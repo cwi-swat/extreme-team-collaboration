@@ -1,0 +1,6 @@
+#!/bin/sh
+
+export CLASSPATH="toolbus-ng.jar:aterm-java.jar:java-cup-11a.jar:jjtraveler.jar:shared-objects.jar:$CLASSPATH"
+
+# java toolbus.Main -SXTCserver.tb -P60000 # $@
+java toolbus.viewer.Viewer -SXTCserver.tb -P60000 # $@
