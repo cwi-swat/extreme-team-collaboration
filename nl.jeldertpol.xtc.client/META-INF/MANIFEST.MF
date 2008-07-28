@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: XTC Client UI Plug-in
+Bundle-SymbolicName: nl.jeldertpol.xtc.client;singleton:=true
+Bundle-Version: 0.0.1
+Bundle-Activator: nl.jeldertpol.xtc.client.Activator
+Bundle-Vendor: Jeldert Pol
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources;bundle-version="3.4.0",
+ org.eclipse.team.core;bundle-version="3.4.0",
+ org.tigris.subversion.subclipse.core;bundle-version="1.4.1",
+ org.eclipse.jface.text;bundle-version="3.4.0",
+ org.eclipse.ui.editors;bundle-version="3.4.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
