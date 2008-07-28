@@ -5,7 +5,7 @@ package nl.jeldertpol.xtc.client.preferences.connection;
  */
 public class PreferenceConstants {
 
-	public static final String P_ADDRESS = "addressPreference";
+	public static final String P_HOST = "addressPreference";
 
 	public static final String P_PORT = "portPreference";
 

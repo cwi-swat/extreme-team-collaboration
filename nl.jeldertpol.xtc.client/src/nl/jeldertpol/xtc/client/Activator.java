@@ -2,6 +2,7 @@ package nl.jeldertpol.xtc.client;
 
 import nl.jeldertpol.xtc.client.changes.ResourceChangeListener;
 import nl.jeldertpol.xtc.client.changes.WindowListener;
+import nl.jeldertpol.xtc.client.session.Session;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -24,6 +25,8 @@ public class Activator extends AbstractUIPlugin {
 	private ResourceChangeListener resourceChangeListener;
 
 	private WindowListener windowListener;
+	
+	public static final Session session = new Session();
 
 	/**
 	 * The constructor.

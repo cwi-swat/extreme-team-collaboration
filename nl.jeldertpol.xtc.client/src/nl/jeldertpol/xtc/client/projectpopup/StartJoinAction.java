@@ -1,6 +1,6 @@
 package nl.jeldertpol.xtc.client.projectpopup;
 
-import nl.jeldertpol.xtc.client.session.StartJoin;
+import nl.jeldertpol.xtc.client.Activator;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.action.IAction;
@@ -47,8 +47,9 @@ public class StartJoinAction implements IObjectActionDelegate {
 		if (selection instanceof TreeSelection) {
 			ITreeSelection treeSelection = (ITreeSelection) selection;
 			IProject project = (IProject) treeSelection.getFirstElement();
-
-			new StartJoin().startJoin(project);
+			
+			// Connect to session...
+			Activator.session.startJoin(project);
 		}
 	}
 

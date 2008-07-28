@@ -34,7 +34,7 @@ public class ConnectionPreferencePage extends FieldEditorPreferencePage
 	 * editor knows how to save and restore itself.
 	 */
 	public void createFieldEditors() {
-		addField(new StringFieldEditor(PreferenceConstants.P_ADDRESS,
+		addField(new StringFieldEditor(PreferenceConstants.P_HOST,
 				"XTC server address", getFieldEditorParent()));
 		addField(new IntegerFieldEditor(PreferenceConstants.P_PORT,
 				"XTC server port", getFieldEditorParent()));
