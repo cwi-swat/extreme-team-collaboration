@@ -34,12 +34,23 @@ public class ConnectionPreferencePage extends FieldEditorPreferencePage
 	 * editor knows how to save and restore itself.
 	 */
 	public void createFieldEditors() {
-		addField(new StringFieldEditor(PreferenceConstants.P_HOST,
+		// Host
+		addField(new HostFieldEditor(PreferenceConstants.P_HOST,
 				"XTC server address", getFieldEditorParent()));
-		addField(new IntegerFieldEditor(PreferenceConstants.P_PORT,
-				"XTC server port", getFieldEditorParent()));
-		addField(new StringFieldEditor(PreferenceConstants.P_NICKNAME,
-				"Nickname", getFieldEditorParent()));
+
+		// Port
+		IntegerFieldEditor portFieldEditor = new IntegerFieldEditor(
+				PreferenceConstants.P_PORT, "XTC server port",
+				getFieldEditorParent());
+		portFieldEditor.setValidRange(1, 65535);
+		addField(portFieldEditor);
+
+		// Nickname
+		StringFieldEditor nicknameFieldEditor = new StringFieldEditor(
+				PreferenceConstants.P_NICKNAME, "Nickname",
+				getFieldEditorParent());
+		nicknameFieldEditor.setEmptyStringAllowed(false);
+		addField(nicknameFieldEditor);
 	}
 
 	/*
