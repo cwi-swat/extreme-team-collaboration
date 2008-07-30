@@ -2,9 +2,9 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="toolbus/aterm-java.jar"/>
-	<classpathentry kind="lib" path="toolbus/toolbus-ng.jar"/>
-	<classpathentry kind="lib" path="toolbus/shared-objects.jar"/>
+	<classpathentry kind="lib" path="toolbus/aterm-java.jar" sourcepath="/export/scratch1/jpol/asfsdf-meta-bundle-2.0.1RC3/aterm-java/src"/>
 	<classpathentry kind="lib" path="toolbus/jjtraveler.jar"/>
+	<classpathentry kind="lib" path="toolbus/shared-objects.jar"/>
+	<classpathentry kind="lib" path="toolbus/toolbus-ng.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

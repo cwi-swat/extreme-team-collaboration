@@ -1,7 +1,14 @@
 package nl.jeldertpol.xtc.server;
 
+import java.util.ArrayList;
+
+import nl.jeldertpol.xtc.server.client.Client;
+import nl.jeldertpol.xtc.server.project.Project;
 import toolbus.adapter.java.AbstractJavaTool;
 import aterm.ATerm;
+import aterm.ATermBlob;
+import aterm.ATermFactory;
+import aterm.ATermLong;
 
 /**
  * @author Jeldert Pol
@@ -9,48 +16,29 @@ import aterm.ATerm;
  */
 public class Server extends AbstractJavaTool {
 
-	/**
-	 * 
-	 */
-	public Server(String host, String port) {
-		String toolname = Server.class.getName();
-		String[] connectioninfo = { "-TYPE", "remote", "-TB_TOOL_NAME",
-				toolname, "-TB_HOST", host, "-TB_PORT", port };
-		try {
-			connect(connectioninfo);
-			System.out.println("XTC server is up and running...");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public Server(String[] args) {
-		super();
-		try {
-			connect(args);
-		} catch (Exception ex) {
-			throw new RuntimeException(ex);
-		}
-		System.out.println("Connected!");
-	}
+	private ATermFactory factory = getFactory();
 
 	/**
-	 * @param args
+	 * Holds the connected clients.
 	 */
-	public static void main(String[] args) {
-//		for (int i = 0; i < args.length; i++) {
-//			System.out.println("Arg: " + args[i]);
-//		}
-//		if (args.length == 2) {
-//			String host = args[0];
-//			String port = args[1];
-//
-//			new Server(host, port);
-		new Server(args);
-//		} else {
-//			System.out.println("Use: " + Server.class.getName() + " host port");
-//			System.out.println("Example: java -jar server.jar localhost 8998");
-//		}
+	private ArrayList<Client> clients = new ArrayList<Client>();
+
+	/**
+	 * Holds the current projects.
+	 */
+	private ArrayList<Project> projects = new ArrayList<Project>();
+
+	/**
+	 * Starting point for XTC Server. Can be called directly from the Toolbus
+	 * script. This supplies the correct args (as required by
+	 * {@link AbstractJavaTool#connect(String[])}).
+	 * 
+	 * @param args
+	 *            arguments to connect to the Toolbus.
+	 * @throws Exception
+	 */
+	public static void main(String[] args) throws Exception {
+		new Server().connect(args);
 	}
 
 	@Override
@@ -63,6 +51,81 @@ public class Server extends AbstractJavaTool {
 	public void receiveTerminate(ATerm term) {
 		// TODO Auto-generated method stub
 
+	}
+	
+	public ATerm startSession(String name, ATermLong revision, ATermBlob resources) {
+				
+		
+		ATerm sessionStart = factory.make("sessionStart(<bool>)", true);
+		return sessionStart;
+	}
+
+	/**
+	 * A client wants to set its nickname.
+	 * 
+	 * @param nickname
+	 *            the nickname to be set
+	 * @return a boolean, <code>true</code> when nickname is set,
+	 *         <code>false</code> when nickname is already taken.
+	 */
+	public ATerm setNickname(String nickname) {
+		System.out.println("server nickname: " + nickname);
+
+		boolean valid = true;
+		for (Client client : clients) {
+			if (client.getNickname().equals(nickname)) {
+				valid = false;
+				break;
+			}
+		}
+		if (valid) {
+			clients.add(new Client(nickname));
+		}
+
+		ATerm nicknameSet = factory.make("nicknameSet(<bool>)", valid);
+		return nicknameSet;
+	}
+
+	/**
+	 * A client requests the revision of a project.
+	 * 
+	 * @param projectName
+	 *            the project to get the revision from.
+	 * @return a {@link Long}, containing the revision, or -1 if the project is
+	 *         not present.
+	 */
+	public ATerm getRevision(String projectName) {
+		System.out.println("server revision: " + projectName);
+
+		Long revision = -1L;
+		for (Project project : projects) {
+			if (project.getProjectName().equals(projectName)) {
+				revision = project.getRevision();
+				break;
+			}
+		}
+
+		ATermLong atermRevision = factory.makeLong(revision);
+
+		ATerm gotRevision = factory.make("gotRevision(<term>)", atermRevision);
+		return gotRevision;
+	}
+
+	/**
+	 * A client is disconnected.
+	 * 
+	 * @param nickname
+	 *            The nickname of the disconnected client.
+	 */
+	public void disconnect(String nickname) {
+		Client clientToDisconnect = null;
+		for (Client client : clients) {
+			if (client.getNickname().equals(nickname)) {
+				clientToDisconnect = client;
+				break;
+			}
+		}
+		clients.remove(clientToDisconnect);
 	}
 
 }

@@ -1,125 +1,71 @@
 process XTC is
-	printf("XTC is up and running...\n") .
-	
-	let Server : server
+	printf("TB: script is up and running...\n") .
+
+	let
+		Server : server,
+		Client : client,
+		Cid : int
 	in
-		execute(server, Server?)
+		(
+			rec-connect(Server?)
+			. printf("TB: XTC server connected...\n")
+		)
+		.
+		(
+			(
+				rec-connect(Client?)
+				. printf("TB: XTC client connected...\n")
+				. create(XTCclient(Client, Server), Cid?)
+			) * delta
+		)
 	endlet
-	
-	//let Server : server
-	//in
-	//	rec-connect(Server?) .
-	//	printf("XTC server connected")
-	//endlet
 
-process XTCserver is
-	printf("XTCserver is up and running...\n") .
-	(
-		let Client : client, Nickname : str, Project : str, Pid : int
-		in
-			rec-connect(Client?) .
-			rec-event(Client, join(Nickname?)) .
-			snd-ack-event(Client, join(Nickname)) .
-			printf("KwekClient %s %s connected.\n", Client, Nickname) .
-
-			create(KwekClient(Client, Nickname), Pid?)
-		endlet
-	) * delta
-
-process KwekClient(Client : client, Nickname : str) is
-let Text : str, OtherNickname : str, Nicks : list(str)
-in
-	subscribe(join-client(<str>)) .
-	subscribe(leave-client(<str>, <str>)) .
-	subscribe(say-client(<str>, <str>)) .
-	subscribe(clientsChanged(<list>)) .
-	subscribe(banClient(<str>)).
-	
-	// Laat andere clients weten dat ik er ben
-	snd-do(Client, addClient(Nickname)) .
-	snd-note(join-client(Nickname)) .
-	
+process XTCclient(Client : client, Server : server) is
+	printf("client\n") .
+		
 	(
 		(
-			rec-note(join-client(OtherNickname?)) .
-			printf("received join-client(%s)\n", OtherNickname) .
-			snd-do(Client, addClient(OtherNickname))
+			let
+				Nickname : str,
+				Valid : bool
+			in
+				rec-request(Client, setNickname(Nickname?))
+				. snd-eval(Server, setNickname(Nickname))
+				. rec-value(Server, nicknameSet(Valid?))
+				. snd-response(Client, setNickname(Valid))
+				. printf("nickname set %d\n", Nickname)
+			endlet
 		)
 		+
 		(
-			rec-note(leave-client(OtherNickname?, Text?)) .
-			printf("received leave-client(%s)\n", OtherNickname) .
-			snd-do(Client, removeClient(OtherNickname, Text))
+			let
+				Nickname : str
+			in
+				rec-msg(Client, disconnect(Nickname?))
+				. snd-do(Server, disconnect(Nickname))
+				. printf("Client disconnected %d\n", Nickname)
+			endlet
 		)
 		+
 		(
-			rec-event(Client, say(Text?)) .
-			snd-ack-event(Client, say(Text)) .
-			printf("%s kwekt: %s\n", Nickname, Text) .
-			snd-do(Client, hear(Nickname, Text)) .
-			snd-note(say-client(Nickname, Text))
+			let
+				Project : str,
+				Revision : term
+			in
+				rec-request(Client, getRevision(Project?))
+				. snd-eval(Server, getRevision(Project))
+				. rec-value(Server, gotRevision(Revision?))
+				. snd-response(Client, getRevision(Revision))
+				. printf("revision get %d\n", Revision)
+			endlet
 		)
-		+
-		(
-			rec-note(say-client(OtherNickname?, Text?)) .
-			printf("received say-client(%s)(%s)\n", OtherNickname, Text) .
-			snd-do(Client, hear(OtherNickname, Text))
-		)
-		+
-		(
-			rec-note(clientsChanged(Nicks?)) .
-			printf("received clientsChanged(%s)\n", Nicks) .
-			snd-do(Client, clientsChanged(Nicks))
-		)
-		+
-		(
-			rec-event(Client, ban(Text?)) .
-			snd-ack-event(Client, ban(Text)) .
-			printf("%s ban: %s\n", Nickname, Text) .
-			//snd-do(Client, banClient(Text)) .
-			snd-note(banClient(Text))
-		)
-		+
-		(
-			rec-note(banClient(Text?)) .
-			printf("received banClient(%s)\n", Text) .
-			snd-do(Client, banClient(Text))
-		)
-	) *
-	rec-disconnect(Client) .
-	printf("%s left the building\n", Nickname) .
-	Text := "Some reason..." .
-	snd-note(leave-client(Nickname, Text))
-endlet
+		
+	)
+	*
+	rec-disconnect(Client)
+	//delta
 
-process Nicknames is
-let Nicks : list(str),
-	Nickname : str,
-	Reason : str
-in
-	Nicks := [] .
-	subscribe(join-client(<str>)) .
-	subscribe(leave-client(<str>, <str>)) .
-	
-	(
-		(
-			rec-note(join-client(Nickname?)) .
-			printf("nicks... join\n") .
-			Nicks := join(Nicks, [Nickname]) .
-			snd-note(clientsChanged(Nicks))
-		)
-		+
-		(
-			rec-note(leave-client(Nickname?, Reason?)) .
-			printf("nicks... leave\n") .
-			Nicks := diff(Nicks, [Nickname]) //.
-			// Niet nodig, omdat client zelf ook al luisteren
-			//snd-note(clientsChanged(Nicks))
-		)
-	) * delta
-endlet
-
-tool server is {command = "java -jar XTCserver.jar"}
+tool server is {}
 tool client is {}
 
 toolbus(XTC)

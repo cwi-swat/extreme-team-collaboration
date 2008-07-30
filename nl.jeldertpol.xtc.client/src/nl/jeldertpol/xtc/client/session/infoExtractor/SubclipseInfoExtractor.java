@@ -19,7 +19,7 @@ import org.tigris.subversion.svnclientadapter.SVNStatusKind;
  * 
  * @author Jeldert Pol
  */
-public class SubclipseInfoExtractor {
+public class SubclipseInfoExtractor extends InfoExtractor {
 
 	/**
 	 * Returns a list of modified {@link IResource} in a {@link IProject}, based
@@ -55,8 +55,7 @@ public class SubclipseInfoExtractor {
 					modifiedFiles.add(resource);
 				}
 
-				if (resource instanceof IFolder) { // || resource instanceof
-													// IProject) {
+				if (resource instanceof IFolder) {
 					IFolder folder = (IFolder) resource;
 					try {
 						for (IResource member : folder.members()) {
@@ -87,11 +86,11 @@ public class SubclipseInfoExtractor {
 	}
 
 	/**
-	 * Get the revision of a project.
+	 * Get the revision of a project, or null.
 	 * 
 	 * @param project
 	 *            the project to get the revision from.
-	 * @return the revision of the project.
+	 * @return the revision of the project or null.
 	 */
 	public Long getRevision(IProject project) {
 		ISVNLocalResource svnResource = SVNWorkspaceRoot

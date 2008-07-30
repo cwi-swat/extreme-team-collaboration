@@ -1,10 +1,15 @@
 package nl.jeldertpol.xtc.client.session;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import nl.jeldertpol.xtc.client.Activator;
+import nl.jeldertpol.xtc.client.exceptions.NicknameAlreadyTakenException;
+import nl.jeldertpol.xtc.client.exceptions.ProjectNotPresentException;
 import nl.jeldertpol.xtc.client.exceptions.UnableToConnectException;
+import nl.jeldertpol.xtc.client.exceptions.WrongRevisionException;
 import nl.jeldertpol.xtc.client.preferences.connection.PreferenceConstants;
+import nl.jeldertpol.xtc.client.session.infoExtractor.InfoExtractor;
 import nl.jeldertpol.xtc.client.session.infoExtractor.SubclipseInfoExtractor;
 
 import org.eclipse.core.resources.IProject;
@@ -16,18 +21,18 @@ import org.eclipse.jface.dialogs.MessageDialog;
  * @author Jeldert Pol
  */
 public class Session {
-	private SubclipseInfoExtractor infoExtractor;
+	private InfoExtractor infoExtractor;
 
 	private boolean connected;
 
-	private Toolbus toolbus;
+	private Server server;
 
 	public Session() {
 		super();
 
 		infoExtractor = new SubclipseInfoExtractor();
 		connected = false;
-		toolbus = new Toolbus();
+		server = new Server();
 	}
 
 	/**
@@ -41,30 +46,65 @@ public class Session {
 		boolean valid = versionedProject(project) && unmodifiedProject(project);
 
 		if (valid && !connected) {
-			// Contact server
-			String toolname = Activator.PLUGIN_ID;
+			// Get all needed settings
 			Preferences preferences = Activator.getDefault()
 					.getPluginPreferences();
 			String host = preferences.getString(PreferenceConstants.P_HOST);
 			String port = preferences.getString(PreferenceConstants.P_PORT);
+			String nickname = preferences
+					.getString(PreferenceConstants.P_NICKNAME);
 
 			try {
-				toolbus.connect(toolname, host, port);
+				// Connect to server
+				server.connect(host, port, nickname);
+				connected = true;
+
+				Long localRevision = getRevision(project);
+				
+				try {
+					Long serverRevision = server.getRevision(project.getName());
+
+					if (serverRevision == localRevision) {
+						// Join session
+					} else {
+						throw new WrongRevisionException(localRevision,
+								serverRevision);
+					}
+
+				} catch (ProjectNotPresentException e) {
+					// Start new session
+					List<IResource> iResources = infoExtractor.getResources(project);
+					List<String> resources = new ArrayList<String>(iResources.size());
+					for (IResource resource : iResources) {
+						resources.add(resource.toString());
+					}
+					
+					server.start(project.getName(), localRevision, resources);
+				}
+
 			} catch (UnableToConnectException e) {
+				server.disconnect();
+				connected = false;
 				e.printStackTrace();
 				MessageDialog.openError(null, "XTC Start / Join",
 						"Unable to connect to XTC server.");
 				return;
+			} catch (NicknameAlreadyTakenException e) {
+				e.printStackTrace();
+				MessageDialog.openError(null, "XTC Start / Join", e
+						.getMessage());
+				return;
+			} catch (WrongRevisionException e) {
+				e.printStackTrace();
+				MessageDialog.openError(null, "XTC Start / Join", e
+						.getMessage());
+				return;
+				// } catch (ProjectNotPresentException e) {
+				// e.printStackTrace();
+				// MessageDialog.openError(null, "XTC Start / Join", e
+				// .getMessage());
+				// return;
 			}
-
-			// Look if project is already started
-			
-			// Match revision
-			// Join
-			// Error
-
-			// Start new session
-
 		} else {
 			if (connected) {
 				MessageDialog.openError(null, "XTC Start / Join",
@@ -74,7 +114,8 @@ public class Session {
 	}
 
 	public void disconnect() {
-
+		server.disconnect();
+		connected = false;
 	}
 
 	/**
@@ -98,6 +139,17 @@ public class Session {
 							"The selected project is not under version control. Only versioned projects can be used.");
 			return false;
 		}
+	}
+
+	/**
+	 * Get the revision of the project, or null.
+	 * 
+	 * @param project
+	 *            the project to get the revision from.
+	 * @return the revision of the project, or null.
+	 */
+	private Long getRevision(IProject project) {
+		return infoExtractor.getRevision(project);
 	}
 
 	/**

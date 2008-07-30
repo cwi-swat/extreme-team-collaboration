@@ -13,6 +13,9 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jface.text;bundle-version="3.4.0",
  org.eclipse.ui.editors;bundle-version="3.4.0",
  toolbus_ng;bundle-version="1.0.6",
- aterm_java;bundle-version="1.7.0"
+ aterm_java;bundle-version="1.7.0",
+ shared_objects;bundle-version="1.4.5",
+ JJTraveler;bundle-version="0.5.0",
+ org.junit4
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
