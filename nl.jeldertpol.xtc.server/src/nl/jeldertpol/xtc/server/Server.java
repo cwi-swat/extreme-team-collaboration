@@ -48,68 +48,110 @@ public class Server extends AbstractJavaTool {
 		// TODO Auto-generated method stub
 
 	}
-	
+
+	/**
+	 * A client request all the sessions on the server.
+	 * 
+	 * @return An {@link ArrayList} with {@link SimpleSession}, inside an
+	 *         {@link ATermBlob}
+	 */
 	public ATerm getSessions() {
-		ArrayList<SimpleSession> simpleSessions = new ArrayList<SimpleSession>(sessions);
+		ArrayList<SimpleSession> simpleSessions = new ArrayList<SimpleSession>(
+				sessions);
 		simpleSessions.addAll(sessions);
-		
+
 		byte[] blob = Conversion.ObjectToByte(simpleSessions);
 		ATermBlob termBlob = factory.makeBlob(blob);
-		return termBlob;
-	}
-	
-	public ATerm startSession(String projectName, ATerm revisionTerm, String nickname) {
-		boolean succes = true;
 		
+		ATerm response = factory.make("getSessions(<term>)", termBlob);
+		return response;
+	}
+
+	/**
+	 * A client starts a new session.
+	 * 
+	 * @param projectName
+	 *            Name of the project in the session.
+	 * @param revisionTerm
+	 *            An {@link ATermLong} containing the revision of the project.
+	 * @param nickname
+	 *            The nickname of the client.
+	 * @return An {@link ATerm} containing a {@link Boolean}, representing the
+	 *         success of this action.
+	 */
+	public ATerm startSession(String projectName, ATerm revisionTerm,
+			String nickname) {
+		boolean success = true;
+
 		// Convert ATerms to right ATerm
 		ATermLong revisionTermLong = (ATermLong) revisionTerm;
 		Long revision = revisionTermLong.getLong();
-		
+
 		// Check if project exists
 		for (Session session : sessions) {
 			if (session.getProjectName().equals(projectName)) {
-				succes = false;
+				success = false;
 				break;
 			}
 		}
-		if (succes) {
+		if (success) {
 			// Create new session
 			Session session = new Session(projectName, revision, nickname);
 			sessions.add(session);
 		}
-		
-		ATerm startSession = factory.make("startSession(<bool>)", succes);
+
+		ATerm startSession = factory.make("startSession(<bool>)", success);
 		return startSession;
 	}
-	
+
+	/**
+	 * A client joins an existing session.
+	 * 
+	 * @param projectName
+	 *            Name of the project, to identify the session.
+	 * @param nickname
+	 *            The nickname of the client.
+	 * @return An {@link ATerm} containing a {@link Boolean}, representing the
+	 *         success of this action.
+	 */
 	public ATerm joinSession(String projectName, String nickname) {
-		boolean succes = false;
-		
+		boolean success = false;
+
 		// Check if project exists
 		for (Session session : sessions) {
 			if (session.getProjectName().equals(projectName)) {
 				// Check if nickname is available
 				session.addClient(nickname);
-				succes = true;
+				success = true;
 			}
 		}
-		
-		ATerm joinSession = factory.make("joinSession(<bool>)", succes);
+
+		ATerm joinSession = factory.make("joinSession(<bool>)", success);
 		return joinSession;
 	}
 
+	/**
+	 * A client leaves an existing session.
+	 * 
+	 * @param projectName
+	 *            Name of the project, to identify the session.
+	 * @param nickname
+	 *            The nickname of the client.
+	 * @return An {@link ATerm} containing a {@link Boolean}, representing the
+	 *         success of this action.
+	 */
 	public ATerm leaveSession(String projectName, String nickname) {
-		boolean succes = false;
-		
+		boolean success = false;
+
 		// Check if project exists
 		for (Session session : sessions) {
 			if (session.getProjectName().equals(projectName)) {
 				session.removeClient(nickname);
-				succes = true;
+				success = true;
 			}
 		}
-		
-		ATerm leaveSession = factory.make("leaveSession(<bool>)", succes);
+
+		ATerm leaveSession = factory.make("leaveSession(<bool>)", success);
 		return leaveSession;
 	}
 
