@@ -1,4 +1,4 @@
-package nl.jeldertpol.xtc.server.project;
+package nl.jeldertpol.xtc.server.session;
 
 /**
  * A change to a resource

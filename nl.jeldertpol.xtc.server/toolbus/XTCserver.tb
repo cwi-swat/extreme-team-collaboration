@@ -20,50 +20,73 @@ process XTC is
 		)
 	endlet
 
+// There is only one server, so now we can send directly to the server
 process XTCclient(Client : client, Server : server) is
 	printf("client\n") .
-		
-	(
+	
+	(	
 		(
+			// Get current sessions
 			let
-				Nickname : str,
-				Valid : bool
+				Sessions : term
 			in
-				rec-request(Client, setNickname(Nickname?))
-				. snd-eval(Server, setNickname(Nickname))
-				. rec-value(Server, nicknameSet(Valid?))
-				. snd-response(Client, setNickname(Valid))
-				. printf("nickname set %d\n", Nickname)
+				rec-request(Client, getSessions())
+				. snd-eval(Server, getSessions())
+				. rec-value(Server, getSessions(Sessions?))
+				. snd-response(Client, getSessions(Sessions))
 			endlet
 		)
-		+
+		*
 		(
-			let
-				Nickname : str
-			in
-				rec-msg(Client, disconnect(Nickname?))
-				. snd-do(Server, disconnect(Nickname))
-				. printf("Client disconnected %d\n", Nickname)
-			endlet
+			(
+				// Start a new session
+				let
+					Project : str,
+					Revision : term,
+					Nickname : str,
+					Succes : bool
+				in
+					rec-request(Client, startSession(Project?, Revision?, Nickname?))
+					. snd-eval(Server, startSession(Project, Revision, Nickname))
+					. rec-value(Server, startSession(Succes?))
+					. subscribe(change(<str>, <term>))	// project, change
+					. snd-response(Client, startSession(Succes))
+				endlet
+			)
+			+
+			(
+				// Join an existing session
+				let
+					Project : str,
+					Nickname : str,
+					Succes : bool
+				in
+					rec-request(Client, jointSession(Project?, Nickname?))
+					. snd-eval(Server, joinSession(Project, Nickname))
+					. rec-value(Server, joinSession(Succes?))
+					. subscribe(change(<str>, <term>))	// project, change
+					. snd-response(Client, joinSession(Succes))
+				endlet
+			)
+			*
+			(
+				// Leave a session
+				let
+					Project : str,
+					Nickname : str,
+					Succes : bool
+				in
+					rec-request(Client, leaveSession(Project?, Nickname?))
+					. snd-eval(Server, leaveSession(Project, Nickname))
+					. rec-value(Server, leaveSession(Succes?))
+					. unsubscribe(change(<str>, <term>))	// project, change
+					. snd-response(Client, leaveSession(Succes))
+				endlet
+			)
 		)
-		+
-		(
-			let
-				Project : str,
-				Revision : term
-			in
-				rec-request(Client, getRevision(Project?))
-				. snd-eval(Server, getRevision(Project))
-				. rec-value(Server, gotRevision(Revision?))
-				. snd-response(Client, getRevision(Revision))
-				. printf("revision get %d\n", Revision)
-			endlet
-		)
-		
 	)
 	*
 	rec-disconnect(Client)
-	//delta
 
 tool server is {}
 tool client is {}

@@ -2,8 +2,9 @@ package nl.jeldertpol.xtc.server;
 
 import java.util.ArrayList;
 
-import nl.jeldertpol.xtc.server.client.Client;
-import nl.jeldertpol.xtc.server.project.Project;
+import nl.jeldertpol.xtc.common.Conversion.Conversion;
+import nl.jeldertpol.xtc.common.Session.SimpleSession;
+import nl.jeldertpol.xtc.server.session.Session;
 import toolbus.adapter.java.AbstractJavaTool;
 import aterm.ATerm;
 import aterm.ATermBlob;
@@ -19,14 +20,9 @@ public class Server extends AbstractJavaTool {
 	private ATermFactory factory = getFactory();
 
 	/**
-	 * Holds the connected clients.
-	 */
-	private ArrayList<Client> clients = new ArrayList<Client>();
-
-	/**
 	 * Holds the current projects.
 	 */
-	private ArrayList<Project> projects = new ArrayList<Project>();
+	private ArrayList<Session> sessions = new ArrayList<Session>();
 
 	/**
 	 * Starting point for XTC Server. Can be called directly from the Toolbus
@@ -53,79 +49,68 @@ public class Server extends AbstractJavaTool {
 
 	}
 	
-	public ATerm startSession(String name, ATermLong revision, ATermBlob resources) {
-				
+	public ATerm getSessions() {
+		ArrayList<SimpleSession> simpleSessions = new ArrayList<SimpleSession>(sessions);
+		simpleSessions.addAll(sessions);
 		
-		ATerm sessionStart = factory.make("sessionStart(<bool>)", true);
-		return sessionStart;
+		byte[] blob = Conversion.ObjectToByte(simpleSessions);
+		ATermBlob termBlob = factory.makeBlob(blob);
+		return termBlob;
 	}
-
-	/**
-	 * A client wants to set its nickname.
-	 * 
-	 * @param nickname
-	 *            the nickname to be set
-	 * @return a boolean, <code>true</code> when nickname is set,
-	 *         <code>false</code> when nickname is already taken.
-	 */
-	public ATerm setNickname(String nickname) {
-		System.out.println("server nickname: " + nickname);
-
-		boolean valid = true;
-		for (Client client : clients) {
-			if (client.getNickname().equals(nickname)) {
-				valid = false;
+	
+	public ATerm startSession(String projectName, ATerm revisionTerm, String nickname) {
+		boolean succes = true;
+		
+		// Convert ATerms to right ATerm
+		ATermLong revisionTermLong = (ATermLong) revisionTerm;
+		Long revision = revisionTermLong.getLong();
+		
+		// Check if project exists
+		for (Session session : sessions) {
+			if (session.getProjectName().equals(projectName)) {
+				succes = false;
 				break;
 			}
 		}
-		if (valid) {
-			clients.add(new Client(nickname));
+		if (succes) {
+			// Create new session
+			Session session = new Session(projectName, revision, nickname);
+			sessions.add(session);
 		}
-
-		ATerm nicknameSet = factory.make("nicknameSet(<bool>)", valid);
-		return nicknameSet;
+		
+		ATerm startSession = factory.make("startSession(<bool>)", succes);
+		return startSession;
 	}
-
-	/**
-	 * A client requests the revision of a project.
-	 * 
-	 * @param projectName
-	 *            the project to get the revision from.
-	 * @return a {@link Long}, containing the revision, or -1 if the project is
-	 *         not present.
-	 */
-	public ATerm getRevision(String projectName) {
-		System.out.println("server revision: " + projectName);
-
-		Long revision = -1L;
-		for (Project project : projects) {
-			if (project.getProjectName().equals(projectName)) {
-				revision = project.getRevision();
-				break;
+	
+	public ATerm joinSession(String projectName, String nickname) {
+		boolean succes = false;
+		
+		// Check if project exists
+		for (Session session : sessions) {
+			if (session.getProjectName().equals(projectName)) {
+				// Check if nickname is available
+				session.addClient(nickname);
+				succes = true;
 			}
 		}
-
-		ATermLong atermRevision = factory.makeLong(revision);
-
-		ATerm gotRevision = factory.make("gotRevision(<term>)", atermRevision);
-		return gotRevision;
+		
+		ATerm joinSession = factory.make("joinSession(<bool>)", succes);
+		return joinSession;
 	}
 
-	/**
-	 * A client is disconnected.
-	 * 
-	 * @param nickname
-	 *            The nickname of the disconnected client.
-	 */
-	public void disconnect(String nickname) {
-		Client clientToDisconnect = null;
-		for (Client client : clients) {
-			if (client.getNickname().equals(nickname)) {
-				clientToDisconnect = client;
-				break;
+	public ATerm leaveSession(String projectName, String nickname) {
+		boolean succes = false;
+		
+		// Check if project exists
+		for (Session session : sessions) {
+			if (session.getProjectName().equals(projectName)) {
+				session.removeClient(nickname);
+				succes = true;
 			}
 		}
-		clients.remove(clientToDisconnect);
+		
+		ATerm leaveSession = factory.make("leaveSession(<bool>)", succes);
+		return leaveSession;
 	}
 
 }

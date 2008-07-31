@@ -6,5 +6,6 @@
 	<classpathentry kind="lib" path="toolbus/jjtraveler.jar"/>
 	<classpathentry kind="lib" path="toolbus/shared-objects.jar"/>
 	<classpathentry kind="lib" path="toolbus/toolbus-ng.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/nl.jeldertpol.xtc.common"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
