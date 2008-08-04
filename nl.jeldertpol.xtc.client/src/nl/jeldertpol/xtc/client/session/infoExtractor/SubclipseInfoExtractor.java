@@ -106,6 +106,9 @@ public class SubclipseInfoExtractor extends InfoExtractor {
 		} catch (SVNException e) {
 			e.printStackTrace();
 			throw new UnrevisionedProjectException(project.getName());
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+			throw new UnrevisionedProjectException(project.getName());
 		}
 
 		return number;

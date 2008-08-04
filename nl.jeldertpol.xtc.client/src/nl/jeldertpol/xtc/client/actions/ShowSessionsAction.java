@@ -7,7 +7,7 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 
 /**
- * Shows the sessions on the server.
+ * Shows the projects in the workspace.
  * 
  * @author Jeldert Pol
  */
@@ -17,7 +17,7 @@ public class ShowSessionsAction extends AbstractHandler {
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		// Only show the sessions
 		ShowSessions showSessions = new ShowSessions();
-		showSessions.showSessions("Sessions currently on the server.");
+		showSessions.showSessions("Sessions currently on the server. Press OK to join.");
 
 		return null;
 	}

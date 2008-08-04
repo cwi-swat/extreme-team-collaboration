@@ -3,6 +3,8 @@ package nl.jeldertpol.xtc.client;
 import nl.jeldertpol.xtc.client.changes.ResourceChangeListener;
 import nl.jeldertpol.xtc.client.changes.WindowListener;
 import nl.jeldertpol.xtc.client.session.Session;
+import nl.jeldertpol.xtc.client.session.infoExtractor.InfoExtractor;
+import nl.jeldertpol.xtc.client.session.infoExtractor.SubclipseInfoExtractor;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -20,6 +22,8 @@ public class Activator extends AbstractUIPlugin {
 	public static final String PLUGIN_ID = "nl.jeldertpol.xtc.client";
 
 	public static final Session session = new Session();
+	
+	public static final InfoExtractor infoExtractor = new SubclipseInfoExtractor();
 
 	/**
 	 * Image for an session.
@@ -30,6 +34,11 @@ public class Activator extends AbstractUIPlugin {
 	 * Image for a client.
 	 */
 	public static final String IMAGE_CLIENT = "resources/icons/user.png";
+	
+	/**
+	 * Image for a project.
+	 */
+	public static final String IMAGE_PROJECT = "resources/icons/folder.png";
 
 	// The shared instance
 	private static Activator plugin;

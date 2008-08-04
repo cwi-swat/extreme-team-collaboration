@@ -57,16 +57,25 @@
             id="nl.jeldertpol.xtc.client.commands.leaveSession"
             name="Leave session">
       </command>
+      <command
+            description="Start a new session."
+            id="nl.jeldertpol.xtc.client.commands.startSession"
+            name="Start session">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
       <handler
-            class="nl.jeldertpol.xtc.client.actions.sessions.ShowSessions"
+            class="nl.jeldertpol.xtc.client.actions.ShowSessionsAction"
             commandId="nl.jeldertpol.xtc.client.commands.showSessions">
       </handler>
       <handler
-            class="nl.jeldertpol.xtc.client.actions.sessions.LeaveSession"
+            class="nl.jeldertpol.xtc.client.actions.LeaveSessionAction"
             commandId="nl.jeldertpol.xtc.client.commands.leaveSession">
+      </handler>
+      <handler
+            class="nl.jeldertpol.xtc.client.actions.StartSessionAction"
+            commandId="nl.jeldertpol.xtc.client.commands.startSession">
       </handler>
    </extension>
    <extension
@@ -79,12 +88,17 @@
                mnemonic="X">
             <command
                   commandId="nl.jeldertpol.xtc.client.commands.showSessions"
-                  mnemonic="S"
+                  mnemonic="w"
                   style="push">
             </command>
             <command
                   commandId="nl.jeldertpol.xtc.client.commands.leaveSession"
                   mnemonic="L"
+                  style="push">
+            </command>
+            <command
+                  commandId="nl.jeldertpol.xtc.client.commands.startSession"
+                  mnemonic="S"
                   style="push">
             </command>
          </menu>
