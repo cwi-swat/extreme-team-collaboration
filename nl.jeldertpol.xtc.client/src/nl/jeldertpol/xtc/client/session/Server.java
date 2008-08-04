@@ -2,6 +2,7 @@ package nl.jeldertpol.xtc.client.session;
 
 import java.util.List;
 
+import nl.jeldertpol.xtc.client.exceptions.LeaveSessionException;
 import nl.jeldertpol.xtc.client.exceptions.NicknameAlreadyTakenException;
 import nl.jeldertpol.xtc.client.exceptions.ProjectAlreadyPresentException;
 import nl.jeldertpol.xtc.client.exceptions.UnableToConnectException;
@@ -149,59 +150,19 @@ public class Server extends AbstractJavaTool {
 	 *            The nickname of the client.
 	 * @return <code>true</code> is everything went ok, <code>false</code>
 	 *         otherwise.
+	 * @throws LeaveSessionException Something failed when leaving the session.
 	 */
-	public boolean leaveSession(String projectName, String nickname) {
+	public void leaveSession(String projectName, String nickname) throws LeaveSessionException {
 		ATerm leaveSession = factory.make("leaveSession(<str>, <str>)",
 				projectName, nickname);
 		ATermAppl reply = sendRequest(leaveSession);
 
 		ATerm answer = reply.getArgument(0);
 		boolean success = Boolean.parseBoolean(answer.toString());
-		return success;
-		// TODO testen
+		
+		if (!success) {
+			throw new LeaveSessionException(projectName);
+		}
 	}
-
-	// /**
-	// * Set the nickname on the server.
-	// *
-	// * @param nickname
-	// * the nickname to be set.
-	// * @throws NicknameAlreadyTakenException
-	// * thrown when nickname is already taken.
-	// */
-	// private void setNickname(String nickname)
-	// throws NicknameAlreadyTakenException {
-	// ATerm setNickname = factory.make("setNickname(<str>)", nickname);
-	// ATermAppl response = sendRequest(setNickname);
-	//
-	// ATerm answer = response.getArgument(0);
-	// boolean set = Boolean.parseBoolean(answer.toString());
-	//
-	// if (!set) {
-	// throw new NicknameAlreadyTakenException(nickname);
-	// }
-	// }
-	//
-	// /**
-	// * Get the revision of the project from the server.
-	// *
-	// * @param project
-	// * the project to get the revision from.
-	// * @return the revision of the project on the server.
-	// * @throws ProjectNotPresentException
-	// * thrown if the project does not exist on server.
-	// */
-	// public Long getRevision(String project) throws ProjectNotPresentException
-	// {
-	// ATerm getRevision = factory.make("getRevision(<str>)", project);
-	// ATermAppl revision = sendRequest(getRevision);
-	//
-	// ATermLong answer = (ATermLong) revision.getArgument(0);
-	// if (answer.getLong() > -1L) {
-	// return answer.getLong();
-	// } else {
-	// throw new ProjectNotPresentException(project);
-	// }
-	// }
 
 }

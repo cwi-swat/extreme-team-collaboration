@@ -4,6 +4,7 @@ import java.util.List;
 
 import nl.jeldertpol.xtc.client.Activator;
 import nl.jeldertpol.xtc.client.exceptions.AlreadyInSessionException;
+import nl.jeldertpol.xtc.client.exceptions.LeaveSessionException;
 import nl.jeldertpol.xtc.client.exceptions.NicknameAlreadyTakenException;
 import nl.jeldertpol.xtc.client.exceptions.ProjectAlreadyPresentException;
 import nl.jeldertpol.xtc.client.exceptions.ProjectModifiedException;
@@ -39,6 +40,17 @@ public class Session {
 	private boolean inSession;
 
 	/**
+	 * Holds the project of the current session, or an empty String;
+	 */
+	private String projectName;
+
+	/**
+	 * Holds the nickname used in the current session. Is refilled on starting
+	 * or joining a new session.
+	 */
+	private String nickname;
+
+	/**
 	 * Holds the server.
 	 */
 	private Server server;
@@ -53,6 +65,9 @@ public class Session {
 		infoExtractor = new SubclipseInfoExtractor();
 		connected = false;
 		inSession = false;
+		projectName = "";
+		nickname = "";
+
 		server = new Server();
 	}
 
@@ -68,15 +83,8 @@ public class Session {
 		String host = preferences.getString(PreferenceConstants.P_HOST);
 		String port = preferences.getString(PreferenceConstants.P_PORT);
 
-		// try {
 		server.connect(host, port);
 		connected = true;
-		// } catch (UnableToConnectException e) {
-		// e.printStackTrace();
-		// MessageDialog.openError(null, "XTC Connect",
-		// "Connecting to the server failed: " + e.getMessage());
-		// throw e;
-		// }
 	}
 
 	/**
@@ -85,9 +93,13 @@ public class Session {
 	 * This one is public, so it can be called when the plug-in is de-activated.
 	 */
 	public void disconnect() {
+		try {
+			leaveSession();
+		} catch (LeaveSessionException e) {
+			e.printStackTrace();
+		}
 		server.disconnect();
 		connected = false;
-		inSession = false;
 	}
 
 	/**
@@ -139,13 +151,15 @@ public class Session {
 
 		Long revision = infoExtractor.getRevision(project);
 
+		// Get nickname
 		Preferences preferences = Activator.getDefault().getPluginPreferences();
-		String nickname = preferences.getString(PreferenceConstants.P_NICKNAME);
+		nickname = preferences.getString(PreferenceConstants.P_NICKNAME);
 
 		server.startSession(projectName, revision, nickname);
 
 		// Nothing went wrong, so client is now in a session.
 		inSession = true;
+		this.projectName = projectName;
 	}
 
 	/**
@@ -185,8 +199,9 @@ public class Session {
 			throw new ProjectModifiedException(projectName);
 		}
 
+		// Get nickname
 		Preferences preferences = Activator.getDefault().getPluginPreferences();
-		String nickname = preferences.getString(PreferenceConstants.P_NICKNAME);
+		nickname = preferences.getString(PreferenceConstants.P_NICKNAME);
 
 		List<SimpleSession> sessions = getSessions();
 		for (SimpleSession simpleSession : sessions) {
@@ -196,11 +211,27 @@ public class Session {
 
 				if (localRevision.equals(serverRevision)) {
 					server.joinSession(projectName, nickname);
+					inSession = true;
+					this.projectName = projectName;
 				} else {
 					throw new WrongRevisionException(localRevision,
 							serverRevision);
 				}
 			}
+		}
+	}
+
+	/**
+	 * Leave the currently joined session. Does nothing when not in a session.
+	 * 
+	 * @throws LeaveSessionException
+	 */
+	public void leaveSession() throws LeaveSessionException {
+		if (inSession) {
+			server.leaveSession(projectName, nickname);
+			inSession = false;
+			projectName = "";
+			nickname = "";
 		}
 	}
 
