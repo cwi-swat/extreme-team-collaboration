@@ -52,12 +52,21 @@
             id="nl.jeldertpol.xtc.client.commands.showSessions"
             name="Show sessions">
       </command>
+      <command
+            description="Leave the currently joined session."
+            id="nl.jeldertpol.xtc.client.commands.leaveSession"
+            name="Leave session">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
       <handler
             class="nl.jeldertpol.xtc.client.actions.sessions.ShowSessions"
             commandId="nl.jeldertpol.xtc.client.commands.showSessions">
+      </handler>
+      <handler
+            class="nl.jeldertpol.xtc.client.actions.sessions.LeaveSession"
+            commandId="nl.jeldertpol.xtc.client.commands.leaveSession">
       </handler>
    </extension>
    <extension
@@ -71,6 +80,11 @@
             <command
                   commandId="nl.jeldertpol.xtc.client.commands.showSessions"
                   mnemonic="S"
+                  style="push">
+            </command>
+            <command
+                  commandId="nl.jeldertpol.xtc.client.commands.leaveSession"
+                  mnemonic="L"
                   style="push">
             </command>
          </menu>
