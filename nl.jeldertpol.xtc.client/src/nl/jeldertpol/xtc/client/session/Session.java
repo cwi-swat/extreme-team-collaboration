@@ -6,6 +6,7 @@ import nl.jeldertpol.xtc.client.Activator;
 import nl.jeldertpol.xtc.client.exceptions.AlreadyInSessionException;
 import nl.jeldertpol.xtc.client.exceptions.NicknameAlreadyTakenException;
 import nl.jeldertpol.xtc.client.exceptions.ProjectAlreadyPresentException;
+import nl.jeldertpol.xtc.client.exceptions.ProjectModifiedException;
 import nl.jeldertpol.xtc.client.exceptions.UnableToConnectException;
 import nl.jeldertpol.xtc.client.exceptions.UnrevisionedProjectException;
 import nl.jeldertpol.xtc.client.exceptions.WrongRevisionException;
@@ -113,14 +114,16 @@ public class Session {
 	 *             Connecting to the server failed.
 	 * @throws AlreadyInSessionException
 	 *             Client is already in a session.
+	 * @throws ProjectModifiedException
+	 *             The project has local modifications.
 	 * @throws UnrevisionedProjectException
 	 *             The project is not under version control.
 	 * @throws ProjectAlreadyPresentException
 	 *             The project is already present on the server.
 	 */
 	public void startSession(IProject project) throws UnableToConnectException,
-			AlreadyInSessionException, UnrevisionedProjectException,
-			ProjectAlreadyPresentException {
+			AlreadyInSessionException, ProjectModifiedException,
+			UnrevisionedProjectException, ProjectAlreadyPresentException {
 		if (!connected) {
 			connect();
 		}
@@ -129,6 +132,11 @@ public class Session {
 		}
 
 		String projectName = project.getName();
+
+		if (!unmodifiedProject(project)) {
+			throw new ProjectModifiedException(projectName);
+		}
+
 		Long revision = infoExtractor.getRevision(project);
 
 		Preferences preferences = Activator.getDefault().getPluginPreferences();
@@ -150,6 +158,8 @@ public class Session {
 	 *             Connecting to the server failed.
 	 * @throws AlreadyInSessionException
 	 *             Client is already in a session.
+	 * @throws ProjectModifiedException
+	 *             The project has local modifications.
 	 * @throws UnrevisionedProjectException
 	 *             The project is not under version control.
 	 * @throws WrongRevisionException
@@ -159,8 +169,9 @@ public class Session {
 	 *             The nickname is already present in the session.
 	 */
 	public void joinSession(IProject project) throws UnableToConnectException,
-			AlreadyInSessionException, UnrevisionedProjectException,
-			WrongRevisionException, NicknameAlreadyTakenException {
+			AlreadyInSessionException, ProjectModifiedException,
+			UnrevisionedProjectException, WrongRevisionException,
+			NicknameAlreadyTakenException {
 		if (!connected) {
 			connect();
 		}
@@ -169,6 +180,10 @@ public class Session {
 		}
 
 		String projectName = project.getName();
+
+		if (!unmodifiedProject(project)) {
+			throw new ProjectModifiedException(projectName);
+		}
 
 		Preferences preferences = Activator.getDefault().getPluginPreferences();
 		String nickname = preferences.getString(PreferenceConstants.P_NICKNAME);
@@ -200,7 +215,7 @@ public class Session {
 	}
 
 	/**
-	 * Checks if the project is unmodified. Shows an error message if it's not.
+	 * Checks if the project is unmodified.
 	 * 
 	 * @param project
 	 *            The project to check.
@@ -211,17 +226,6 @@ public class Session {
 		List<IResource> modifiedFiles = infoExtractor.modifiedFiles(project);
 
 		return modifiedFiles.isEmpty();
-		// if (modifiedFiles.isEmpty()) {
-		// return true;
-		// } else {
-		// MessageDialog
-		// .openError(
-		// null,
-		// "XTC Start / Join",
-		// "The selected project has modified files. Only unmodified projects can be used."
-		// );
-		// return false;
-		// }
 	}
 
 }
