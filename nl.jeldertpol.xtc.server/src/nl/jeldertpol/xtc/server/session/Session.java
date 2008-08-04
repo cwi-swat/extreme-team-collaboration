@@ -1,6 +1,6 @@
 package nl.jeldertpol.xtc.server.session;
 
-import nl.jeldertpol.xtc.common.Session.SimpleSession;
+import nl.jeldertpol.xtc.common.session.SimpleSession;
 
 
 /**

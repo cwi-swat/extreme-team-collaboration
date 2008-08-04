@@ -1,4 +1,4 @@
-package nl.jeldertpol.xtc.common.Conversion;
+package nl.jeldertpol.xtc.common.conversion;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

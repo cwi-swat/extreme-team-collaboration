@@ -1,13 +1,13 @@
 package nl.jeldertpol.xtc.client.exceptions;
 
 /**
- * An {@link XTCException} is an {@link Exception} thrown by XTC. This is used
+ * An {@link XtcException} is an {@link Exception} thrown by XTC. This is used
  * so that the client only needs to catch one error. The error message shows
  * more detailed information about the error.
  * 
  * @author Jeldert Pol
  */
-public abstract class XTCException extends Exception {
+public abstract class XtcException extends Exception {
 
 	/**
 	 * 
@@ -19,7 +19,7 @@ public abstract class XTCException extends Exception {
 	 * 
 	 * @see Exception#Exception(String)
 	 */
-	public XTCException(String message) {
+	public XtcException(String message) {
 		super(message);
 	}
 

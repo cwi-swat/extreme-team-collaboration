@@ -3,8 +3,8 @@ package nl.jeldertpol.xtc.client.actions.sessions;
 import java.util.List;
 
 import nl.jeldertpol.xtc.client.Activator;
-import nl.jeldertpol.xtc.client.exceptions.XTCException;
-import nl.jeldertpol.xtc.common.Session.SimpleSession;
+import nl.jeldertpol.xtc.client.exceptions.XtcException;
+import nl.jeldertpol.xtc.common.session.SimpleSession;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -26,7 +26,7 @@ public class ShowSessions extends AbstractHandler {
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		// Only show the sessions
-		showSessions();
+		showSessions("Sessions currently on the server.");
 
 		return null;
 	}
@@ -36,10 +36,12 @@ public class ShowSessions extends AbstractHandler {
 	 * clients. A user is allowed to select one of these sessions. When a client
 	 * is selected, the name of the related project is returned.
 	 * 
+	 * @param message The message to display in the dialog.
+	 * 
 	 * @return The name of the selected session, or <code>null</code> when no
 	 *         session was selected, or cancel was pressed.
 	 */
-	public String showSessions() {
+	public String showSessions(String message) {
 		String projectName = null;
 
 		try {
@@ -56,17 +58,18 @@ public class ShowSessions extends AbstractHandler {
 			sessions.add(session2);
 			// Eind tijdelijk vullen
 
-			Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+			Shell parent = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
 					.getShell();
 
 			ElementTreeSelectionDialog sessionsDialog = new ElementTreeSelectionDialog(
-					shell, new SessionLabelProvider(),
+					parent, new SessionLabelProvider(),
 					new TreeNodeContentProvider());
 
 			TreeNode[] treeNodes = createTreeNodes(sessions);
 			sessionsDialog.setInput(treeNodes);
 
 			sessionsDialog.setTitle("Sessions");
+			sessionsDialog.setMessage(message);
 			sessionsDialog.setEmptyListMessage("No sessions on the server.");
 			sessionsDialog.setAllowMultiple(false);
 			sessionsDialog.setBlockOnOpen(true);
@@ -78,7 +81,7 @@ public class ShowSessions extends AbstractHandler {
 				Object selection = sessionsDialog.getFirstResult();
 				projectName = getProjectNameFromSelection(selection);
 			}
-		} catch (XTCException e) {
+		} catch (XtcException e) {
 			e.printStackTrace();
 			MessageDialog.openError(null, "XTC Start/Join", e.getMessage());
 		}

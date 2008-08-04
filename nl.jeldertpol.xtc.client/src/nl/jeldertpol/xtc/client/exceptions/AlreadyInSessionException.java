@@ -3,7 +3,7 @@ package nl.jeldertpol.xtc.client.exceptions;
 /**
  * @author Jeldert Pol
  */
-public class AlreadyInSessionException extends XTCException {
+public class AlreadyInSessionException extends XtcException {
 
 	private static final long serialVersionUID = 1L;
 

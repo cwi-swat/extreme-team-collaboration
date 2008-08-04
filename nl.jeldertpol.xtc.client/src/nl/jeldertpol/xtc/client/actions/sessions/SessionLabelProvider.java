@@ -1,7 +1,7 @@
 package nl.jeldertpol.xtc.client.actions.sessions;
 
 import nl.jeldertpol.xtc.client.Activator;
-import nl.jeldertpol.xtc.common.Session.SimpleSession;
+import nl.jeldertpol.xtc.common.session.SimpleSession;
 
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;

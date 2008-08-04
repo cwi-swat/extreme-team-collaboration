@@ -1,4 +1,4 @@
-package nl.jeldertpol.xtc.common.Session;
+package nl.jeldertpol.xtc.common.session;
 
 import java.io.Serializable;
 import java.util.ArrayList;

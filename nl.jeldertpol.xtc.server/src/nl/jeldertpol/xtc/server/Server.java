@@ -3,8 +3,8 @@ package nl.jeldertpol.xtc.server;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.jeldertpol.xtc.common.Conversion.Conversion;
-import nl.jeldertpol.xtc.common.Session.SimpleSession;
+import nl.jeldertpol.xtc.common.conversion.Conversion;
+import nl.jeldertpol.xtc.common.session.SimpleSession;
 import nl.jeldertpol.xtc.server.session.Session;
 import toolbus.adapter.java.AbstractJavaTool;
 import aterm.ATerm;

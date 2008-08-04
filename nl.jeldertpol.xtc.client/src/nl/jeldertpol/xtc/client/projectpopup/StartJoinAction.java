@@ -3,8 +3,8 @@ package nl.jeldertpol.xtc.client.projectpopup;
 import java.util.List;
 
 import nl.jeldertpol.xtc.client.Activator;
-import nl.jeldertpol.xtc.client.exceptions.XTCException;
-import nl.jeldertpol.xtc.common.Session.SimpleSession;
+import nl.jeldertpol.xtc.client.exceptions.XtcException;
+import nl.jeldertpol.xtc.common.session.SimpleSession;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.action.IAction;
@@ -78,7 +78,7 @@ public class StartJoinAction implements IObjectActionDelegate {
 			if (!present) {
 				Activator.session.startSession(project);
 			}
-		} catch (XTCException e) {
+		} catch (XtcException e) {
 			e.printStackTrace();
 			MessageDialog.openError(null, "XTC Start/Join", e.getMessage());
 		}
