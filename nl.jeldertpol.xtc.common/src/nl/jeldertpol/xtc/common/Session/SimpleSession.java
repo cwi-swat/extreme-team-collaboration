@@ -1,21 +1,47 @@
 package nl.jeldertpol.xtc.common.Session;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Representation of a project. Only holds projectname, revision and clients.
+ * Representation of a session. Only holds the name and revision of project, and
+ * clients.
  * 
  * @author Jeldert Pol
  */
-public class SimpleSession {
+public class SimpleSession implements Serializable {
+
+	/**
+	 * TODO map to plug-in version
+	 */
+	private static final long serialVersionUID = 1L;
 
 	private String projectName;
 	private Long revision;
 	private ArrayList<String> clients;
 
 	/**
-	 * Create a new project.
+	 * Create a new session.
+	 * 
+	 * Not to be called by clients: they need to call
+	 * {@link SimpleSession#SimpleSession(String, Long, String)}
+	 * 
+	 * @param projectName
+	 *            The name of the project.
+	 * @param revision
+	 *            The revision of the project.
+	 */
+	public SimpleSession(String projectName, Long revision) {
+		super();
+		this.projectName = projectName;
+		this.revision = revision;
+
+		clients = new ArrayList<String>();
+	}
+
+	/**
+	 * Create a new session.
 	 * 
 	 * @param projectName
 	 *            The name of the project.
@@ -25,12 +51,8 @@ public class SimpleSession {
 	 *            The client that started this session.
 	 */
 	public SimpleSession(String projectName, Long revision, String nickname) {
-		// naam project, revision, resources, changes to resources,
-		super();
-		this.projectName = projectName;
-		this.revision = revision;
+		this(projectName, revision);
 
-		clients = new ArrayList<String>();
 		addClient(nickname);
 	}
 

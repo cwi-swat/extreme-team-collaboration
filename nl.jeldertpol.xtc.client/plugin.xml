@@ -46,6 +46,37 @@
       </objectContribution>
    </extension>
    <extension
+         point="org.eclipse.ui.commands">
+      <command
+            description="Shows the current sessions on the server."
+            id="nl.jeldertpol.xtc.client.commands.showSessions"
+            name="Show sessions">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="nl.jeldertpol.xtc.client.actions.sessions.ShowSessions"
+            commandId="nl.jeldertpol.xtc.client.commands.showSessions">
+      </handler>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="menu:org.eclipse.ui.main.menu?after=additions">
+         <menu
+               id="nl.jeldertpol.xtc.client.menu"
+               label="XTC"
+               mnemonic="X">
+            <command
+                  commandId="nl.jeldertpol.xtc.client.commands.showSessions"
+                  mnemonic="S"
+                  style="push">
+            </command>
+         </menu>
+      </menuContribution>
+   </extension>
+   <extension
          point="org.eclipse.ui.preferencePages">
       <page
             class="nl.jeldertpol.xtc.client.preferences.XtcPreferencePage"

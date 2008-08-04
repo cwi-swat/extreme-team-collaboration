@@ -67,6 +67,9 @@ public class Activator extends AbstractUIPlugin {
 	public void stop(BundleContext context) throws Exception {
 		ResourcesPlugin.getWorkspace().removeResourceChangeListener(
 				resourceChangeListener);
+		
+		session.disconnect();
+		
 		plugin = null;
 		super.stop(context);
 	}

@@ -14,7 +14,7 @@ import org.eclipse.core.runtime.CoreException;
  */
 public abstract class InfoExtractor {
 
-	public List<IResource> getResources(IProject project) {
+	public final List<IResource> getResources(IProject project) {
 		return getResources((IResource) project);
 	}
 

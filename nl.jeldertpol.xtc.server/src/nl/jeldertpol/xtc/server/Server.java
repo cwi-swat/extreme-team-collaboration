@@ -1,6 +1,7 @@
 package nl.jeldertpol.xtc.server;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import nl.jeldertpol.xtc.common.Conversion.Conversion;
 import nl.jeldertpol.xtc.common.Session.SimpleSession;
@@ -12,8 +13,10 @@ import aterm.ATermFactory;
 import aterm.ATermLong;
 
 /**
- * @author Jeldert Pol
+ * Server can send and receive messages from the Toolbus. Keeps a list of
+ * current sessions.
  * 
+ * @author Jeldert Pol
  */
 public class Server extends AbstractJavaTool {
 
@@ -57,12 +60,26 @@ public class Server extends AbstractJavaTool {
 	 */
 	public ATerm getSessions() {
 		ArrayList<SimpleSession> simpleSessions = new ArrayList<SimpleSession>(
-				sessions);
-		simpleSessions.addAll(sessions);
+				sessions.size());
+
+		// Downcasting / Converting Session to SimpleSession, to loose client
+		// dependency on Session, and changes recorded.
+		for (Session session : sessions) {
+			String projectName = session.getProjectName();
+			Long revision = session.getRevision();
+			List<String> clients = session.getClients();
+
+			SimpleSession simpleSession = new SimpleSession(projectName,
+					revision);
+			for (String client : clients) {
+				simpleSession.addClient(client);
+			}
+			simpleSessions.add(simpleSession);
+		}
 
 		byte[] blob = Conversion.ObjectToByte(simpleSessions);
 		ATermBlob termBlob = factory.makeBlob(blob);
-		
+
 		ATerm response = factory.make("getSessions(<term>)", termBlob);
 		return response;
 	}
@@ -88,13 +105,8 @@ public class Server extends AbstractJavaTool {
 		Long revision = revisionTermLong.getLong();
 
 		// Check if project exists
-		for (Session session : sessions) {
-			if (session.getProjectName().equals(projectName)) {
-				success = false;
-				break;
-			}
-		}
-		if (success) {
+		Session existingSession = getSession(projectName);
+		if (existingSession == null) {
 			// Create new session
 			Session session = new Session(projectName, revision, nickname);
 			sessions.add(session);
@@ -118,9 +130,13 @@ public class Server extends AbstractJavaTool {
 		boolean success = false;
 
 		// Check if project exists
-		for (Session session : sessions) {
-			if (session.getProjectName().equals(projectName)) {
-				// Check if nickname is available
+		Session session = getSession(projectName);
+		if (session != null) {
+			// Check if nickname is available
+			boolean available = nicknameAvailable(session, nickname);
+
+			// Add client if nickname is available
+			if (available) {
 				session.addClient(nickname);
 				success = true;
 			}
@@ -144,15 +160,60 @@ public class Server extends AbstractJavaTool {
 		boolean success = false;
 
 		// Check if project exists
-		for (Session session : sessions) {
-			if (session.getProjectName().equals(projectName)) {
+		Session session = getSession(projectName);
+		if (session != null) {
+			// Check if nickname is available
+			boolean available = nicknameAvailable(session, nickname);
+
+			// Remove client if nickname is present
+			if (!available) {
 				session.removeClient(nickname);
 				success = true;
 			}
 		}
 
+		// TODO remove session when no clients are left.
+		
 		ATerm leaveSession = factory.make("leaveSession(<bool>)", success);
 		return leaveSession;
 	}
 
+	/**
+	 * Get a session.
+	 * 
+	 * @param projectName
+	 *            The identifier of the session.
+	 * @return The session, or <code>null</code> if it does not exist.
+	 */
+	private Session getSession(String projectName) {
+		// Check if project exists
+		for (Session session : sessions) {
+			if (session.getProjectName().equals(projectName)) {
+				return session;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Checks if the nickname is available in the gives session.
+	 * 
+	 * @param session
+	 *            The session to check in.
+	 * @param nickname
+	 *            The nickname to check.
+	 * @return <code>true</code> if nickname is available, <code>false</code>
+	 *         otherwise.
+	 */
+	private boolean nicknameAvailable(Session session, String nickname) {
+		// Check if nickname is available
+		boolean available = true;
+		for (String client : session.getClients()) {
+			if (client.equals(nickname)) {
+				available = false;
+				break;
+			}
+		}
+		return available;
+	}
 }
