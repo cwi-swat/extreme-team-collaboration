@@ -19,14 +19,24 @@ public class Activator extends AbstractUIPlugin {
 	// The plug-in ID
 	public static final String PLUGIN_ID = "nl.jeldertpol.xtc.client";
 
+	public static final Session session = new Session();
+
+	/**
+	 * Image for an session.
+	 */
+	public static final String IMAGE_SESSION = "resources/icons/group.png";
+
+	/**
+	 * Image for a client.
+	 */
+	public static final String IMAGE_CLIENT = "resources/icons/user.png";
+
 	// The shared instance
 	private static Activator plugin;
 
 	private ResourceChangeListener resourceChangeListener;
 
 	private WindowListener windowListener;
-	
-	public static final Session session = new Session();
 
 	/**
 	 * The constructor.
@@ -46,10 +56,10 @@ public class Activator extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
-		
+
 		// Registers the resourceChangeListener to the workspace.
-		ResourcesPlugin.getWorkspace()
-				.addResourceChangeListener(resourceChangeListener);
+		ResourcesPlugin.getWorkspace().addResourceChangeListener(
+				resourceChangeListener);
 
 		// Registers the windowListener to the workbench.
 		IWorkbench workbench = PlatformUI.getWorkbench();
@@ -67,9 +77,9 @@ public class Activator extends AbstractUIPlugin {
 	public void stop(BundleContext context) throws Exception {
 		ResourcesPlugin.getWorkspace().removeResourceChangeListener(
 				resourceChangeListener);
-		
+
 		session.disconnect();
-		
+
 		plugin = null;
 		super.stop(context);
 	}

@@ -1,12 +1,13 @@
 package nl.jeldertpol.xtc.client.session;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import nl.jeldertpol.xtc.client.Activator;
+import nl.jeldertpol.xtc.client.exceptions.AlreadyInSessionException;
 import nl.jeldertpol.xtc.client.exceptions.NicknameAlreadyTakenException;
-import nl.jeldertpol.xtc.client.exceptions.ProjectNotPresentException;
+import nl.jeldertpol.xtc.client.exceptions.ProjectAlreadyPresentException;
 import nl.jeldertpol.xtc.client.exceptions.UnableToConnectException;
+import nl.jeldertpol.xtc.client.exceptions.UnrevisionedProjectException;
 import nl.jeldertpol.xtc.client.exceptions.WrongRevisionException;
 import nl.jeldertpol.xtc.client.preferences.connection.PreferenceConstants;
 import nl.jeldertpol.xtc.client.session.infoExtractor.InfoExtractor;
@@ -16,7 +17,6 @@ import nl.jeldertpol.xtc.common.Session.SimpleSession;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Preferences;
-import org.eclipse.jface.dialogs.MessageDialog;
 
 /**
  * A session to the server. This is an abstraction to be called by the client.
@@ -59,23 +59,23 @@ public class Session {
 	 * Connect to the server.
 	 * 
 	 * This is private, because it needs only be called when there is no
-	 * connection. Now the client does not need to worry about having a
-	 * connection or not.
+	 * connection. This is done automatically. Now the client does not need to
+	 * worry about having a connection or not.
 	 */
 	private void connect() throws UnableToConnectException {
 		Preferences preferences = Activator.getDefault().getPluginPreferences();
 		String host = preferences.getString(PreferenceConstants.P_HOST);
 		String port = preferences.getString(PreferenceConstants.P_PORT);
 
-		try {
-			server.connect(host, port);
-			connected = true;
-		} catch (UnableToConnectException e) {
-			e.printStackTrace();
-			MessageDialog.openError(null, "XTC Connect",
-					"Connecting to the server failed: " + e.getMessage());
-			throw e;
-		}
+		// try {
+		server.connect(host, port);
+		connected = true;
+		// } catch (UnableToConnectException e) {
+		// e.printStackTrace();
+		// MessageDialog.openError(null, "XTC Connect",
+		// "Connecting to the server failed: " + e.getMessage());
+		// throw e;
+		// }
 	}
 
 	/**
@@ -86,6 +86,7 @@ public class Session {
 	public void disconnect() {
 		server.disconnect();
 		connected = false;
+		inSession = false;
 	}
 
 	/**
@@ -98,116 +99,93 @@ public class Session {
 	public List<SimpleSession> getSessions() throws UnableToConnectException {
 		if (!connected) {
 			connect();
-
-			return server.getSessions();
 		}
-
-		// Impossible to reach this place??? returns above, or throws error
-		// above.
-		return null;
+		return server.getSessions();
 	}
 
 	/**
-	 * Start a new session, or join an existing one. First validates the
-	 * project: only versioned and unmodified projects can be used.
+	 * Start a new session on the server. All needed information for this is
+	 * extracted from the project and the preferences.
 	 * 
 	 * @param project
-	 *            the {@link IProject} that is to be used in this session.
+	 *            The project for the session.
 	 * @throws UnableToConnectException
+	 *             Connecting to the server failed.
+	 * @throws AlreadyInSessionException
+	 *             Client is already in a session.
+	 * @throws UnrevisionedProjectException
+	 *             The project is not under version control.
+	 * @throws ProjectAlreadyPresentException
+	 *             The project is already present on the server.
 	 */
-	// public void startJoin(IProject project) {
-	// boolean valid = versionedProject(project) && unmodifiedProject(project);
-	//
-	// if (valid && !connected) {
-	// // Get all needed settings
-	// Preferences preferences = Activator.getDefault()
-	// .getPluginPreferences();
-	// String host = preferences.getString(PreferenceConstants.P_HOST);
-	// String port = preferences.getString(PreferenceConstants.P_PORT);
-	// String nickname = preferences
-	// .getString(PreferenceConstants.P_NICKNAME);
-	//
-	// try {
-	// // Connect to server
-	// server.connect(host, port, nickname);
-	// connected = true;
-	//
-	// Long localRevision = getRevision(project);
-	//
-	// try {
-	// Long serverRevision = server.getRevision(project.getName());
-	//
-	// if (serverRevision == localRevision) {
-	// // Join session
-	// } else {
-	// throw new WrongRevisionException(localRevision,
-	// serverRevision);
-	// }
-	//
-	// } catch (ProjectNotPresentException e) {
-	// // Start new session
-	// List<IResource> iResources = infoExtractor
-	// .getResources(project);
-	// List<String> resources = new ArrayList<String>(iResources
-	// .size());
-	// for (IResource resource : iResources) {
-	// resources.add(resource.toString());
-	// }
-	//
-	// server.startSession(project.getName(), localRevision, resources,
-	// nickname);
-	// }
-	//
-	// } catch (UnableToConnectException e) {
-	// disconnect();
-	// e.printStackTrace();
-	// MessageDialog.openError(null, "XTC Start / Join",
-	// "Unable to connect to XTC server.");
-	// return;
-	// } catch (NicknameAlreadyTakenException e) {
-	// e.printStackTrace();
-	// MessageDialog.openError(null, "XTC Start / Join", e
-	// .getMessage());
-	// return;
-	// } catch (WrongRevisionException e) {
-	// e.printStackTrace();
-	// MessageDialog.openError(null, "XTC Start / Join", e
-	// .getMessage());
-	// return;
-	// // } catch (ProjectNotPresentException e) {
-	// // e.printStackTrace();
-	// // MessageDialog.openError(null, "XTC Start / Join", e
-	// // .getMessage());
-	// // return;
-	// }
-	// } else {
-	// if (connected) {
-	// MessageDialog.openError(null, "XTC Start / Join",
-	// "You are already connected to a session.");
-	// }
-	// }
-	// }
+	public void startSession(IProject project) throws UnableToConnectException,
+			AlreadyInSessionException, UnrevisionedProjectException,
+			ProjectAlreadyPresentException {
+		if (!connected) {
+			connect();
+		}
+		if (inSession) {
+			throw new AlreadyInSessionException();
+		}
 
-	/**
-	 * Checks if the project is versioned. Shows an error message if it's not.
-	 * 
-	 * @param project
-	 *            The project to check.
-	 * @return <code>true</code> if project is versioned, <code>false</code>
-	 *         otherwise.
-	 */
-	private boolean versionedProject(IProject project) {
+		String projectName = project.getName();
 		Long revision = infoExtractor.getRevision(project);
 
-		if (revision != null) {
-			return true;
-		} else {
-			MessageDialog
-					.openError(
-							null,
-							"XTC Start / Join",
-							"The selected project is not under version control. Only versioned projects can be used.");
-			return false;
+		Preferences preferences = Activator.getDefault().getPluginPreferences();
+		String nickname = preferences.getString(PreferenceConstants.P_NICKNAME);
+
+		server.startSession(projectName, revision, nickname);
+
+		// Nothing went wrong, so client is now in a session.
+		inSession = true;
+	}
+
+	/**
+	 * Join a session on the server. All needed information for this is
+	 * extracted from the project and the preferences.
+	 * 
+	 * @param project
+	 *            The project for the session.
+	 * @throws UnableToConnectException
+	 *             Connecting to the server failed.
+	 * @throws AlreadyInSessionException
+	 *             Client is already in a session.
+	 * @throws UnrevisionedProjectException
+	 *             The project is not under version control.
+	 * @throws WrongRevisionException
+	 *             The revision of the project does not match the revision of
+	 *             the server.
+	 * @throws NicknameAlreadyTakenException
+	 *             The nickname is already present in the session.
+	 */
+	public void joinSession(IProject project) throws UnableToConnectException,
+			AlreadyInSessionException, UnrevisionedProjectException,
+			WrongRevisionException, NicknameAlreadyTakenException {
+		if (!connected) {
+			connect();
+		}
+		if (inSession) {
+			throw new AlreadyInSessionException();
+		}
+
+		String projectName = project.getName();
+
+		Preferences preferences = Activator.getDefault().getPluginPreferences();
+		String nickname = preferences.getString(PreferenceConstants.P_NICKNAME);
+
+		List<SimpleSession> sessions = getSessions();
+		for (SimpleSession simpleSession : sessions) {
+			if (simpleSession.getProjectName().equals(projectName)) {
+				Long localRevision = getRevision(project);
+				Long serverRevision = simpleSession.getRevision();
+
+				if (localRevision.equals(serverRevision)) {
+					server.joinSession(projectName, nickname);
+				} else {
+					throw new WrongRevisionException(localRevision,
+							serverRevision);
+				}
+			}
 		}
 	}
 
@@ -216,7 +194,8 @@ public class Session {
 	 * 
 	 * @see InfoExtractor#getRevision(IProject)
 	 */
-	private Long getRevision(IProject project) {
+	private Long getRevision(IProject project)
+			throws UnrevisionedProjectException {
 		return infoExtractor.getRevision(project);
 	}
 
@@ -244,4 +223,5 @@ public class Session {
 		// return false;
 		// }
 	}
+
 }

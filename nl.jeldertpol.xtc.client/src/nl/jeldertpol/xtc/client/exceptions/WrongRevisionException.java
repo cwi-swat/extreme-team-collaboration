@@ -1,9 +1,10 @@
 package nl.jeldertpol.xtc.client.exceptions;
 
-public class WrongRevisionException extends Exception {
-	/**
-	 * 
-	 */
+/**
+ * @author Jeldert Pol
+ */
+public class WrongRevisionException extends XTCException {
+
 	private static final long serialVersionUID = 1L;
 
 	private final static String message1 = "Your revision (";

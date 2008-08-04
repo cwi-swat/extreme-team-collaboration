@@ -98,7 +98,7 @@ public class Server extends AbstractJavaTool {
 	 */
 	public ATerm startSession(String projectName, ATerm revisionTerm,
 			String nickname) {
-		boolean success = true;
+		boolean success = false;
 
 		// Convert ATerms to right ATerm
 		ATermLong revisionTermLong = (ATermLong) revisionTerm;
@@ -110,6 +110,7 @@ public class Server extends AbstractJavaTool {
 			// Create new session
 			Session session = new Session(projectName, revision, nickname);
 			sessions.add(session);
+			success = true;
 		}
 
 		ATerm startSession = factory.make("startSession(<bool>)", success);

@@ -1,9 +1,14 @@
 package nl.jeldertpol.xtc.client.projectpopup;
 
+import java.util.List;
+
 import nl.jeldertpol.xtc.client.Activator;
+import nl.jeldertpol.xtc.client.exceptions.XTCException;
+import nl.jeldertpol.xtc.common.Session.SimpleSession;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ITreeSelection;
 import org.eclipse.jface.viewers.TreeSelection;
@@ -16,13 +21,6 @@ import org.eclipse.ui.IWorkbenchPart;
 public class StartJoinAction implements IObjectActionDelegate {
 
 	private ISelection selection;
-
-	/**
-	 * 
-	 */
-	public StartJoinAction() {
-		// TODO Auto-generated constructor stub
-	}
 
 	/*
 	 * (non-Javadoc)
@@ -47,9 +45,7 @@ public class StartJoinAction implements IObjectActionDelegate {
 		if (selection instanceof TreeSelection) {
 			ITreeSelection treeSelection = (ITreeSelection) selection;
 			IProject project = (IProject) treeSelection.getFirstElement();
-			
-			// Connect to session...
-			Activator.session.startJoin(project);
+			startJoin(project);
 		}
 	}
 
@@ -63,6 +59,29 @@ public class StartJoinAction implements IObjectActionDelegate {
 	@Override
 	public void selectionChanged(IAction action, ISelection selection) {
 		this.selection = selection;
+	}
+
+	private void startJoin(IProject project) {
+		try {
+			List<SimpleSession> sessions = Activator.session.getSessions();
+			String projectName = project.getName();
+			
+			boolean present = false;
+			for (SimpleSession simpleSession : sessions) {
+				if (simpleSession.getProjectName().equals(projectName)) {
+					Activator.session.joinSession(project);
+					present = true;
+					break;
+				}
+			}
+			
+			if (!present) {
+				Activator.session.startSession(project);
+			}
+		} catch (XTCException e) {
+			e.printStackTrace();
+			MessageDialog.openError(null, "XTC Start/Join", e.getMessage());
+		}
 	}
 
 }

@@ -2,6 +2,8 @@ package nl.jeldertpol.xtc.client.session;
 
 import java.util.List;
 
+import nl.jeldertpol.xtc.client.exceptions.NicknameAlreadyTakenException;
+import nl.jeldertpol.xtc.client.exceptions.ProjectAlreadyPresentException;
 import nl.jeldertpol.xtc.client.exceptions.UnableToConnectException;
 import nl.jeldertpol.xtc.common.Conversion.Conversion;
 import nl.jeldertpol.xtc.common.Session.SimpleSession;
@@ -56,8 +58,8 @@ public class Server extends AbstractJavaTool {
 					host, "-TB_PORT", port };
 			connect(connectioninfo);
 		} catch (Exception ex) {
-//			disconnect();
-			throw new UnableToConnectException(ex);
+			// disconnect();
+			throw new UnableToConnectException(ex.getMessage());
 		}
 	}
 
@@ -94,11 +96,11 @@ public class Server extends AbstractJavaTool {
 	 *            The revision of the project.
 	 * @param nickname
 	 *            The nickname of the client.
-	 * @return <code>true</code> is session is created, <code>false</code>
-	 *         otherwise.
+	 * @throws ProjectAlreadyPresentException
+	 *             The project is already present on the server.
 	 */
-	public boolean startSession(String projectName, Long revision,
-			String nickname) {
+	public void startSession(String projectName, Long revision, String nickname)
+			throws ProjectAlreadyPresentException {
 		ATermLong revisionLong = factory.makeLong(revision);
 
 		ATerm startSession = factory.make("startSession(<str>, <term>, <str>)",
@@ -107,8 +109,10 @@ public class Server extends AbstractJavaTool {
 
 		ATerm answer = reply.getArgument(0);
 		boolean success = Boolean.parseBoolean(answer.toString());
-		return success;
-		// TODO testen
+
+		if (!success) {
+			throw new ProjectAlreadyPresentException(projectName);
+		}
 	}
 
 	/**
@@ -118,18 +122,22 @@ public class Server extends AbstractJavaTool {
 	 *            The name of the project, to identify the session.
 	 * @param nickname
 	 *            The nickname of the client.
-	 * @return <code>true</code> is session is joined, <code>false</code>
-	 *         otherwise.
+	 * @throws NicknameAlreadyTakenException The nickname is already present in the session.
 	 */
-	public boolean joinSession(String projectName, String nickname) {
+	public void joinSession(String projectName, String nickname)
+			throws NicknameAlreadyTakenException {
 		ATerm joinSession = factory.make("joinSession(<str>, <str>)",
 				projectName, nickname);
 		ATermAppl reply = sendRequest(joinSession);
 
 		ATerm answer = reply.getArgument(0);
 		boolean success = Boolean.parseBoolean(answer.toString());
-		return success;
-		// TODO testen
+
+		if (!success) {
+			// Everything else should already be checked, this is the only
+			// exception left.
+			throw new NicknameAlreadyTakenException(nickname);
+		}
 	}
 
 	/**

@@ -19,9 +19,6 @@ import org.eclipse.swt.widgets.Display;
  */
 public class SessionLabelProvider implements ILabelProvider {
 
-	private final String image_session = "resources/icons/group.png";
-	private final String image_client = "resources/icons/user.png";
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -35,12 +32,12 @@ public class SessionLabelProvider implements ILabelProvider {
 
 			Device device = Display.getCurrent();
 			if (value instanceof SimpleSession) {
-				ImageData session = Activator.getImageDescriptor(image_session)
-						.getImageData();
+				ImageData session = Activator.getImageDescriptor(
+						Activator.IMAGE_SESSION).getImageData();
 				return new Image(device, session);
 			} else if (value instanceof String) {
-				ImageData client = Activator.getImageDescriptor(image_client)
-						.getImageData();
+				ImageData client = Activator.getImageDescriptor(
+						Activator.IMAGE_CLIENT).getImageData();
 				return new Image(device, client);
 			}
 		}

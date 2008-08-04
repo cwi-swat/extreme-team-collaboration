@@ -3,6 +3,8 @@ package nl.jeldertpol.xtc.client.session.infoExtractor;
 import java.util.ArrayList;
 import java.util.List;
 
+import nl.jeldertpol.xtc.client.exceptions.UnrevisionedProjectException;
+
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -92,7 +94,8 @@ public class SubclipseInfoExtractor extends InfoExtractor {
 	 *            the project to get the revision from.
 	 * @return the revision of the project or null.
 	 */
-	public Long getRevision(IProject project) {
+	@Override
+	public Long getRevision(IProject project) throws UnrevisionedProjectException {
 		ISVNLocalResource svnResource = SVNWorkspaceRoot
 				.getSVNResourceFor(project);
 		Long number = null;
@@ -100,20 +103,9 @@ public class SubclipseInfoExtractor extends InfoExtractor {
 		try {
 			SVNRevision revision = svnResource.getRevision();
 			number = new Long(revision.toString());
-
-			// LocalResourceStatus localResourceStatus =
-			// svnResource.getStatus();
-			// // Only happens when no synchronization info is available
-			// assert (localResourceStatus != null);
-			//			
-			// Number revision = localResourceStatus.getRevision();
-			// // Only happens when resource is not managed
-			// assert (revision != null);
-			//			
-			// number = revision.getNumber();
 		} catch (SVNException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw new UnrevisionedProjectException(project.getName());
 		}
 
 		return number;

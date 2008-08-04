@@ -6,6 +6,10 @@ import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 
 /**
+ * Does nothing, used to activate the plug-in.
+ * 
+ * TODO remove this action.
+ * 
  * @author Jeldert Pol
  */
 public class FakeStartAction implements IObjectActionDelegate {

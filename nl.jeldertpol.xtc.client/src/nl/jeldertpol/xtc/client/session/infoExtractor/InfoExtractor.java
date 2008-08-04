@@ -3,6 +3,8 @@ package nl.jeldertpol.xtc.client.session.infoExtractor;
 import java.util.ArrayList;
 import java.util.List;
 
+import nl.jeldertpol.xtc.client.exceptions.UnrevisionedProjectException;
+
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -50,5 +52,5 @@ public abstract class InfoExtractor {
 
 	public abstract List<IResource> modifiedFiles(IProject project);
 
-	public abstract Long getRevision(IProject project);
+	public abstract Long getRevision(IProject project) throws UnrevisionedProjectException;
 }
