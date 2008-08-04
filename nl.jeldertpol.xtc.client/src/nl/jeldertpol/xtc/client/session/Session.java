@@ -117,6 +117,54 @@ public class Session {
 	}
 
 	/**
+	 * Start or join a session. If the project is already on the server an
+	 * attempt is made to join it. When it is not present an attempt is made to
+	 * start a new session.
+	 * 
+	 * @param project
+	 *            The project for the session.
+	 * @throws UnableToConnectException
+	 *             Connecting to the server failed.
+	 * @throws AlreadyInSessionException
+	 *             Client is already in a session.
+	 * @throws ProjectModifiedException
+	 *             The project has local modifications.
+	 * @throws UnrevisionedProjectException
+	 *             The project is not under version control.
+	 * @throws ProjectAlreadyPresentException
+	 *             The project is already present on the server.
+	 * @throws WrongRevisionException
+	 *             The revision of the project does not match the revision of
+	 *             the server.
+	 * @throws NicknameAlreadyTakenException
+	 *             The nickname is already present in the session.
+	 * 
+	 * @see Session#startSession(IProject)
+	 * @see Session#joinSession(IProject)
+	 */
+	public void startJoinSession(IProject project)
+			throws UnableToConnectException, AlreadyInSessionException,
+			ProjectModifiedException, UnrevisionedProjectException,
+			WrongRevisionException, NicknameAlreadyTakenException,
+			ProjectAlreadyPresentException {
+		List<SimpleSession> sessions = getSessions();
+		String projectName = project.getName();
+
+		boolean present = false;
+		for (SimpleSession simpleSession : sessions) {
+			if (simpleSession.getProjectName().equals(projectName)) {
+				joinSession(project);
+				present = true;
+				break;
+			}
+		}
+
+		if (!present) {
+			startSession(project);
+		}
+	}
+
+	/**
 	 * Start a new session on the server. All needed information for this is
 	 * extracted from the project and the preferences.
 	 * 

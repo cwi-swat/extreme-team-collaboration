@@ -1,4 +1,4 @@
-package nl.jeldertpol.xtc.client.actions.sessions;
+package nl.jeldertpol.xtc.client.actions;
 
 import nl.jeldertpol.xtc.client.Activator;
 import nl.jeldertpol.xtc.client.exceptions.XtcException;
@@ -15,7 +15,7 @@ import org.eclipse.ui.PlatformUI;
  * 
  * @author Jeldert Pol
  */
-public class LeaveSession extends AbstractHandler {
+public class LeaveSessionAction extends AbstractHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {

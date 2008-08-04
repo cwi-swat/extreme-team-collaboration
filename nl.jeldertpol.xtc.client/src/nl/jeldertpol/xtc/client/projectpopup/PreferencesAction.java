@@ -23,12 +23,9 @@ public class PreferencesAction implements IObjectActionDelegate {
 
 	@Override
 	public void run(IAction action) {
-		// TODO Auto-generated method stub
 		PreferenceDialog preferenceDialog = PreferencesUtil
-				.createPreferenceDialogOn(
-						null,
-						XtcPreferencePage.class.getName(),
-						null, null);
+				.createPreferenceDialogOn(null, XtcPreferencePage.class
+						.getName(), null, null);
 		preferenceDialog.open();
 	}
 

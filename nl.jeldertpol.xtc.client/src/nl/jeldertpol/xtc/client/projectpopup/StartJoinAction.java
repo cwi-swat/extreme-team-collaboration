@@ -1,10 +1,7 @@
 package nl.jeldertpol.xtc.client.projectpopup;
 
-import java.util.List;
-
 import nl.jeldertpol.xtc.client.Activator;
 import nl.jeldertpol.xtc.client.exceptions.XtcException;
-import nl.jeldertpol.xtc.common.session.SimpleSession;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.action.IAction;
@@ -63,21 +60,7 @@ public class StartJoinAction implements IObjectActionDelegate {
 
 	private void startJoin(IProject project) {
 		try {
-			List<SimpleSession> sessions = Activator.session.getSessions();
-			String projectName = project.getName();
-			
-			boolean present = false;
-			for (SimpleSession simpleSession : sessions) {
-				if (simpleSession.getProjectName().equals(projectName)) {
-					Activator.session.joinSession(project);
-					present = true;
-					break;
-				}
-			}
-			
-			if (!present) {
-				Activator.session.startSession(project);
-			}
+			Activator.session.startJoinSession(project);
 		} catch (XtcException e) {
 			e.printStackTrace();
 			MessageDialog.openError(null, "XTC Start/Join", e.getMessage());
