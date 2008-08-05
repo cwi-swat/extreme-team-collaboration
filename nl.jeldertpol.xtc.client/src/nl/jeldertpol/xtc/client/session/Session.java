@@ -8,6 +8,7 @@ import nl.jeldertpol.xtc.client.exceptions.LeaveSessionException;
 import nl.jeldertpol.xtc.client.exceptions.NicknameAlreadyTakenException;
 import nl.jeldertpol.xtc.client.exceptions.ProjectAlreadyPresentException;
 import nl.jeldertpol.xtc.client.exceptions.ProjectModifiedException;
+import nl.jeldertpol.xtc.client.exceptions.ProjectNotOnServerException;
 import nl.jeldertpol.xtc.client.exceptions.UnableToConnectException;
 import nl.jeldertpol.xtc.client.exceptions.UnrevisionedProjectException;
 import nl.jeldertpol.xtc.client.exceptions.WrongRevisionException;
@@ -138,7 +139,8 @@ public class Session {
 	 *             the server.
 	 * @throws NicknameAlreadyTakenException
 	 *             The nickname is already present in the session.
-	 * 
+	 * @throws ProjectNotOnServerException
+	 *             The project is not on the server. Cannot join a session.
 	 * @see Session#startSession(IProject)
 	 * @see Session#joinSession(IProject)
 	 */
@@ -146,7 +148,7 @@ public class Session {
 			throws UnableToConnectException, AlreadyInSessionException,
 			ProjectModifiedException, UnrevisionedProjectException,
 			WrongRevisionException, NicknameAlreadyTakenException,
-			ProjectAlreadyPresentException {
+			ProjectAlreadyPresentException, ProjectNotOnServerException {
 		List<SimpleSession> sessions = getSessions();
 		String projectName = project.getName();
 
@@ -229,11 +231,13 @@ public class Session {
 	 *             the server.
 	 * @throws NicknameAlreadyTakenException
 	 *             The nickname is already present in the session.
+	 * @throws ProjectNotOnServerException
+	 *             The project is not on the server. Cannot join a session.
 	 */
 	public void joinSession(IProject project) throws UnableToConnectException,
 			AlreadyInSessionException, ProjectModifiedException,
 			UnrevisionedProjectException, WrongRevisionException,
-			NicknameAlreadyTakenException {
+			NicknameAlreadyTakenException, ProjectNotOnServerException {
 		if (!connected) {
 			connect();
 		}
@@ -252,8 +256,10 @@ public class Session {
 		nickname = preferences.getString(PreferenceConstants.P_NICKNAME);
 
 		List<SimpleSession> sessions = getSessions();
+		boolean found = false;
 		for (SimpleSession simpleSession : sessions) {
 			if (simpleSession.getProjectName().equals(projectName)) {
+				found = true;
 				Long localRevision = getRevision(project);
 				Long serverRevision = simpleSession.getRevision();
 
@@ -265,8 +271,33 @@ public class Session {
 					throw new WrongRevisionException(localRevision,
 							serverRevision);
 				}
+				break;
 			}
 		}
+
+		if (!found) {
+			throw new ProjectNotOnServerException(projectName);
+		}
+	}
+
+	/**
+	 * Returns if the client is currently in a session.
+	 * 
+	 * @return <code>true</code> when client is in a session, <code>false</code>
+	 *         otherwise.
+	 */
+	public boolean inSession() {
+		return inSession;
+	}
+
+	/**
+	 * Get the name of the project of the current session. Returns an empty
+	 * {@link String} ("") when not in a session.
+	 * 
+	 * @return The name of the project or an empty {@link String} ("").
+	 */
+	public String getCurrentProject() {
+		return projectName;
 	}
 
 	/**

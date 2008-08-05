@@ -24,21 +24,30 @@ public class LeaveSessionAction extends AbstractHandler {
 		return null;
 	}
 
+	/**
+	 * When client is in a session it will ask user to leave it. Shows a message
+	 * when not in a session.
+	 */
 	private void leaveSession() {
 		Shell parent = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
 				.getShell();
-		String title = "Leave session?";
-		String message = "Leave currently joined session?";
+		if (Activator.session.inSession()) {
+			String title = "Leave session?";
+			String message = "Leave currently joined session?";
 
-		boolean leave = MessageDialog.openQuestion(parent, title, message);
+			boolean leave = MessageDialog.openQuestion(parent, title, message);
 
-		if (leave) {
-			try {
-				Activator.session.leaveSession();
-			} catch (XtcException e) {
-				e.printStackTrace();
-				MessageDialog.openError(null, "XTC Leave", e.getMessage());
+			if (leave) {
+				try {
+					Activator.session.leaveSession();
+				} catch (XtcException e) {
+					e.printStackTrace();
+					MessageDialog.openError(null, "XTC Leave", e.getMessage());
+				}
 			}
+		} else {
+			MessageDialog.openInformation(null, "XTC Leave",
+					"You are not in a session.");
 		}
 	}
 

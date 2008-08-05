@@ -21,13 +21,15 @@ public class StartSessionAction extends AbstractHandler {
 		ShowProjects showProjects = new ShowProjects();
 		IProject project = showProjects.showProjects("Projects in workspace.");
 
-		try {
-			Activator.session.startJoinSession(project);
-		} catch (XtcException e) {
-			e.printStackTrace();
-			MessageDialog.openError(null, "XTC Start/Join", e.getMessage());
+		if (project != null) {
+			try {
+				Activator.session.startJoinSession(project);
+			} catch (XtcException e) {
+				e.printStackTrace();
+				MessageDialog.openError(null, "XTC Start/Join", e.getMessage());
+			}
 		}
-		
+
 		return null;
 	}
 
