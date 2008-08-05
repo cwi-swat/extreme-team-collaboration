@@ -178,6 +178,26 @@ public class Server extends AbstractJavaTool {
 		ATerm leaveSession = factory.make("leaveSession(<bool>)", success);
 		return leaveSession;
 	}
+	
+	/**
+	 * A client sends a change.
+	 * 
+	 * @param projectName
+	 * @param filename
+	 * @param length
+	 * @param offset
+	 * @param text
+	 * @return
+	 */
+	public ATerm sendChange(String projectName, String filename, int length,
+			int offset, String text, String nickname) {
+		boolean success = false;
+		
+		// TODO change bewaren
+		
+		ATerm sendChange = factory.make("sendChange(<bool>)", success);
+		return sendChange;
+	}
 
 	/**
 	 * Get a session.

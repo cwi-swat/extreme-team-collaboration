@@ -24,68 +24,101 @@ process XTC is
 process XTCclient(Client : client, Server : server) is
 	printf("client\n") .
 	
-	(	
-		(
-			// Get current sessions
-			let
-				Sessions : term
-			in
-				rec-request(Client, getSessions())
-				. snd-eval(Server, getSessions())
-				. rec-value(Server, getSessions(Sessions?))
-				. snd-response(Client, getSessions(Sessions))
-			endlet
-		)
-		*
-		(
-			(
-				// Start a new session
-				let
-					Project : str,
-					Revision : term,
-					Nickname : str,
-					Succes : bool
-				in
-					rec-request(Client, startSession(Project?, Revision?, Nickname?))
-					. snd-eval(Server, startSession(Project, Revision, Nickname))
-					. rec-value(Server, startSession(Succes?))
-					. subscribe(change(<str>, <term>))	// project, change
-					. snd-response(Client, startSession(Succes))
-				endlet
-			)
-			+
-			(
-				// Join an existing session
-				let
-					Project : str,
-					Nickname : str,
-					Succes : bool
-				in
-					rec-request(Client, jointSession(Project?, Nickname?))
-					. snd-eval(Server, joinSession(Project, Nickname))
-					. rec-value(Server, joinSession(Succes?))
-					. subscribe(change(<str>, <term>))	// project, change
-					. snd-response(Client, joinSession(Succes))
-				endlet
-			)
-			*
-			(
-				// Leave a session
-				let
-					Project : str,
-					Nickname : str,
-					Succes : bool
-				in
-					rec-request(Client, leaveSession(Project?, Nickname?))
-					. snd-eval(Server, leaveSession(Project, Nickname))
-					. rec-value(Server, leaveSession(Succes?))
-					. unsubscribe(change(<str>, <term>))	// project, change
-					. snd-response(Client, leaveSession(Succes))
-				endlet
-			)
-		)
+	(
+		// Get current sessions
+		let
+			Sessions : term
+		in
+			rec-request(Client, getSessions())
+			. snd-eval(Server, getSessions())
+			. rec-value(Server, getSessions(Sessions?))
+			. snd-response(Client, getSessions(Sessions))
+		endlet
 	)
 	*
+	(
+		(
+			// Start a new session
+			let
+				Project : str,
+				Revision : term,
+				Nickname : str,
+				Success : bool
+			in
+				rec-request(Client, startSession(Project?, Revision?, Nickname?))
+				. snd-eval(Server, startSession(Project, Revision, Nickname))
+				. rec-value(Server, startSession(Success?))
+				. subscribe(change(<str>, <str>, <int>, <int>, <str>, <str>))	// Project, Filename, Length, Offset, Text, Nickname
+				. snd-response(Client, startSession(Success))
+			endlet
+		)
+		+
+		(
+			// Join an existing session
+			let
+				Project : str,
+				Nickname : str,
+				Success : bool
+			in
+				rec-request(Client, joinSession(Project?, Nickname?))
+				. snd-eval(Server, joinSession(Project, Nickname))
+				. rec-value(Server, joinSession(Success?))
+				. subscribe(change(<str>, <str>, <int>, <int>, <str>, <str>))	// Project, Filename, Length, Offset, Text, Nickname
+				. snd-response(Client, joinSession(Success))
+			endlet
+		)
+		+
+		(
+			// Leave a session
+			let
+				Project : str,
+				Nickname : str,
+				Success : bool
+			in
+				rec-request(Client, leaveSession(Project?, Nickname?))
+				. snd-eval(Server, leaveSession(Project, Nickname))
+				. rec-value(Server, leaveSession(Success?))
+				. unsubscribe(change(<str>, <str>, <int>, <int>, <str>, <str>))	// Project, Filename, Length, Offset, Text, Nickname
+				. snd-response(Client, leaveSession(Success))
+			endlet
+		)
+		+
+		(
+			// Send a change
+			let
+				Project : str,
+				Filename : str,
+				Length : int,
+				Offset : int,
+				Text : str,
+				Nickname : str,
+				Success : bool
+			in
+				rec-request(Client, sendChange(Project?, Filename?, Length?, Offset?, Text?, Nickname?))
+				. snd-eval(Server, sendChange(Project, Filename, Length, Offset, Text, Nickname))
+				. rec-value(Server, sendChange(Success?))
+				. snd-response(Client, sendChange(Success))
+				. snd-note(change(Project, Filename, Length, Offset, Text, Nickname))
+			endlet
+		)
+		+
+		(
+			// Receive a change
+			let
+				Project : str,
+				Filename : str,
+				Length : int,
+				Offset : int,
+				Text : str,
+				Nickname : str,
+				Success : bool
+			in
+				rec-note(change(Project?, Filename?, Length?, Offset?, Text?, Nickname?))
+				. snd-do(Client, receiveChange(Project, Filename, Length, Offset, Text, Nickname))
+			endlet
+		)
+	)
+	*	
 	rec-disconnect(Client)
 
 tool server is {}

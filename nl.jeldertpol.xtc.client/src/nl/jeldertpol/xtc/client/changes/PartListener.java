@@ -1,5 +1,9 @@
 package nl.jeldertpol.xtc.client.changes;
 
+import nl.jeldertpol.xtc.client.Activator;
+
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.ui.IEditorInput;
@@ -20,7 +24,6 @@ import org.eclipse.ui.texteditor.IDocumentProvider;
  */
 public class PartListener implements IPartListener2 {
 
-	private DocumentListener documentListener;
 	private IDocument currentDocument;
 
 	/**
@@ -28,7 +31,6 @@ public class PartListener implements IPartListener2 {
 	 */
 	public PartListener() {
 		System.out.println("New PartListener()");
-		documentListener = new DocumentListener();
 		currentDocument = null;
 	}
 
@@ -38,7 +40,8 @@ public class PartListener implements IPartListener2 {
 	 * 
 	 * @param partRef
 	 *            a reference in which the {@link IDocument} will be looked for.
-	 * @return the {@link IDocument}.
+	 * @return the {@link IDocument}, or <code>null</code> when no
+	 *         {@link IDocument} is found.
 	 */
 	private IDocument getDocument(IWorkbenchPartReference partRef) {
 		IWorkbenchPage workbenchPage = partRef.getPage();
@@ -95,17 +98,13 @@ public class PartListener implements IPartListener2 {
 	 *            the {@link IDocument} the listener should be added.
 	 */
 	private void addDocumentListener(IDocument document) {
-		if (document != null) {
-			if (!document.equals(currentDocument)) {
-				if (currentDocument != null) {
-					currentDocument.removeDocumentListener(documentListener);
-				}
-				currentDocument = document;
-				currentDocument.addDocumentListener(documentListener);
+		// Listen to another document than the current one.
+		if (!document.equals(currentDocument)) {
+			if (currentDocument != null) {
+				currentDocument.removeDocumentListener(Activator.documentListener);
 			}
-		} else {
-			currentDocument = null;
-			System.out.println("null");
+			currentDocument = document;
+			currentDocument.addDocumentListener(Activator.documentListener);
 		}
 	}
 
@@ -117,9 +116,23 @@ public class PartListener implements IPartListener2 {
 	 */
 	@Override
 	public void partActivated(IWorkbenchPartReference partRef) {
-		// TODO Auto-generated method stub
 		System.out.println("partActivated " + partRef.getTitle());
-		addDocumentListener(getDocument(partRef));
+
+		// Document afluisteren, linken met IResource
+		// Getting document
+		IDocument document = getDocument(partRef);
+		if (document != null) {
+			// Listen to document changes.
+			addDocumentListener(document);
+			
+			// Get the IResource of the document.
+			String documentName = partRef.getPage().getActiveEditor().getEditorInput()
+					.getToolTipText();
+			IResource resouce = ResourcesPlugin.getWorkspace().getRoot()
+					.findMember(documentName);
+			Activator.documentListener.setResource(resouce);
+			System.out.println("Name: " + resouce.toString());
+		}
 	}
 
 	/*

@@ -3,6 +3,7 @@ package nl.jeldertpol.xtc.client.session;
 import java.util.List;
 
 import nl.jeldertpol.xtc.client.Activator;
+import nl.jeldertpol.xtc.client.changes.DocumentReplacer;
 import nl.jeldertpol.xtc.client.exceptions.AlreadyInSessionException;
 import nl.jeldertpol.xtc.client.exceptions.LeaveSessionException;
 import nl.jeldertpol.xtc.client.exceptions.NicknameAlreadyTakenException;
@@ -19,7 +20,10 @@ import nl.jeldertpol.xtc.common.session.SimpleSession;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Preferences;
+import org.eclipse.jface.text.DocumentEvent;
 
 /**
  * A session to the server. This is an abstraction to be called by the client.
@@ -281,6 +285,81 @@ public class Session {
 	}
 
 	/**
+	 * Leave the currently joined session. Does nothing when not in a session.
+	 * 
+	 * @throws LeaveSessionException
+	 */
+	public void leaveSession() throws LeaveSessionException {
+		if (inSession) {
+			server.leaveSession(projectName, nickname);
+			inSession = false;
+			projectName = "";
+			nickname = "";
+		}
+	}
+
+	/**
+	 * Send a change to the server.
+	 * 
+	 * @param project
+	 *            The project the change originated from.
+	 * @param file
+	 *            The file, path must be relative to the project.
+	 * @param length
+	 *            Length of the replaced document text.
+	 * @param offset
+	 *            The document offset.
+	 * @param text
+	 *            Text inserted into the document.
+	 * 
+	 * @see IResource#getProjectRelativePath()
+	 * @see DocumentEvent
+	 */
+	public void sendChange(IProject project, IPath file, int length,
+			int offset, String text) {
+		projectName = project.getName();
+		String filename = file.toPortableString();
+
+		if (inSession && projectName.equals(projectName)) {
+			server.sendChange(projectName, filename, length, offset, text,
+					nickname);
+		}
+	}
+
+	/**
+	 * Receive a change from the server / other clients
+	 * 
+	 * @param projectName
+	 *            The name of the project the change originated from.
+	 * @param filename
+	 *            The file the change originated from, path is relative to the
+	 *            project, and portable.
+	 * @param length
+	 *            Length of the replaced document text.
+	 * @param offset
+	 *            The document offset.
+	 * @param text
+	 *            Text inserted into the document.
+	 * @param nickname
+	 *            The nickname of the client the change originated from.
+	 */
+	public void receiveChange(String projectName, String filename, int length,
+			int offset, String text, String nickname) {
+		// Only act when in a session. Should always be true.
+		// This will ignore changes from originating from the client itself.
+		// Only react if current project is the same as the change.
+		if (inSession && !this.nickname.equals(nickname)
+				&& this.projectName.equals(projectName)) {
+			IProject project = ResourcesPlugin.getWorkspace().getRoot()
+					.getProject(projectName);
+			IResource resource = project.findMember(filename);
+
+			DocumentReplacer documentReplacer = new DocumentReplacer();
+			documentReplacer.replace(resource, length, offset, text);
+		}
+	}
+
+	/**
 	 * Returns if the client is currently in a session.
 	 * 
 	 * @return <code>true</code> when client is in a session, <code>false</code>
@@ -298,20 +377,6 @@ public class Session {
 	 */
 	public String getCurrentProject() {
 		return projectName;
-	}
-
-	/**
-	 * Leave the currently joined session. Does nothing when not in a session.
-	 * 
-	 * @throws LeaveSessionException
-	 */
-	public void leaveSession() throws LeaveSessionException {
-		if (inSession) {
-			server.leaveSession(projectName, nickname);
-			inSession = false;
-			projectName = "";
-			nickname = "";
-		}
 	}
 
 	/*

@@ -1,14 +1,18 @@
 package nl.jeldertpol.xtc.client;
 
+import nl.jeldertpol.xtc.client.changes.DocumentListener;
+import nl.jeldertpol.xtc.client.changes.PartListener;
 import nl.jeldertpol.xtc.client.changes.ResourceChangeListener;
-import nl.jeldertpol.xtc.client.changes.WindowListener;
 import nl.jeldertpol.xtc.client.session.Session;
 import nl.jeldertpol.xtc.client.session.infoExtractor.InfoExtractor;
 import nl.jeldertpol.xtc.client.session.infoExtractor.SubclipseInfoExtractor;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -23,6 +27,8 @@ public class Activator extends AbstractUIPlugin {
 
 	public static final Session session = new Session();
 	
+	public static final DocumentListener documentListener = new DocumentListener();
+
 	public static final InfoExtractor infoExtractor = new SubclipseInfoExtractor();
 
 	/**
@@ -34,7 +40,7 @@ public class Activator extends AbstractUIPlugin {
 	 * Image for a client.
 	 */
 	public static final String IMAGE_CLIENT = "resources/icons/user.png";
-	
+
 	/**
 	 * Image for a project.
 	 */
@@ -45,14 +51,11 @@ public class Activator extends AbstractUIPlugin {
 
 	private ResourceChangeListener resourceChangeListener;
 
-	private WindowListener windowListener;
-
 	/**
 	 * The constructor.
 	 */
 	public Activator() {
 		resourceChangeListener = new ResourceChangeListener();
-		windowListener = new WindowListener();
 	}
 
 	/*
@@ -65,15 +68,23 @@ public class Activator extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
-
+		
 		// Registers the resourceChangeListener to the workspace.
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(
 				resourceChangeListener);
 
-		// Registers the windowListener to the workbench.
+		// Registers a {@link PartListener} to the current {@link
+		// IWorkbenchPage}.
+		System.out.println("updateDocumentListeners");
 		IWorkbench workbench = PlatformUI.getWorkbench();
-		workbench.addWindowListener(windowListener);
-		windowListener.updatePartListener();
+		IWorkbenchWindow workbenchWindow = workbench.getActiveWorkbenchWindow();
+		IWorkbenchPage workbenchPage = workbenchWindow.getActivePage();
+
+		IPartListener2 partListener = new PartListener();
+		workbenchPage.addPartListener(partListener);
+		
+//		IResource resource = ResourcesPlugin.getWorkspace().getRoot().getProject("argusViewer").findMember("AUTHORS");
+//		DocumentApplier.apply(resource, 3, 4, "hoi");
 	}
 
 	/*

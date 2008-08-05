@@ -62,6 +62,11 @@
             id="nl.jeldertpol.xtc.client.commands.startSession"
             name="Start session">
       </command>
+      <command
+            description="Show XTC preferences."
+            id="nl.jeldertpol.xtc.client.commands.preferences"
+            name="Preferences">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
@@ -76,6 +81,10 @@
       <handler
             class="nl.jeldertpol.xtc.client.actions.StartSessionAction"
             commandId="nl.jeldertpol.xtc.client.commands.startSession">
+      </handler>
+      <handler
+            class="nl.jeldertpol.xtc.client.actions.PreferencesAction"
+            commandId="nl.jeldertpol.xtc.client.commands.preferences">
       </handler>
    </extension>
    <extension
@@ -99,6 +108,15 @@
             <command
                   commandId="nl.jeldertpol.xtc.client.commands.startSession"
                   mnemonic="S"
+                  style="push">
+            </command>
+            <separator
+                  name="nl.jeldertpol.xtc.client.menu.separator"
+                  visible="true">
+            </separator>
+            <command
+                  commandId="nl.jeldertpol.xtc.client.commands.preferences"
+                  mnemonic="P"
                   style="push">
             </command>
          </menu>

@@ -2,6 +2,9 @@ package nl.jeldertpol.xtc.client.session;
 
 import java.util.List;
 
+import org.eclipse.core.runtime.IPath;
+
+import nl.jeldertpol.xtc.client.Activator;
 import nl.jeldertpol.xtc.client.exceptions.LeaveSessionException;
 import nl.jeldertpol.xtc.client.exceptions.NicknameAlreadyTakenException;
 import nl.jeldertpol.xtc.client.exceptions.ProjectAlreadyPresentException;
@@ -123,7 +126,8 @@ public class Server extends AbstractJavaTool {
 	 *            The name of the project, to identify the session.
 	 * @param nickname
 	 *            The nickname of the client.
-	 * @throws NicknameAlreadyTakenException The nickname is already present in the session.
+	 * @throws NicknameAlreadyTakenException
+	 *             The nickname is already present in the session.
 	 */
 	public void joinSession(String projectName, String nickname)
 			throws NicknameAlreadyTakenException {
@@ -150,19 +154,76 @@ public class Server extends AbstractJavaTool {
 	 *            The nickname of the client.
 	 * @return <code>true</code> is everything went ok, <code>false</code>
 	 *         otherwise.
-	 * @throws LeaveSessionException Something failed when leaving the session.
+	 * @throws LeaveSessionException
+	 *             Something failed when leaving the session.
 	 */
-	public void leaveSession(String projectName, String nickname) throws LeaveSessionException {
+	public void leaveSession(String projectName, String nickname)
+			throws LeaveSessionException {
 		ATerm leaveSession = factory.make("leaveSession(<str>, <str>)",
 				projectName, nickname);
 		ATermAppl reply = sendRequest(leaveSession);
 
 		ATerm answer = reply.getArgument(0);
 		boolean success = Boolean.parseBoolean(answer.toString());
-		
+
 		if (!success) {
 			throw new LeaveSessionException(projectName);
 		}
+	}
+
+	/**
+	 * Send a change to the server.
+	 * 
+	 * @param projectName
+	 *            The name of the project the change originated from.
+	 * @param filename
+	 *            The file, path must be relative to the project, and be
+	 *            portable.
+	 * @param length
+	 *            Length of the replaced document text.
+	 * @param offset
+	 *            The document offset.
+	 * @param text
+	 *            Text inserted into the document.
+	 * 
+	 * @see IPath#toPortableString()
+	 */
+	public void sendChange(String projectName, String filename, int length,
+			int offset, String text, String nickname) {
+		ATerm sendChange = factory.make(
+				"sendChange(<str>, <str>, <int>, <int>, <str>, <str>)",
+				projectName, filename, length, offset, text, nickname);
+		ATermAppl reply = sendRequest(sendChange);
+
+		ATerm answer = reply.getArgument(0);
+		boolean success = Boolean.parseBoolean(answer.toString());
+
+		if (!success) {
+			// throw new LeaveSessionException(projectName);
+		}
+	}
+
+	/**
+	 * Receive a change from the server / other clients
+	 * 
+	 * @param projectName
+	 *            The name of the project the change originated from.
+	 * @param filename
+	 *            The file the change originated from, path is relative to the
+	 *            project, and portable.
+	 * @param length
+	 *            Length of the replaced document text.
+	 * @param offset
+	 *            The document offset.
+	 * @param text
+	 *            Text inserted into the document.
+	 * @param nickname
+	 *            The nickname of the client the change originated from.
+	 */
+	public void receiveChange(String projectName, String filename, int length,
+			int offset, String text, String nickname) {
+		Activator.session.receiveChange(projectName, filename, length, offset,
+				text, nickname);
 	}
 
 }
