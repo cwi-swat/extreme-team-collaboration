@@ -226,4 +226,47 @@ public class Server extends AbstractJavaTool {
 				text, nickname);
 	}
 
+	/**
+	 * Send a move to the server.
+	 * 
+	 * @param projectName
+	 *            The name of the project the move originated from.
+	 * @param from
+	 *            Full path of original resource location, must be portable.
+	 * @param to
+	 *            Full path of new resource location, must be portable.
+	 * 
+	 * @see IPath#toPortableString()
+	 */
+	public void sendMove(String projectName, String from, String to,
+			String nickname) {
+		ATerm sendMove = factory.make("sendMove(<str>, <str>, <str>, <str>)",
+				projectName, from, to, nickname);
+		ATermAppl reply = sendRequest(sendMove);
+
+		ATerm answer = reply.getArgument(0);
+		boolean success = Boolean.parseBoolean(answer.toString());
+
+		if (!success) {
+			// throw new LeaveSessionException(projectName);
+		}
+	}
+
+	/**
+	 * Receive a move from the server / other clients
+	 * 
+	 * @param projectName
+	 *            The name of the project the move originated from.
+	 * @param from
+	 *            Full path of original resource location, must be portable.
+	 * @param to
+	 *            Full path of new resource location, must be portable.
+	 * @param nickname
+	 *            The nickname of the client the move originated from.
+	 */
+	public void receiveMove(String projectName, String from, String to,
+			String nickname) {
+		Activator.session.receiveMove(projectName, from, to, nickname);
+	}
+
 }

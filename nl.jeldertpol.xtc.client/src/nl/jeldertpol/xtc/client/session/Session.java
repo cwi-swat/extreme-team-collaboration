@@ -3,7 +3,11 @@ package nl.jeldertpol.xtc.client.session;
 import java.util.List;
 
 import nl.jeldertpol.xtc.client.Activator;
-import nl.jeldertpol.xtc.client.changes.DocumentReplacer;
+import nl.jeldertpol.xtc.client.changes.editor.DocumentReplacer;
+import nl.jeldertpol.xtc.client.changes.editor.PartListener;
+import nl.jeldertpol.xtc.client.changes.resource.ResourceChangeExecuter;
+import nl.jeldertpol.xtc.client.changes.resource.ResourceChangeListener;
+import nl.jeldertpol.xtc.client.changes.resource.ResourceMoveJob;
 import nl.jeldertpol.xtc.client.exceptions.AlreadyInSessionException;
 import nl.jeldertpol.xtc.client.exceptions.LeaveSessionException;
 import nl.jeldertpol.xtc.client.exceptions.NicknameAlreadyTakenException;
@@ -18,12 +22,21 @@ import nl.jeldertpol.xtc.client.session.infoExtractor.InfoExtractor;
 import nl.jeldertpol.xtc.client.session.infoExtractor.SubclipseInfoExtractor;
 import nl.jeldertpol.xtc.common.session.SimpleSession;
 
+import org.eclipse.core.internal.resources.Workspace;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Preferences;
 import org.eclipse.jface.text.DocumentEvent;
+import org.eclipse.ui.IPartListener2;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 
 /**
  * A session to the server. This is an abstraction to be called by the client.
@@ -33,6 +46,7 @@ import org.eclipse.jface.text.DocumentEvent;
  */
 public class Session {
 	private InfoExtractor infoExtractor;
+	private ResourceChangeExecuter resourceChangeExecuter;
 
 	/**
 	 * Holds the connection state with the server.
@@ -68,6 +82,7 @@ public class Session {
 		super();
 
 		infoExtractor = new SubclipseInfoExtractor();
+		resourceChangeExecuter = new ResourceChangeExecuter();
 		connected = false;
 		inSession = false;
 		projectName = "";
@@ -214,6 +229,8 @@ public class Session {
 		// Nothing went wrong, so client is now in a session.
 		inSession = true;
 		this.projectName = projectName;
+
+		registerListeners();
 	}
 
 	/**
@@ -282,6 +299,47 @@ public class Session {
 		if (!found) {
 			throw new ProjectNotOnServerException(projectName);
 		}
+
+		registerListeners();
+	}
+
+	/**
+	 * Add the {@link IResourceChangeListener} to the workspace.
+	 * 
+	 * @see Activator#resourceChangeListener
+	 */
+	public void addResourceChangeListener() {
+		// Registers the resourceChangeListener to the workspace.
+		ResourcesPlugin.getWorkspace().addResourceChangeListener(
+				Activator.resourceChangeListener,
+				IResourceChangeEvent.POST_CHANGE);
+	}
+
+	/**
+	 * Removes the {@link IResourceChangeListener} from the workspace.
+	 * 
+	 * @see Activator#resourceChangeListener
+	 */
+	public void removeResourceChangeListener() {
+		ResourcesPlugin.getWorkspace().removeResourceChangeListener(
+				Activator.resourceChangeListener);
+	}
+
+	/**
+	 * Registers {@link ResourceChangeListener} and {@link PartListener}.
+	 */
+	private void registerListeners() {
+		addResourceChangeListener();
+		
+		// Registers a {@link PartListener} to the current {@link
+		// IWorkbenchPage}.
+		System.out.println("updateDocumentListeners");
+		IWorkbench workbench = PlatformUI.getWorkbench();
+		IWorkbenchWindow workbenchWindow = workbench.getActiveWorkbenchWindow();
+		IWorkbenchPage workbenchPage = workbenchWindow.getActivePage();
+
+		IPartListener2 partListener = new PartListener();
+		workbenchPage.addPartListener(partListener);
 	}
 
 	/**
@@ -317,10 +375,8 @@ public class Session {
 	 */
 	public void sendChange(IProject project, IPath file, int length,
 			int offset, String text) {
-		projectName = project.getName();
-		String filename = file.toPortableString();
-
-		if (inSession && projectName.equals(projectName)) {
+		if (shouldSend(project)) {
+			String filename = file.toPortableString();
 			server.sendChange(projectName, filename, length, offset, text,
 					nickname);
 		}
@@ -343,19 +399,58 @@ public class Session {
 	 * @param nickname
 	 *            The nickname of the client the change originated from.
 	 */
-	public void receiveChange(String projectName, String filename, int length,
-			int offset, String text, String nickname) {
-		// Only act when in a session. Should always be true.
-		// This will ignore changes from originating from the client itself.
-		// Only react if current project is the same as the change.
-		if (inSession && !this.nickname.equals(nickname)
-				&& this.projectName.equals(projectName)) {
+	public void receiveChange(String remoteProjectName, String filename,
+			int length, int offset, String text, String nickname) {
+		if (shouldReceive(remoteProjectName, nickname)) {
 			IProject project = ResourcesPlugin.getWorkspace().getRoot()
 					.getProject(projectName);
 			IResource resource = project.findMember(filename);
 
 			DocumentReplacer documentReplacer = new DocumentReplacer();
 			documentReplacer.replace(resource, length, offset, text);
+		}
+	}
+
+	/**
+	 * A resource is moved. Send it to the server.
+	 * 
+	 * @param project
+	 *            The project the move originated from.
+	 * @param moveFrom
+	 *            Full path of original resource location.
+	 * @param moveTo
+	 *            Full path of new resource location.
+	 */
+	public void sendMove(IProject project, IPath moveFrom, IPath moveTo) {
+		if (shouldSend(project)) {
+			String from = moveFrom.toPortableString();
+			String to = moveTo.toPortableString();
+			server.sendMove(projectName, from, to, nickname);
+		}
+	}
+
+	/**
+	 * Receive a move from the server / other clients
+	 * 
+	 * @param remoteProjectName
+	 *            The name of the project the move originated from.
+	 * @param from
+	 *            Full path of original resource location, must be portable.
+	 * @param to
+	 *            Full path of new resource location, must be portable.
+	 * @param nickname
+	 *            The nickname of the client the move originated from.
+	 */
+	public void receiveMove(String remoteProjectName, String from, String to,
+			String nickname) {
+		if (shouldReceive(remoteProjectName, nickname)) {
+			IPath moveFrom = Path.fromPortableString(from);
+			IPath moveTo = Path.fromPortableString(to);
+
+			IResource resource = ResourcesPlugin.getWorkspace().getRoot()
+					.findMember(moveFrom);
+
+			resourceChangeExecuter.move(resource, moveTo);
 		}
 	}
 
@@ -401,6 +496,38 @@ public class Session {
 		List<IResource> modifiedFiles = infoExtractor.modifiedFiles(project);
 
 		return modifiedFiles.isEmpty();
+	}
+
+	/**
+	 * Determines whether a change should be send.
+	 * 
+	 * @param project
+	 *            The project the change originated from.
+	 * @return <code>true</code> if change should be send to server,
+	 *         <code>false</code> otherwise.
+	 */
+	private boolean shouldSend(IProject project) {
+		String remoteProjectName = project.getName();
+
+		return inSession() && remoteProjectName.equals(projectName);
+	}
+
+	/**
+	 * Determines whether a change should be received.
+	 * 
+	 * @param remoteProjectName
+	 *            The project the change originated from.
+	 * @param nickname
+	 *            The nickname of the client the change originated from.
+	 * @return <code>true</code> if change should be received,
+	 *         <code>false</code> otherwise.
+	 */
+	private boolean shouldReceive(String remoteProjectName, String nickname) {
+		// Only act when in a session. Should always be true.
+		// Only react if current project is the same as remote.
+		// This will ignore changes from the client itself.
+		return inSession() && remoteProjectName.equals(projectName)
+				&& !this.nickname.equals(nickname);
 	}
 
 }

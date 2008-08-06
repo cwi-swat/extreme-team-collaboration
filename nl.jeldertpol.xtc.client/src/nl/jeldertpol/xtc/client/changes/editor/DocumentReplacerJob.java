@@ -1,4 +1,4 @@
-package nl.jeldertpol.xtc.client.changes;
+package nl.jeldertpol.xtc.client.changes.editor;
 
 import nl.jeldertpol.xtc.client.Activator;
 
@@ -59,10 +59,10 @@ public class DocumentReplacerJob extends UIJob {
 			document.replace(offset, length, text);
 			status = new Status(Status.OK, Activator.PLUGIN_ID, "Change applied successfully.");
 		} catch (BadLocationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 
 			status = new Status(Status.ERROR, Activator.PLUGIN_ID, "Change could not be applied.");
+			// TODO revert, and re-apply all changes?
 		}
 
 		return status;

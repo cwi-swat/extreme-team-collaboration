@@ -1,4 +1,4 @@
-package nl.jeldertpol.xtc.client.changes;
+package nl.jeldertpol.xtc.client.changes.editor;
 
 import nl.jeldertpol.xtc.client.Activator;
 

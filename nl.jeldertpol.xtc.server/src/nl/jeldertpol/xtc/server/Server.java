@@ -174,11 +174,11 @@ public class Server extends AbstractJavaTool {
 		}
 
 		// TODO remove session when no clients are left.
-		
+
 		ATerm leaveSession = factory.make("leaveSession(<bool>)", success);
 		return leaveSession;
 	}
-	
+
 	/**
 	 * A client sends a change.
 	 * 
@@ -192,11 +192,30 @@ public class Server extends AbstractJavaTool {
 	public ATerm sendChange(String projectName, String filename, int length,
 			int offset, String text, String nickname) {
 		boolean success = false;
-		
+
 		// TODO change bewaren
-		
+
 		ATerm sendChange = factory.make("sendChange(<bool>)", success);
 		return sendChange;
+	}
+
+	/**
+	 * A client sends a move.
+	 * 
+	 * @param projectName
+	 * @param from
+	 * @param to
+	 * @param nickname
+	 * @return
+	 */
+	public ATerm sendMove(String projectName, String from, String to,
+			String nickname) {
+		boolean success = false;
+
+		// TODO move bewaren
+
+		ATerm sendMove = factory.make("sendMove(<bool>)", success);
+		return sendMove;
 	}
 
 	/**

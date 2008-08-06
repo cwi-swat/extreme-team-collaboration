@@ -1,4 +1,4 @@
-package nl.jeldertpol.xtc.client.changes;
+package nl.jeldertpol.xtc.client.changes.editor;
 
 import nl.jeldertpol.xtc.client.Activator;
 
@@ -80,8 +80,7 @@ public class DocumentReplacer implements IJobChangeListener {
 
 	@Override
 	public void awake(IJobChangeEvent event) {
-		// TODO Auto-generated method stub
-
+		// Nothing to do
 	}
 
 	@Override
@@ -92,19 +91,16 @@ public class DocumentReplacer implements IJobChangeListener {
 
 	@Override
 	public void running(IJobChangeEvent event) {
-		// TODO Auto-generated method stub
-
+		// Nothing to do
 	}
 
 	@Override
 	public void scheduled(IJobChangeEvent event) {
-		// TODO Auto-generated method stub
-
+		// Nothing to do
 	}
 
 	@Override
 	public void sleeping(IJobChangeEvent event) {
-		// TODO Auto-generated method stub
-
+		// Nothing to do
 	}
 }
