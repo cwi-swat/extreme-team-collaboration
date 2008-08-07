@@ -10,6 +10,11 @@ import nl.jeldertpol.xtc.common.session.SimpleSession;
  */
 public class Session extends SimpleSession {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	//private HashMap<String, LinkedList<Change>> changes;
 	// TODO changes bijhouden
 

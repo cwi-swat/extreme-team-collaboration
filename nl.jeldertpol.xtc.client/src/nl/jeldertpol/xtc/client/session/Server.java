@@ -1,8 +1,7 @@
 package nl.jeldertpol.xtc.client.session;
 
+import java.io.InputStream;
 import java.util.List;
-
-import org.eclipse.core.runtime.IPath;
 
 import nl.jeldertpol.xtc.client.Activator;
 import nl.jeldertpol.xtc.client.exceptions.LeaveSessionException;
@@ -11,6 +10,9 @@ import nl.jeldertpol.xtc.client.exceptions.ProjectAlreadyPresentException;
 import nl.jeldertpol.xtc.client.exceptions.UnableToConnectException;
 import nl.jeldertpol.xtc.common.conversion.Conversion;
 import nl.jeldertpol.xtc.common.session.SimpleSession;
+
+import org.eclipse.core.runtime.IPath;
+
 import toolbus.adapter.java.AbstractJavaTool;
 import aterm.ATerm;
 import aterm.ATermAppl;
@@ -176,7 +178,7 @@ public class Server extends AbstractJavaTool {
 	 * 
 	 * @param projectName
 	 *            The name of the project the change originated from.
-	 * @param filename
+	 * @param filePath
 	 *            The file, path must be relative to the project, and be
 	 *            portable.
 	 * @param length
@@ -188,11 +190,11 @@ public class Server extends AbstractJavaTool {
 	 * 
 	 * @see IPath#toPortableString()
 	 */
-	public void sendChange(String projectName, String filename, int length,
+	public void sendChange(String projectName, String filePath, int length,
 			int offset, String text, String nickname) {
 		ATerm sendChange = factory.make(
 				"sendChange(<str>, <str>, <int>, <int>, <str>, <str>)",
-				projectName, filename, length, offset, text, nickname);
+				projectName, filePath, length, offset, text, nickname);
 		ATermAppl reply = sendRequest(sendChange);
 
 		ATerm answer = reply.getArgument(0);
@@ -208,7 +210,7 @@ public class Server extends AbstractJavaTool {
 	 * 
 	 * @param projectName
 	 *            The name of the project the change originated from.
-	 * @param filename
+	 * @param filePath
 	 *            The file the change originated from, path is relative to the
 	 *            project, and portable.
 	 * @param length
@@ -220,9 +222,9 @@ public class Server extends AbstractJavaTool {
 	 * @param nickname
 	 *            The nickname of the client the change originated from.
 	 */
-	public void receiveChange(String projectName, String filename, int length,
+	public void receiveChange(String projectName, String filePath, int length,
 			int offset, String text, String nickname) {
-		Activator.session.receiveChange(projectName, filename, length, offset,
+		Activator.session.receiveChange(projectName, filePath, length, offset,
 				text, nickname);
 	}
 
@@ -267,6 +269,62 @@ public class Server extends AbstractJavaTool {
 	public void receiveMove(String projectName, String from, String to,
 			String nickname) {
 		Activator.session.receiveMove(projectName, from, to, nickname);
+	}
+
+	/**
+	 * Send new content to the server.
+	 * 
+	 * @param projectName
+	 *            The name of the project the content belongs to.
+	 * @param filePath
+	 *            The file the content belongs to, path is relative to the
+	 *            project, and portable.
+	 * @param content
+	 *            The actual content. Will be closed.
+	 * @param nickname
+	 *            The nickname of the client the content originated from.
+	 */
+	public void sendContent(String projectName, String filePath,
+			InputStream content, String nickname) {
+		byte[] blob = Conversion.InputStreamToByte(content);
+//		byte[] test = { new Byte("0"),new Byte("1") }; 
+		ATermBlob termBlob = factory.makeBlob(blob);
+
+		// Close content. Important!
+//		try {
+//			content.close();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+
+		ATerm sendContent = factory.make(
+				"sendContent(<str>, <str>, <term>, <str>))", projectName,
+				filePath, termBlob, nickname);
+		ATermAppl reply = sendRequest(sendContent);
+
+		ATerm answer = reply.getArgument(0);
+		boolean success = Boolean.parseBoolean(answer.toString());
+
+		if (!success) {
+			// throw new LeaveSessionException(projectName);
+		}
+	}
+	
+	public void receiveContent(String projectName, String filePath,
+			ATerm contentTerm, String nickname) {
+		ATermBlob blob = (ATermBlob) contentTerm;
+		InputStream content = (InputStream) Conversion
+				.ByteToObject(blob.getBlobData());
+		
+		Activator.session.receiveContent(projectName, filePath, content, nickname);
+	}
+	
+	public void receiveContent(String projectName, String filePath,
+			byte[] contentTerm, String nickname) {
+		InputStream content = Conversion.ByteToInputStream(contentTerm);
+		
+		Activator.session.receiveContent(projectName, filePath, content, nickname);
 	}
 
 }

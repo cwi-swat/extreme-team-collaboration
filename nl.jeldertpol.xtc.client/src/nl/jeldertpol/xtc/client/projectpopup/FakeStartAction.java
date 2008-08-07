@@ -1,5 +1,7 @@
 package nl.jeldertpol.xtc.client.projectpopup;
 
+import nl.jeldertpol.xtc.client.Activator;
+
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IObjectActionDelegate;
@@ -20,7 +22,8 @@ public class FakeStartAction implements IObjectActionDelegate {
 	 * 
 	 */
 	public FakeStartAction() {
-		// TODO Auto-generated constructor stub
+		Activator.session.addResourceChangeListener();
+		Activator.fakeStart = true;
 	}
 
 	/* (non-Javadoc)

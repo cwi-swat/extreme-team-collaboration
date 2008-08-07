@@ -50,6 +50,7 @@ process XTCclient(Client : client, Server : server) is
 				. rec-value(Server, startSession(Success?))
 				. subscribe(change(<str>, <str>, <int>, <int>, <str>, <str>))	// Project, Filename, Length, Offset, Text, Nickname
 				. subscribe(move(<str>, <str>, <str>, <str>))	// Project, From, To, Nickname
+				. subscribe(content(<str>, <str>, <term>, <str>))	// Project, File, Content, Nickname
 				. snd-response(Client, startSession(Success))
 			endlet
 		)
@@ -66,6 +67,7 @@ process XTCclient(Client : client, Server : server) is
 				. rec-value(Server, joinSession(Success?))
 				. subscribe(change(<str>, <str>, <int>, <int>, <str>, <str>))	// Project, Filename, Length, Offset, Text, Nickname
 				. subscribe(move(<str>, <str>, <str>, <str>))	// Project, From, To, Nickname
+				. subscribe(content(<str>, <str>, <term>, <str>))	// Project, File, Content, Nickname
 				. snd-response(Client, joinSession(Success))
 			endlet
 		)
@@ -147,6 +149,36 @@ process XTCclient(Client : client, Server : server) is
 			in
 				rec-note(move(Project?, From?, To?, Nickname?))
 				. snd-do(Client, receiveMove(Project, From, To, Nickname))
+			endlet
+		)
+		+
+		(
+			// Send content
+			let
+				Project : str,
+				Filename : str,
+				Content : term,
+				Nickname : str,
+				Success : bool
+			in
+				rec-request(Client, sendContent(Project?, Filename?, Content?, Nickname?))
+				. snd-eval(Server, sendContent(Project, Filename, Content, Nickname))
+				. rec-value(Server, sendContent(Success?))
+				. snd-response(Client, sendContent(Success))
+				. snd-note(content(Project, Filename, Content, Nickname))
+			endlet
+		)
+		+
+		(
+			// Receive content
+			let
+				Project : str,
+				Filename : str,
+				Content : term,
+				Nickname : str
+			in
+				rec-note(content(Project?, Filename?, Content?, Nickname?))
+				. snd-do(Client, receiveContent(Project, Filename, Content, Nickname))
 			endlet
 		)
 	)

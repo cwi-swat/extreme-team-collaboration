@@ -1,7 +1,10 @@
 package nl.jeldertpol.xtc.client.changes.resource;
 
+import java.io.InputStream;
+
 import nl.jeldertpol.xtc.client.Activator;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
@@ -76,8 +79,17 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 			// have changed in the file system.
 			if ((flags & IResourceDelta.CONTENT) != 0) {
 				System.out.println("CONTENT");
-				// ((IFile)resource).setContents(source, force, keepHistory,
-				// monitor);
+				
+				IProject project = resource.getProject();
+				
+				IFile file = (IFile) resource;
+				InputStream content = file.getContents();
+				
+				IPath filePath = file.getProjectRelativePath();
+				
+				Activator.session.sendContent(project, filePath, content);
+				
+				visitChildren = false;
 			}
 			// The project description has changed.
 			if ((flags & IResourceDelta.DESCRIPTION) != 0) {
@@ -101,7 +113,7 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 			if ((flags & IResourceDelta.MOVED_TO) != 0) {
 				IPath moveFrom = delta.getResource().getFullPath();
 				IPath moveTo = delta.getMovedToPath();
-				IProject project = delta.getResource().getProject();
+				IProject project = resource.getProject();
 				
 				System.out.println("MOVED_TO: " + moveFrom.toString() + " --> " + moveTo.toString());
 				

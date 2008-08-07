@@ -1,5 +1,6 @@
 package nl.jeldertpol.xtc.client.session;
 
+import java.io.InputStream;
 import java.util.List;
 
 import nl.jeldertpol.xtc.client.Activator;
@@ -7,7 +8,6 @@ import nl.jeldertpol.xtc.client.changes.editor.DocumentReplacer;
 import nl.jeldertpol.xtc.client.changes.editor.PartListener;
 import nl.jeldertpol.xtc.client.changes.resource.ResourceChangeExecuter;
 import nl.jeldertpol.xtc.client.changes.resource.ResourceChangeListener;
-import nl.jeldertpol.xtc.client.changes.resource.ResourceMoveJob;
 import nl.jeldertpol.xtc.client.exceptions.AlreadyInSessionException;
 import nl.jeldertpol.xtc.client.exceptions.LeaveSessionException;
 import nl.jeldertpol.xtc.client.exceptions.NicknameAlreadyTakenException;
@@ -22,7 +22,7 @@ import nl.jeldertpol.xtc.client.session.infoExtractor.InfoExtractor;
 import nl.jeldertpol.xtc.client.session.infoExtractor.SubclipseInfoExtractor;
 import nl.jeldertpol.xtc.common.session.SimpleSession;
 
-import org.eclipse.core.internal.resources.Workspace;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -330,7 +330,7 @@ public class Session {
 	 */
 	private void registerListeners() {
 		addResourceChangeListener();
-		
+
 		// Registers a {@link PartListener} to the current {@link
 		// IWorkbenchPage}.
 		System.out.println("updateDocumentListeners");
@@ -361,7 +361,7 @@ public class Session {
 	 * 
 	 * @param project
 	 *            The project the change originated from.
-	 * @param file
+	 * @param filePath
 	 *            The file, path must be relative to the project.
 	 * @param length
 	 *            Length of the replaced document text.
@@ -373,21 +373,21 @@ public class Session {
 	 * @see IResource#getProjectRelativePath()
 	 * @see DocumentEvent
 	 */
-	public void sendChange(IProject project, IPath file, int length,
+	public void sendChange(IProject project, IPath filePath, int length,
 			int offset, String text) {
 		if (shouldSend(project)) {
-			String filename = file.toPortableString();
+			String filename = filePath.toPortableString();
 			server.sendChange(projectName, filename, length, offset, text,
 					nickname);
 		}
 	}
 
 	/**
-	 * Receive a change from the server / other clients
+	 * Receive a change from the server / other clients.
 	 * 
 	 * @param projectName
 	 *            The name of the project the change originated from.
-	 * @param filename
+	 * @param filePath
 	 *            The file the change originated from, path is relative to the
 	 *            project, and portable.
 	 * @param length
@@ -399,12 +399,12 @@ public class Session {
 	 * @param nickname
 	 *            The nickname of the client the change originated from.
 	 */
-	public void receiveChange(String remoteProjectName, String filename,
+	public void receiveChange(String remoteProjectName, String filePath,
 			int length, int offset, String text, String nickname) {
 		if (shouldReceive(remoteProjectName, nickname)) {
 			IProject project = ResourcesPlugin.getWorkspace().getRoot()
 					.getProject(projectName);
-			IResource resource = project.findMember(filename);
+			IResource resource = project.findMember(filePath);
 
 			DocumentReplacer documentReplacer = new DocumentReplacer();
 			documentReplacer.replace(resource, length, offset, text);
@@ -430,7 +430,7 @@ public class Session {
 	}
 
 	/**
-	 * Receive a move from the server / other clients
+	 * Receive a move from the server / other clients.
 	 * 
 	 * @param remoteProjectName
 	 *            The name of the project the move originated from.
@@ -451,6 +451,53 @@ public class Session {
 					.findMember(moveFrom);
 
 			resourceChangeExecuter.move(resource, moveTo);
+		}
+	}
+
+	/**
+	 * Send new content to the server.
+	 * 
+	 * @param project
+	 *            The project the content belongs to.
+	 * @param filePath
+	 *            The file, path must be relative to the project.
+	 * @param content
+	 *            The actual content. Will be closed after this method finishes.
+	 */
+	public void sendContent(IProject project, IPath filePath,
+			InputStream content) {
+		if (shouldSend(project)) {
+			String file = filePath.toPortableString();
+
+			server.sendContent(projectName, file, content, nickname);
+		}
+	}
+
+	/**
+	 * Receive new content from the server / other clients.
+	 * 
+	 * @param remoteProjectName
+	 *            The name of the project the content belongs to.
+	 * @param filePath
+	 *            The file the content belongs to, path is relative to the
+	 *            project, and portable.
+	 * @param content
+	 *            The actual content.
+	 * @param nickname
+	 *            The nickname of the client the content originated from.
+	 */
+	public void receiveContent(String remoteProjectName, String filePath,
+			InputStream content, String nickname) {
+		if (shouldReceive(remoteProjectName, nickname)) {
+			System.out.println("New content arrived!");
+
+			IProject project = ResourcesPlugin.getWorkspace().getRoot()
+					.getProject(projectName);
+			IResource resource = project.findMember(filePath);
+
+			IFile file = (IFile) resource;
+
+			resourceChangeExecuter.setContent(file, content);
 		}
 	}
 

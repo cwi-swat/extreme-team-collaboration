@@ -1,7 +1,10 @@
 package nl.jeldertpol.xtc.client.changes.resource;
 
+import java.io.InputStream;
+
 import nl.jeldertpol.xtc.client.Activator;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
@@ -16,6 +19,12 @@ public class ResourceChangeExecuter implements IJobChangeListener {
 
 	public void move(IResource resource, IPath moveTo) {
 		ResourceMoveJob job = new ResourceMoveJob(resource, moveTo);
+		job.addJobChangeListener(this);
+		job.schedule();
+	}
+	
+	public void setContent(IFile file, InputStream content) {
+		ResourceSetContentJob job = new ResourceSetContentJob(file, content);
 		job.addJobChangeListener(this);
 		job.schedule();
 	}

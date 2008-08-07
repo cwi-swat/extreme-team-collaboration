@@ -217,6 +217,22 @@ public class Server extends AbstractJavaTool {
 		ATerm sendMove = factory.make("sendMove(<bool>)", success);
 		return sendMove;
 	}
+	
+	public ATerm sendContent(String projectName, String filename,
+			ATerm content, String nickname) {
+		// bug in Toolbus, only needed for handshake.
+		return null;
+	}
+	
+	public ATerm sendContent(String projectName, String filename,
+			byte[] content, String nickname) {
+		boolean success = false;
+
+		// TODO content bewaren
+
+		ATerm sendChange = factory.make("sendContent(<bool>)", success);
+		return sendChange;
+	}
 
 	/**
 	 * Get a session.
