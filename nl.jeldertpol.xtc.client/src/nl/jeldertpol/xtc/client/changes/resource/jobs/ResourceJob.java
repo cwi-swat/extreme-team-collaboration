@@ -1,4 +1,4 @@
-package nl.jeldertpol.xtc.client.changes.resource;
+package nl.jeldertpol.xtc.client.changes.resource.jobs;
 
 import org.eclipse.core.runtime.jobs.Job;
 

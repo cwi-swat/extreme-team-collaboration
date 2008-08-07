@@ -502,6 +502,95 @@ public class Session {
 	}
 
 	/**
+	 * Send an added resource to the server.
+	 * 
+	 * @param project
+	 *            The project the resource belongs to.
+	 * @param resourcePath
+	 *            The added resource, path must be relative to the project.
+	 * @param type
+	 *            The type of resource added.
+	 * 
+	 * @see IResource#getType()
+	 */
+	public void sendAddedResource(IProject project, IPath resourcePath, int type) {
+		if (shouldSend(project)) {
+			String resource = resourcePath.toPortableString();
+			server.sendAddedResource(projectName, resource, type, nickname);
+		}
+	}
+
+	/**
+	 * Receive an added resource from the server / other clients.
+	 * 
+	 * @param remoteProjectName
+	 *            The name of the project the resource is added to.
+	 * @param resourcePath
+	 *            The added resource, path is relative to the project, and
+	 *            portable.
+	 * @param type
+	 *            The type of resource added.
+	 * @param nickname
+	 *            The nickname of the client the added resource originated from.
+	 * 
+	 * @see IResource#getType()
+	 */
+	public void receiveAddedResource(String remoteProjectName,
+			String resourcePath, int type, String nickname) {
+		if (shouldReceive(remoteProjectName, nickname)) {
+			IProject project = ResourcesPlugin.getWorkspace().getRoot()
+					.getProject(projectName);
+
+			IResource resource = null;
+			if (type == IResource.FILE) {
+				resource = project.getFile(resourcePath);
+			} else if (type == IResource.FOLDER) {
+				resource = project.getFolder(resourcePath);
+			}
+
+			resourceChangeExecuter.addedResource(resource, type);
+		}
+	}
+	
+	/**
+	 * Send an removed resource to the server.
+	 * 
+	 * @param project
+	 *            The project the resource belongs to.
+	 * @param resourcePath
+	 *            The added resource, path must be relative to the project.
+	 */
+	public void sendRemovedResource(IProject project, IPath resourcePath) {
+		if (shouldSend(project)) {
+			String resource = resourcePath.toPortableString();
+			server.sendRemovedResource(projectName, resource, nickname);
+		}
+	}
+
+	/**
+	 * Receive an removed resource from the server / other clients.
+	 * 
+	 * @param remoteProjectName
+	 *            The name of the project the resource is added to.
+	 * @param resourcePath
+	 *            The added resource, path is relative to the project, and
+	 *            portable.
+	 * @param nickname
+	 *            The nickname of the client the added resource originated from.
+	 */
+	public void receiveRemovedResource(String remoteProjectName,
+			String resourcePath, String nickname) {
+		if (shouldReceive(remoteProjectName, nickname)) {
+			IProject project = ResourcesPlugin.getWorkspace().getRoot()
+					.getProject(projectName);
+
+			IResource resource = project.findMember(resourcePath);
+
+			resourceChangeExecuter.removedResource(resource);
+		}
+	}
+
+	/**
 	 * Returns if the client is currently in a session.
 	 * 
 	 * @return <code>true</code> when client is in a session, <code>false</code>

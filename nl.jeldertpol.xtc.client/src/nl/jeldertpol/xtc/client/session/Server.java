@@ -11,6 +11,7 @@ import nl.jeldertpol.xtc.client.exceptions.UnableToConnectException;
 import nl.jeldertpol.xtc.common.conversion.Conversion;
 import nl.jeldertpol.xtc.common.session.SimpleSession;
 
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 
 import toolbus.adapter.java.AbstractJavaTool;
@@ -255,7 +256,7 @@ public class Server extends AbstractJavaTool {
 	}
 
 	/**
-	 * Receive a move from the server / other clients
+	 * Receive a move from the server / other clients.
 	 * 
 	 * @param projectName
 	 *            The name of the project the move originated from.
@@ -287,16 +288,10 @@ public class Server extends AbstractJavaTool {
 	public void sendContent(String projectName, String filePath,
 			InputStream content, String nickname) {
 		byte[] blob = Conversion.InputStreamToByte(content);
-//		byte[] test = { new Byte("0"),new Byte("1") }; 
-		ATermBlob termBlob = factory.makeBlob(blob);
 
-		// Close content. Important!
-//		try {
-//			content.close();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		// TODO close inputstream
+
+		ATermBlob termBlob = factory.makeBlob(blob);
 
 		ATerm sendContent = factory.make(
 				"sendContent(<str>, <str>, <term>, <str>))", projectName,
@@ -310,21 +305,146 @@ public class Server extends AbstractJavaTool {
 			// throw new LeaveSessionException(projectName);
 		}
 	}
-	
+
+	/**
+	 * Receive new content from the server / other clients.
+	 * 
+	 * @param projectName
+	 *            The name of the project the content belongs to.
+	 * @param filePath
+	 *            The file the content belongs to, path is relative to the
+	 *            project, and portable.
+	 * @param contentTerm
+	 *            The actual content.
+	 * @param nickname
+	 *            The nickname of the client the content originated from.
+	 */
 	public void receiveContent(String projectName, String filePath,
 			ATerm contentTerm, String nickname) {
-		ATermBlob blob = (ATermBlob) contentTerm;
-		InputStream content = (InputStream) Conversion
-				.ByteToObject(blob.getBlobData());
-		
-		Activator.session.receiveContent(projectName, filePath, content, nickname);
+		// TODO bug in toolbus, needed for handshaking only.
+		// ATermBlob blob = (ATermBlob) contentTerm;
+		// InputStream content = (InputStream) Conversion.ByteToObject(blob
+		// .getBlobData());
+		//
+		// Activator.session.receiveContent(projectName, filePath, content,
+		// nickname);
 	}
-	
+
+	/**
+	 * Receive new content from the server / other clients.
+	 * 
+	 * @param projectName
+	 *            The name of the project the content belongs to.
+	 * @param filePath
+	 *            The file the content belongs to, path is relative to the
+	 *            project, and portable.
+	 * @param contentTerm
+	 *            The actual content.
+	 * @param nickname
+	 *            The nickname of the client the content originated from.
+	 */
 	public void receiveContent(String projectName, String filePath,
 			byte[] contentTerm, String nickname) {
+		// TODO bug in toolbus, this method will be called.
 		InputStream content = Conversion.ByteToInputStream(contentTerm);
-		
-		Activator.session.receiveContent(projectName, filePath, content, nickname);
+
+		Activator.session.receiveContent(projectName, filePath, content,
+				nickname);
+	}
+
+	/**
+	 * Send an added resource to the server.
+	 * 
+	 * @param projectName
+	 *            The name of the project the resource is added to.
+	 * @param resourcePath
+	 *            The added resource, path is relative to the project, and
+	 *            portable.
+	 * @param type
+	 *            The type of resource added.
+	 * @param nickname
+	 *            The nickname of the client the added resource originated from.
+	 * 
+	 * @see IResource#getType()
+	 */
+	public void sendAddedResource(String projectName, String resourcePath,
+			int type, String nickname) {
+		ATerm sendAddedResource = factory.make(
+				"sendAddedResource(<str>, <str>, <int>, <str>)", projectName,
+				resourcePath, type, nickname);
+		ATermAppl reply = sendRequest(sendAddedResource);
+
+		ATerm answer = reply.getArgument(0);
+		boolean success = Boolean.parseBoolean(answer.toString());
+
+		if (!success) {
+			// throw new LeaveSessionException(projectName);
+		}
+	}
+
+	/**
+	 * Receive an added resource from the server / other clients.
+	 * 
+	 * @param projectName
+	 *            The name of the project the resource is added to.
+	 * @param resourcePath
+	 *            The added resource, path is relative to the project, and
+	 *            portable.
+	 * @param type
+	 *            The type of resource added.
+	 * @param nickname
+	 *            The nickname of the client the added resource originated from.
+	 * 
+	 * @see IResource#getType()
+	 */
+	public void receiveAddedResource(String projectName, String resourcePath,
+			int type, String nickname) {
+		Activator.session.receiveAddedResource(projectName, resourcePath, type,
+				nickname);
+	}
+
+	/**
+	 * Send an removed resource to the server.
+	 * 
+	 * @param projectName
+	 *            The name of the project the resource belongs to.
+	 * @param resourcePath
+	 *            The removed resource, path must be relative to the project.
+	 * @param nickname
+	 *            The nickname of the client the removed resource originated
+	 *            from.
+	 */
+	public void sendRemovedResource(String projectName, String resourcePath,
+			String nickname) {
+		ATerm sendRemovedResource = factory.make(
+				"sendRemovedResource(<str>, <str>, <str>)", projectName,
+				resourcePath, nickname);
+		ATermAppl reply = sendRequest(sendRemovedResource);
+
+		ATerm answer = reply.getArgument(0);
+		boolean success = Boolean.parseBoolean(answer.toString());
+
+		if (!success) {
+			// throw new LeaveSessionException(projectName);
+		}
+	}
+
+	/**
+	 * Receive an removed resource from the server / other clients.
+	 * 
+	 * @param projectName
+	 *            The name of the project the resource is added to.
+	 * @param resourcePath
+	 *            The removed resource, path is relative to the project, and
+	 *            portable.
+	 * @param nickname
+	 *            The nickname of the client the removed resource originated
+	 *            from.
+	 */
+	public void receiveRemovedResource(String projectName, String resourcePath,
+			String nickname) {
+		Activator.session.receiveRemovedResource(projectName, resourcePath,
+				nickname);
 	}
 
 }

@@ -3,6 +3,10 @@ package nl.jeldertpol.xtc.client.changes.resource;
 import java.io.InputStream;
 
 import nl.jeldertpol.xtc.client.Activator;
+import nl.jeldertpol.xtc.client.changes.resource.jobs.ResourceAddedResourceJob;
+import nl.jeldertpol.xtc.client.changes.resource.jobs.ResourceMoveJob;
+import nl.jeldertpol.xtc.client.changes.resource.jobs.ResourceRemovedResourceJob;
+import nl.jeldertpol.xtc.client.changes.resource.jobs.ResourceSetContentJob;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
@@ -22,9 +26,23 @@ public class ResourceChangeExecuter implements IJobChangeListener {
 		job.addJobChangeListener(this);
 		job.schedule();
 	}
-	
+
 	public void setContent(IFile file, InputStream content) {
 		ResourceSetContentJob job = new ResourceSetContentJob(file, content);
+		job.addJobChangeListener(this);
+		job.schedule();
+	}
+
+	public void addedResource(IResource resource, int type) {
+		ResourceAddedResourceJob job = new ResourceAddedResourceJob(resource,
+				type);
+		job.addJobChangeListener(this);
+		job.schedule();
+	}
+
+	public void removedResource(IResource resource) {
+		ResourceRemovedResourceJob job = new ResourceRemovedResourceJob(
+				resource);
 		job.addJobChangeListener(this);
 		job.schedule();
 	}

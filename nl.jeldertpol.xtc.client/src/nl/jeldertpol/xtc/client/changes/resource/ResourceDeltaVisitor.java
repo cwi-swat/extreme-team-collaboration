@@ -13,6 +13,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 
 /**
+ * Visit a {@link IResourceDelta}, and look for anything interesting.
  * 
  * @author Jeldert Pol
  */
@@ -29,15 +30,65 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 	public boolean visit(IResourceDelta delta) throws CoreException {
 		boolean ofInterest = false;
 		boolean visitChildren = true;
-		
+
+		IResource resource = delta.getResource();
+		int flags = delta.getFlags();
+
+		System.out.println(resource.getFullPath().toString());
+
 		switch (delta.getKind()) {
 		case IResourceDelta.NO_CHANGE:
 			ofInterest = false;
 			break;
 		case IResourceDelta.ADDED:
-			ofInterest = true;
+			// Resource is added, but could be the result of a move.
+			System.out.println("Add resource???");
+
+			if ((flags & IResourceDelta.MOVED_FROM) != 0) {
+				// See, it is the result of a move.
+				System.out.println("No, added resource is a move...");
+				// Of interest, because it is a move.
+				ofInterest = true;
+			} else {
+				// It is really a new resource.
+				System.out
+						.println("Yes, added resource is not moved, so new file...");
+
+				IProject project = resource.getProject();
+				IPath resourcePath = resource.getProjectRelativePath();
+
+				Activator.session.sendAddedResource(project, resourcePath,
+						resource.getType());
+
+				// Nothing left of interest in this delta.
+				ofInterest = false;
+			}
+
 			break;
 		case IResourceDelta.REMOVED:
+			// Resource is removed, but could be the result of a move.
+			System.out.println("Remove resource???");
+
+			if ((flags & IResourceDelta.MOVED_TO) != 0) {
+				// See, it is the result of a remove.
+				System.out.println("No, removed resource is a move...");
+				// Of interest, because it is a move.
+				ofInterest = true;
+			} else {
+				// It really is the removal of a resource.
+				System.out
+						.println("Yes, removed resource is not moved, so remove file...");
+
+				IProject project = resource.getProject();
+				IPath resourcePath = resource.getProjectRelativePath();
+
+				Activator.session.sendRemovedResource(project, resourcePath);
+				// Activator.session.addedResource(project, resource);
+
+				// Nothing left of interest in this delta.
+				ofInterest = false;
+			}
+
 			ofInterest = true;
 			break;
 		case IResourceDelta.CHANGED:
@@ -52,43 +103,28 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 			ofInterest = true;
 			break;
 		default:
+			// TODO default needed? All cases are covered above...
 			ofInterest = true;
 			break;
 		}
 
 		if (ofInterest) {
-			IResource resource = delta.getResource();
-			int flags = delta.getFlags();
-
-			System.out.println(resource.getProjectRelativePath().toString());
-
-			// IResourceDelta#CONTENT
-			// IResourceDelta#DESCRIPTION
-			// IResourceDelta#ENCODING
-			// IResourceDelta#OPEN
-			// IResourceDelta#MOVED_TO
-			// IResourceDelta#MOVED_FROM
-			// IResourceDelta#TYPE
-			// IResourceDelta#SYNC
-			// IResourceDelta#MARKERS
-			// IResourceDelta#REPLACED
-
 			// The filesystem modification timestamp has changed since the
 			// last notification. IResource.touch() will also trigger a
 			// content change notification, even though the content may not
 			// have changed in the file system.
 			if ((flags & IResourceDelta.CONTENT) != 0) {
 				System.out.println("CONTENT");
-				
+
 				IProject project = resource.getProject();
-				
+
 				IFile file = (IFile) resource;
 				InputStream content = file.getContents();
-				
+
 				IPath filePath = file.getProjectRelativePath();
-				
+
 				Activator.session.sendContent(project, filePath, content);
-				
+
 				visitChildren = false;
 			}
 			// The project description has changed.
@@ -107,6 +143,7 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 			// is now open, then it was previously closed, and vice-versa.
 			if ((flags & IResourceDelta.OPEN) != 0) {
 				System.out.println("OPEN");
+				// TODO when project closed, leave the session
 			}
 			// The resource was moved to another location. The location it
 			// was moved to is indicated by IResourceDelta.getMovedToPath.
@@ -114,11 +151,12 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 				IPath moveFrom = delta.getResource().getFullPath();
 				IPath moveTo = delta.getMovedToPath();
 				IProject project = resource.getProject();
-				
-				System.out.println("MOVED_TO: " + moveFrom.toString() + " --> " + moveTo.toString());
-				
+
+				System.out.println("MOVED_TO: " + moveFrom.toString() + " --> "
+						+ moveTo.toString());
+
 				Activator.session.sendMove(project, moveFrom, moveTo);
-				
+
 				// Children will be moved by Eclipse, no need to visit them.
 				visitChildren = false;
 			}

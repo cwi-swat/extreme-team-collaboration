@@ -51,6 +51,8 @@ process XTCclient(Client : client, Server : server) is
 				. subscribe(change(<str>, <str>, <int>, <int>, <str>, <str>))	// Project, Filename, Length, Offset, Text, Nickname
 				. subscribe(move(<str>, <str>, <str>, <str>))	// Project, From, To, Nickname
 				. subscribe(content(<str>, <str>, <term>, <str>))	// Project, File, Content, Nickname
+				. subscribe(addedResource(<str>, <str>, <int>, <str>))	// Project, Resource, Type, Nickname
+				. subscribe(removedResource(<str>, <str>, <str>))	// Project, Resource, Nickname
 				. snd-response(Client, startSession(Success))
 			endlet
 		)
@@ -68,6 +70,8 @@ process XTCclient(Client : client, Server : server) is
 				. subscribe(change(<str>, <str>, <int>, <int>, <str>, <str>))	// Project, Filename, Length, Offset, Text, Nickname
 				. subscribe(move(<str>, <str>, <str>, <str>))	// Project, From, To, Nickname
 				. subscribe(content(<str>, <str>, <term>, <str>))	// Project, File, Content, Nickname
+				. subscribe(addedResource(<str>, <str>, <int>, <str>))	// Project, Resource, Type, Nickname
+				. subscribe(removedResource(<str>, <str>, <str>))	// Project, Resource, Nickname
 				. snd-response(Client, joinSession(Success))
 			endlet
 		)
@@ -179,6 +183,64 @@ process XTCclient(Client : client, Server : server) is
 			in
 				rec-note(content(Project?, Filename?, Content?, Nickname?))
 				. snd-do(Client, receiveContent(Project, Filename, Content, Nickname))
+			endlet
+		)
+		+
+		(
+			// Send added resource
+			let
+				Project : str,
+				Resource : str,
+				Type : int,
+				Nickname : str,
+				Success : bool
+			in
+				rec-request(Client, sendAddedResource(Project?, Resource?, Type?, Nickname?))
+				. snd-eval(Server, sendAddedResource(Project, Resource, Type, Nickname))
+				. rec-value(Server, sendAddedResource(Success?))
+				. snd-response(Client, sendAddedResource(Success))
+				. snd-note(addedResource(Project, Resource, Type, Nickname))
+			endlet
+		)
+		+
+		(
+			// Receive added resource
+			let
+				Project : str,
+				Resource : str,
+				Type : int,
+				Nickname : str
+			in
+				rec-note(addedResource(Project?, Resource?, Type?, Nickname?))
+				. snd-do(Client, receiveAddedResource(Project, Resource, Type, Nickname))
+			endlet
+		)
+		+
+		(
+			// Send removed resource
+			let
+				Project : str,
+				Resource : str,
+				Nickname : str,
+				Success : bool
+			in
+				rec-request(Client, sendRemovedResource(Project?, Resource?, Nickname?))
+				. snd-eval(Server, sendRemovedResource(Project, Resource, Nickname))
+				. rec-value(Server, sendRemovedResource(Success?))
+				. snd-response(Client, sendRemovedResource(Success))
+				. snd-note(removedResource(Project, Resource, Nickname))
+			endlet
+		)
+		+
+		(
+			// Receive removed resource
+			let
+				Project : str,
+				Resource : str,
+				Nickname : str
+			in
+				rec-note(removedResource(Project?, Resource?, Nickname?))
+				. snd-do(Client, receiveRemovedResource(Project, Resource, Nickname))
 			endlet
 		)
 	)

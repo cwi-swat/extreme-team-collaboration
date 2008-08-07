@@ -1,11 +1,10 @@
-package nl.jeldertpol.xtc.client.changes.resource;
-
-import java.io.InputStream;
+package nl.jeldertpol.xtc.client.changes.resource.jobs;
 
 import nl.jeldertpol.xtc.client.Activator;
 
-import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -15,10 +14,10 @@ import org.eclipse.core.runtime.Status;
  * 
  * @author Jeldert Pol
  */
-public class ResourceSetContentJob extends ResourceJob {
+public class ResourceMoveJob extends ResourceJob {
 
-	private IFile file;
-	InputStream content;
+	private IResource resource;
+	private IPath moveTo;
 
 	/**
 	 * Move a resource to a new location.
@@ -28,11 +27,11 @@ public class ResourceSetContentJob extends ResourceJob {
 	 * @param moveTo
 	 *            The new location of the resource.
 	 */
-	public ResourceSetContentJob(IFile file, InputStream content) {
-		super(file.toString());
+	public ResourceMoveJob(IResource resource, IPath moveTo) {
+		super(resource.toString());
 
-		this.file = file;
-		this.content = content;
+		this.resource = resource;
+		this.moveTo = moveTo;
 	}
 
 	/*
@@ -46,17 +45,18 @@ public class ResourceSetContentJob extends ResourceJob {
 		IStatus status;
 
 		try {
-			file.setContents(content, false, false, null);
+			resource.move(moveTo, true, null);
 			status = new Status(Status.OK, Activator.PLUGIN_ID,
-					"Resource content set successfully.");
+					"Move applied successfully.");
 		} catch (CoreException e) {
 			e.printStackTrace();
 
 			status = new Status(Status.ERROR, Activator.PLUGIN_ID,
-					"Resource content could not be set.");
+					"Change could not be applied.");
 			// TODO revert, and re-apply all changes?
 		}
 
 		return status;
 	}
+
 }
