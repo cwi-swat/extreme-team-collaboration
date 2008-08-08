@@ -7,10 +7,10 @@ public class NicknameAlreadyTakenException extends XtcException {
 
 	private static final long serialVersionUID = 1L;
 
-	private final static String message1 = "Your nickname (";
-	private final static String message2 = ") is already taken. Please choose another one.";
+	private static final String MESSAGE1 = "Your nickname (";
+	private static final String MESSAGE2 = ") is already taken. Please choose another one.";
 
-	public NicknameAlreadyTakenException(String nickname) {
-		super(message1 + nickname + message2);
+	public NicknameAlreadyTakenException(final String nickname) {
+		super(MESSAGE1 + nickname + MESSAGE2);
 	}
 }

@@ -31,7 +31,7 @@ public class LeaveSessionAction extends AbstractHandler {
 	private void leaveSession() {
 		Shell parent = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
 				.getShell();
-		if (Activator.session.inSession()) {
+		if (Activator.SESSION.inSession()) {
 			String title = "Leave session?";
 			String message = "Leave currently joined session?";
 
@@ -39,7 +39,7 @@ public class LeaveSessionAction extends AbstractHandler {
 
 			if (leave) {
 				try {
-					Activator.session.leaveSession();
+					Activator.SESSION.leaveSession();
 				} catch (XtcException e) {
 					e.printStackTrace();
 					MessageDialog.openError(null, "XTC Leave", e.getMessage());

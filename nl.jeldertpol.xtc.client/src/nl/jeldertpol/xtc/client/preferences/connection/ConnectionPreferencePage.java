@@ -21,6 +21,9 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 
 public class ConnectionPreferencePage extends FieldEditorPreferencePage
 		implements IWorkbenchPreferencePage {
+	
+	private final int portMin = 1;
+	private final int portMax = 65535;
 
 	public ConnectionPreferencePage() {
 		super(GRID);
@@ -42,7 +45,7 @@ public class ConnectionPreferencePage extends FieldEditorPreferencePage
 		IntegerFieldEditor portFieldEditor = new IntegerFieldEditor(
 				PreferenceConstants.P_PORT, "XTC server port",
 				getFieldEditorParent());
-		portFieldEditor.setValidRange(1, 65535);
+		portFieldEditor.setValidRange(portMin, portMax);
 		addField(portFieldEditor);
 
 		// Nickname

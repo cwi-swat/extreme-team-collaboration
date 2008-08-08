@@ -15,18 +15,18 @@ import org.eclipse.core.runtime.Status;
  * 
  * @author Jeldert Pol
  */
-public class ResourceSetContentJob extends ResourceJob {
+public class ResourceSetContentJob extends HighPriorityJob {
 
 	private IFile file;
-	InputStream content;
+	private InputStream content;
 
 	/**
-	 * Move a resource to a new location.
+	 * Set the content of a file.
 	 * 
-	 * @param resource
-	 *            The resource to move.
-	 * @param moveTo
-	 *            The new location of the resource.
+	 * @param file
+	 *            The file the content should be set of.
+	 * @param content
+	 *            The actual content for the file.
 	 */
 	public ResourceSetContentJob(IFile file, InputStream content) {
 		super(file.toString());

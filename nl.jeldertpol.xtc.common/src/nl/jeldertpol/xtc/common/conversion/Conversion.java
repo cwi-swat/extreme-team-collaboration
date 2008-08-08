@@ -25,7 +25,7 @@ public class Conversion {
 	 *            The object to convert.
 	 * @return The converted object, or <code>null</code> in case of an error.
 	 */
-	public static byte[] ObjectToByte(Object object) {
+	public static byte[] objectToByte(final Object object) {
 		try {
 			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 			ObjectOutputStream objectOutputStream = new ObjectOutputStream(
@@ -46,7 +46,7 @@ public class Conversion {
 	 * @return The converted array of bytes, or <code>null</code> in case of an
 	 *         error.
 	 */
-	public static Object ByteToObject(byte[] bytes) {
+	public static Object byteToObject(final byte[] bytes) {
 		try {
 			ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(
 					bytes);
@@ -65,7 +65,7 @@ public class Conversion {
 	/**
 	 * Converts an {@link InputStream} to an array of bytes.
 	 * 
-	 * Note that {@link #ObjectToByte(Object)} does not work for an
+	 * Note that {@link #objectToByte(Object)} does not work for an
 	 * {@link InputStream}, because it is not serializable.
 	 * 
 	 * @param inputStream
@@ -73,10 +73,10 @@ public class Conversion {
 	 * @return The converted {@link InputStream}, or <code>null</code> in case
 	 *         of an error.
 	 * 
-	 * @see #ByteToInputStream(byte[])
-	 * @see #ObjectToByte(Object)
+	 * @see #byteToInputStream(byte[])
+	 * @see #objectToByte(Object)
 	 */
-	public static byte[] InputStreamToByte(InputStream inputStream) {
+	public static byte[] inputStreamToByte(final InputStream inputStream) {
 		BufferedReader bufferedReader = new BufferedReader(
 				new InputStreamReader(inputStream));
 
@@ -87,37 +87,24 @@ public class Conversion {
 			while ((read = bufferedReader.read()) != -1) {
 				result.add(read);
 			}
-			return ObjectToByte(result);
+			return objectToByte(result);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
 		}
 	}
 
-	public static InputStream ByteToInputStream(byte[] listOfIntegers) {
-		List<Integer> integers = (List<Integer>) ByteToObject(listOfIntegers);
-		
+	public static InputStream byteToInputStream(final byte[] listOfIntegers) {
+		List<Integer> integers = (List<Integer>) byteToObject(listOfIntegers);
+
 		byte[] bytes = new byte[integers.size()];
 
 		for (int i = 0; i < integers.size(); i++) {
 			byte b = Byte.parseByte("" + integers.get(i));
 			bytes[i] = b;
 		}
-		
-		ByteArrayOutputStream o = new ByteArrayOutputStream(integers.size());
-		try {
-			o.write(bytes);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-		return bais;
-//		//.
-//		Inp
-//		
-//		BufferedOutputStream b = new BufferedOutputStream()
-		
-//		return null;
+
+		InputStream inputStream = new ByteArrayInputStream(bytes);
+		return inputStream;
 	}
 }

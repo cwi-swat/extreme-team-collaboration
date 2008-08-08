@@ -22,7 +22,7 @@ public class FakeStartAction implements IObjectActionDelegate {
 	 * 
 	 */
 	public FakeStartAction() {
-		Activator.session.addResourceChangeListener();
+		Activator.SESSION.addResourceChangeListener();
 		Activator.fakeStart = true;
 	}
 

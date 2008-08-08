@@ -7,10 +7,10 @@ public class ProjectAlreadyPresentException extends XtcException {
 
 	private static final long serialVersionUID = 1L;
 
-	private final static String message1 = "The project (";
-	private final static String message2 = ") is already present on the server. You cannot start a new session with this project.";
+	private static final String MESSAGE1 = "The project (";
+	private static final String MESSAGE2 = ") is already present on the server. You cannot start a new session with this project.";
 
-	public ProjectAlreadyPresentException(String project) {
-		super(message1 + project + message2);
+	public ProjectAlreadyPresentException(final String project) {
+		super(MESSAGE1 + project + MESSAGE2);
 	}
 }

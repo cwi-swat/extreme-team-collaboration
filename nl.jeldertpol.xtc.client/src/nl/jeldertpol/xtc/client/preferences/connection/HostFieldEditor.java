@@ -13,6 +13,8 @@ import org.eclipse.swt.widgets.Composite;
  */
 public class HostFieldEditor extends StringFieldEditor {
 
+	// TODO javadoc
+	
 	private final String errorMessage = "Invalid host";
 
 	/**

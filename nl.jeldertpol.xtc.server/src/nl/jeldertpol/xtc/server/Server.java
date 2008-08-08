@@ -20,12 +20,12 @@ import aterm.ATermLong;
  */
 public class Server extends AbstractJavaTool {
 
-	private ATermFactory factory = getFactory();
+	private final ATermFactory factory = getFactory();
 
 	/**
 	 * Holds the current projects.
 	 */
-	private ArrayList<Session> sessions = new ArrayList<Session>();
+	private List<Session> sessions = new ArrayList<Session>();
 
 	/**
 	 * Starting point for XTC Server. Can be called directly from the Toolbus
@@ -33,21 +33,23 @@ public class Server extends AbstractJavaTool {
 	 * {@link AbstractJavaTool#connect(String[])}).
 	 * 
 	 * @param args
-	 *            arguments to connect to the Toolbus.
+	 *            Arguments to connect to the Toolbus.
 	 * @throws Exception
+	 *             Thrown when something goes wrong during the parsing of the
+	 *             arguments or the establishing of the connection.
 	 */
-	public static void main(String[] args) throws Exception {
+	public static void main(final String[] args) throws Exception {
 		new Server().connect(args);
 	}
 
 	@Override
-	public void receiveAckEvent(ATerm term) {
+	public void receiveAckEvent(final ATerm term) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void receiveTerminate(ATerm term) {
+	public void receiveTerminate(final ATerm term) {
 		// TODO Auto-generated method stub
 
 	}
@@ -77,7 +79,7 @@ public class Server extends AbstractJavaTool {
 			simpleSessions.add(simpleSession);
 		}
 
-		byte[] blob = Conversion.ObjectToByte(simpleSessions);
+		byte[] blob = Conversion.objectToByte(simpleSessions);
 		ATermBlob termBlob = factory.makeBlob(blob);
 
 		ATerm response = factory.make("getSessions(<term>)", termBlob);
@@ -96,8 +98,8 @@ public class Server extends AbstractJavaTool {
 	 * @return An {@link ATerm} containing a {@link Boolean}, representing the
 	 *         success of this action.
 	 */
-	public ATerm startSession(String projectName, ATerm revisionTerm,
-			String nickname) {
+	public ATerm startSession(final String projectName,
+			final ATerm revisionTerm, final String nickname) {
 		boolean success = false;
 
 		// Convert ATerms to right ATerm
@@ -127,7 +129,7 @@ public class Server extends AbstractJavaTool {
 	 * @return An {@link ATerm} containing a {@link Boolean}, representing the
 	 *         success of this action.
 	 */
-	public ATerm joinSession(String projectName, String nickname) {
+	public ATerm joinSession(final String projectName, final String nickname) {
 		boolean success = false;
 
 		// Check if project exists
@@ -157,7 +159,7 @@ public class Server extends AbstractJavaTool {
 	 * @return An {@link ATerm} containing a {@link Boolean}, representing the
 	 *         success of this action.
 	 */
-	public ATerm leaveSession(String projectName, String nickname) {
+	public ATerm leaveSession(final String projectName, final String nickname) {
 		boolean success = false;
 
 		// Check if project exists
@@ -189,8 +191,9 @@ public class Server extends AbstractJavaTool {
 	 * @param text
 	 * @return
 	 */
-	public ATerm sendChange(String projectName, String filename, int length,
-			int offset, String text, String nickname) {
+	public ATerm sendChange(final String projectName, final String filename,
+			final int length, final int offset, final String text,
+			final String nickname) {
 		boolean success = false;
 
 		// TODO change bewaren
@@ -208,8 +211,8 @@ public class Server extends AbstractJavaTool {
 	 * @param nickname
 	 * @return
 	 */
-	public ATerm sendMove(String projectName, String from, String to,
-			String nickname) {
+	public ATerm sendMove(final String projectName, final String from,
+			final String to, final String nickname) {
 		boolean success = false;
 
 		// TODO move bewaren
@@ -218,14 +221,14 @@ public class Server extends AbstractJavaTool {
 		return sendMove;
 	}
 
-	public ATerm sendContent(String projectName, String filename,
-			ATerm content, String nickname) {
+	public ATerm sendContent(final String projectName, final String filename,
+			final ATerm content, final String nickname) {
 		// bug in Toolbus, only needed for handshake.
 		return null;
 	}
 
-	public ATerm sendContent(String projectName, String filename,
-			byte[] content, String nickname) {
+	public ATerm sendContent(final String projectName, final String filename,
+			final byte[] content, final String nickname) {
 		boolean success = false;
 
 		// TODO content bewaren
@@ -234,8 +237,8 @@ public class Server extends AbstractJavaTool {
 		return sendChange;
 	}
 
-	public ATerm sendAddedResource(String projectName, String resourcePath,
-			int type, String nickname) {
+	public ATerm sendAddedResource(final String projectName,
+			final String resourcePath, final int type, final String nickname) {
 		boolean success = false;
 
 		// TODO bewaren
@@ -245,8 +248,8 @@ public class Server extends AbstractJavaTool {
 		return sendAddedResource;
 	}
 
-	public ATerm sendRemovedResource(String projectName, String resourcePath,
-			String nickname) {
+	public ATerm sendRemovedResource(final String projectName,
+			final String resourcePath, final String nickname) {
 		boolean success = false;
 
 		// TODO bewaren
@@ -263,7 +266,7 @@ public class Server extends AbstractJavaTool {
 	 *            The identifier of the session.
 	 * @return The session, or <code>null</code> if it does not exist.
 	 */
-	private Session getSession(String projectName) {
+	private Session getSession(final String projectName) {
 		// Check if project exists
 		for (Session session : sessions) {
 			if (session.getProjectName().equals(projectName)) {
@@ -283,7 +286,8 @@ public class Server extends AbstractJavaTool {
 	 * @return <code>true</code> if nickname is available, <code>false</code>
 	 *         otherwise.
 	 */
-	private boolean nicknameAvailable(Session session, String nickname) {
+	private boolean nicknameAvailable(final Session session,
+			final String nickname) {
 		// Check if nickname is available
 		boolean available = true;
 		for (String client : session.getClients()) {

@@ -85,7 +85,8 @@ public class ShowProjects {
 				
 				MessageDialog.openError(null, "XTC Start/Join", e.getMessage());
 			} catch (UnversionedProjectException e) {
-				// Project is not under version control. Print notice and ignore.
+				// Project is not under version control. Print notice and
+				// ignore.
 				System.err.println(e.getMessage());
 			}
 		}

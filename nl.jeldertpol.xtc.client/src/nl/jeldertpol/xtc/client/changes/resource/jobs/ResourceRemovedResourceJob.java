@@ -13,17 +13,15 @@ import org.eclipse.core.runtime.Status;
  * 
  * @author Jeldert Pol
  */
-public class ResourceRemovedResourceJob extends ResourceJob {
+public class ResourceRemovedResourceJob extends HighPriorityJob {
 
 	private IResource resource;
 
 	/**
-	 * Move a resource to a new location.
+	 * Remove a resource.
 	 * 
 	 * @param resource
-	 *            The resource to move.
-	 * @param moveTo
-	 *            The new location of the resource.
+	 *            The resource to remove.
 	 */
 	public ResourceRemovedResourceJob(IResource resource) {
 		super(resource.toString());

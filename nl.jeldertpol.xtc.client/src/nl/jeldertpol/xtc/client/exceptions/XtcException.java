@@ -19,7 +19,7 @@ public abstract class XtcException extends Exception {
 	 * 
 	 * @see Exception#Exception(String)
 	 */
-	public XtcException(String message) {
+	public XtcException(final String message) {
 		super(message);
 	}
 

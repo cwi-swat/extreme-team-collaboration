@@ -22,9 +22,16 @@ import org.eclipse.ui.texteditor.ITextEditor;
  * @author Jeldert Pol
  */
 public class DocumentReplacer implements IJobChangeListener {
-	
-	IDocument document;
 
+	private IDocument document;
+
+	/**
+	 * TODO javadoc
+	 * @param resource
+	 * @param length
+	 * @param offset
+	 * @param text
+	 */
 	public void replace(IResource resource, int length, int offset, String text) {
 		System.out.println("wkhjlfjldksjf");
 
@@ -42,8 +49,9 @@ public class DocumentReplacer implements IJobChangeListener {
 					IEditorReference editorReference = editorReferences[k];
 					IEditorPart part = editorReference.getEditor(false);
 
-					if (!(part instanceof AbstractTextEditor))
+					if (!(part instanceof AbstractTextEditor)) {
 						return;
+					}
 					ITextEditor editor = (ITextEditor) part;
 
 					String filename = editor.getEditorInput().getToolTipText();
@@ -54,8 +62,8 @@ public class DocumentReplacer implements IJobChangeListener {
 
 						IDocumentProvider documentProvider = editor
 								.getDocumentProvider();
-						document = documentProvider
-								.getDocument(editor.getEditorInput());
+						document = documentProvider.getDocument(editor
+								.getEditorInput());
 
 						// int offset = doc.getLineOffset(doc.getNumberOfLines()
 						// -

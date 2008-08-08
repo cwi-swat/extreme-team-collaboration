@@ -31,7 +31,7 @@ public class DisconnectAction implements IObjectActionDelegate {
 	 */
 	@Override
 	public void run(IAction action) {
-		Activator.session.disconnect();
+		Activator.SESSION.disconnect();
 	}
 
 	/*

@@ -7,10 +7,10 @@ public class UnableToConnectException extends XtcException {
 
 	private static final long serialVersionUID = 1L;
 
-	private final static String message1 = "Connecting to the server failed:";
+	private static final String MESSAGE1 = "Connecting to the server failed:";
 
-	public UnableToConnectException(String cause) {
-		super(message1 + cause);
+	public UnableToConnectException(final String cause) {
+		super(MESSAGE1 + cause);
 	}
 
 }

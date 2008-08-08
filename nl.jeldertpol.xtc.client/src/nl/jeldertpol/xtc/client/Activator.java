@@ -19,7 +19,7 @@ public class Activator extends AbstractUIPlugin {
 	// The plug-in ID
 	public static final String PLUGIN_ID = "nl.jeldertpol.xtc.client";
 
-	public static final Session session = new Session();
+	public static final Session SESSION = new Session();
 
 	public static final DocumentListener documentListener = new DocumentListener();
 
@@ -51,7 +51,7 @@ public class Activator extends AbstractUIPlugin {
 	 * The constructor.
 	 */
 	public Activator() {
-
+		super();
 	}
 
 	/*
@@ -77,7 +77,7 @@ public class Activator extends AbstractUIPlugin {
 		ResourcesPlugin.getWorkspace().removeResourceChangeListener(
 				resourceChangeListener);
 
-		session.disconnect();
+		SESSION.disconnect();
 
 		plugin = null;
 		super.stop(context);

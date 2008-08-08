@@ -7,10 +7,10 @@ public class LeaveSessionException extends XtcException {
 
 	private static final long serialVersionUID = 1L;
 
-	private final static String message1 = "Leaving session with project (";
-	private final static String message2 = ") failed. Reason unknown.";
+	private static final String MESSAGE1 = "Leaving session with project (";
+	private static final String MESSAGE2 = ") failed. Reason unknown.";
 
-	public LeaveSessionException(String project) {
-		super(message1 + project + message2);
+	public LeaveSessionException(final String project) {
+		super(MESSAGE1 + project + MESSAGE2);
 	}
 }

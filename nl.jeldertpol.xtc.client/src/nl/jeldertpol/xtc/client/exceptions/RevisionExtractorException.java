@@ -7,7 +7,7 @@ public class RevisionExtractorException extends XtcException {
 
 	private static final long serialVersionUID = 1L;
 
-	public RevisionExtractorException(Exception e) {
-		super(e.getMessage());
+	public RevisionExtractorException(final Exception exception) {
+		super(exception.getMessage());
 	}
 }

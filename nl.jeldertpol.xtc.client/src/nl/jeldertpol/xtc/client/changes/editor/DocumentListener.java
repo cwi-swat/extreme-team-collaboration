@@ -15,7 +15,7 @@ import org.eclipse.jface.text.IDocumentListener;
  */
 public class DocumentListener implements IDocumentListener {
 	
-	IResource resource;
+	private IResource resource;
 
 	/*
 	 * (non-Javadoc)
@@ -42,7 +42,7 @@ public class DocumentListener implements IDocumentListener {
 		// Text inserted into the document.
 		String text = event.getText();
 
-		Activator.session.sendChange(project, file, length, offset, text);
+		Activator.SESSION.sendChange(project, file, length, offset, text);
 	}
 
 	/*

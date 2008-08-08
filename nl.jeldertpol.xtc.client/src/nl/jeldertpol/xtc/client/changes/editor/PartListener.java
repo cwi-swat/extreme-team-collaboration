@@ -101,7 +101,8 @@ public class PartListener implements IPartListener2 {
 		// Listen to another document than the current one.
 		if (!document.equals(currentDocument)) {
 			if (currentDocument != null) {
-				currentDocument.removeDocumentListener(Activator.documentListener);
+				currentDocument
+						.removeDocumentListener(Activator.documentListener);
 			}
 			currentDocument = document;
 			currentDocument.addDocumentListener(Activator.documentListener);

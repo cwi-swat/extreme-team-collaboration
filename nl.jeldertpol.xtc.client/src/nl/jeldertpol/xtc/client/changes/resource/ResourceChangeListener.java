@@ -20,13 +20,13 @@ public class ResourceChangeListener implements IResourceChangeListener {
 		// TODO ignore bin? (build map)
 
 		// TODO remove fakeStart before production
-		if (Activator.session.inSession() || Activator.fakeStart) {
+		if (Activator.SESSION.inSession() || Activator.fakeStart) {
 			assert (event.getType() == IResourceChangeEvent.POST_CHANGE);
 			
 			// Only listen to project in current session.
 			IResourceDelta delta = event.getDelta();
 			IResourceDelta projectDelta = delta.findMember(new Path(
-					Activator.session.getCurrentProject()));
+					Activator.SESSION.getCurrentProject()));
 
 			try {
 				projectDelta.accept(new ResourceDeltaVisitor());

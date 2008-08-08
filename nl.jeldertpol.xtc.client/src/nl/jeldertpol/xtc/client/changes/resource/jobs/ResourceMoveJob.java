@@ -14,7 +14,7 @@ import org.eclipse.core.runtime.Status;
  * 
  * @author Jeldert Pol
  */
-public class ResourceMoveJob extends ResourceJob {
+public class ResourceMoveJob extends HighPriorityJob {
 
 	private IResource resource;
 	private IPath moveTo;

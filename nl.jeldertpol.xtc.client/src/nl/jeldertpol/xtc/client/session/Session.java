@@ -60,7 +60,7 @@ public class Session {
 	private boolean inSession;
 
 	/**
-	 * Holds the project of the current session, or an empty String;
+	 * Holds the project of the current session, or an empty String.
 	 */
 	private String projectName;
 
@@ -98,6 +98,9 @@ public class Session {
 	 * This is private, because it needs only be called when there is no
 	 * connection. This is done automatically. Now the client does not need to
 	 * worry about having a connection or not.
+	 * 
+	 * @throws UnableToConnectException
+	 *             Connecting to the server failed.
 	 */
 	private void connect() throws UnableToConnectException {
 		Preferences preferences = Activator.getDefault().getPluginPreferences();
@@ -398,7 +401,7 @@ public class Session {
 	/**
 	 * Receive a change from the server / other clients.
 	 * 
-	 * @param projectName
+	 * @param remoteProjectName
 	 *            The name of the project the change originated from.
 	 * @param filePath
 	 *            The file the change originated from, path is relative to the

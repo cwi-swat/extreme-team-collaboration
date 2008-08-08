@@ -18,18 +18,19 @@ import org.eclipse.core.runtime.Status;
  * 
  * @author Jeldert Pol
  */
-public class ResourceAddedResourceJob extends ResourceJob {
+public class ResourceAddedResourceJob extends HighPriorityJob {
 
 	private IResource resource;
 	private int type;
 
 	/**
-	 * Move a resource to a new location.
+	 * Add a resource.
 	 * 
 	 * @param resource
-	 *            The resource to move.
-	 * @param moveTo
-	 *            The new location of the resource.
+	 *            The resource to add.
+	 * @param type The type of resource.
+	 * 
+	 * @see IResource#getType()
 	 */
 	public ResourceAddedResourceJob(IResource resource, int type) {
 		super(resource.toString());

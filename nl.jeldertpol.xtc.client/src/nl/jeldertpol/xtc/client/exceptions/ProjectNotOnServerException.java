@@ -7,10 +7,10 @@ public class ProjectNotOnServerException extends XtcException {
 
 	private static final long serialVersionUID = 1L;
 
-	private final static String message1 = "Could not join session. No session is assosiated with the project (";
-	private final static String message2 = ").";
+	private static final String MESSAGE1 = "Could not join session. No session is assosiated with the project (";
+	private static final String MESSAGE2 = ").";
 
-	public ProjectNotOnServerException(String project) {
-		super(message1 + project + message2);
+	public ProjectNotOnServerException(final String project) {
+		super(MESSAGE1 + project + MESSAGE2);
 	}
 }

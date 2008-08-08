@@ -7,7 +7,7 @@ import org.eclipse.core.runtime.jobs.Job;
  * 
  * @author Jeldert Pol
  */
-public abstract class ResourceJob extends Job {
+public abstract class HighPriorityJob extends Job {
 
 	/**
 	 * A {@link Job} with a high priority.
@@ -17,7 +17,7 @@ public abstract class ResourceJob extends Job {
 	 * 
 	 * @see Job#INTERACTIVE
 	 */
-	public ResourceJob(String name) {
+	public HighPriorityJob(String name) {
 		super(name);
 
 		setPriority(INTERACTIVE);

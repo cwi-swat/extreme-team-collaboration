@@ -23,7 +23,7 @@ public class StartSessionAction extends AbstractHandler {
 
 		if (project != null) {
 			try {
-				Activator.session.startJoinSession(project);
+				Activator.SESSION.startJoinSession(project);
 			} catch (XtcException e) {
 				e.printStackTrace();
 				MessageDialog.openError(null, "XTC Start/Join", e.getMessage());

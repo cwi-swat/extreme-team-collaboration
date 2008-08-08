@@ -17,9 +17,9 @@ public class SimpleSession implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private String projectName;
-	private Long revision;
-	private ArrayList<String> clients;
+	private final String projectName;
+	private final Long revision;
+	private List<String> clients;
 
 	/**
 	 * Create a new session.
@@ -32,7 +32,7 @@ public class SimpleSession implements Serializable {
 	 * @param revision
 	 *            The revision of the project.
 	 */
-	public SimpleSession(String projectName, Long revision) {
+	public SimpleSession(final String projectName, final Long revision) {
 		super();
 		this.projectName = projectName;
 		this.revision = revision;
@@ -50,7 +50,7 @@ public class SimpleSession implements Serializable {
 	 * @param nickname
 	 *            The client that started this session.
 	 */
-	public SimpleSession(String projectName, Long revision, String nickname) {
+	public SimpleSession(final String projectName, final Long revision, final String nickname) {
 		this(projectName, revision);
 
 		addClient(nickname);
@@ -89,7 +89,7 @@ public class SimpleSession implements Serializable {
 	 * @param nickname
 	 *            Nickname of the client.
 	 */
-	public void addClient(String nickname) {
+	public void addClient(final String nickname) {
 		clients.add(nickname);
 	}
 
@@ -99,7 +99,7 @@ public class SimpleSession implements Serializable {
 	 * @param nickname
 	 *            Nickname of the client.
 	 */
-	public void removeClient(String nickname) {
+	public void removeClient(final String nickname) {
 		clients.remove(nickname);
 	}
 

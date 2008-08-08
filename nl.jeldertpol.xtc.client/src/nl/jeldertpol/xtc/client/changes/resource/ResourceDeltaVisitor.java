@@ -60,7 +60,7 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 				IProject project = resource.getProject();
 				IPath resourcePath = resource.getProjectRelativePath();
 
-				Activator.session.sendAddedResource(project, resourcePath,
+				Activator.SESSION.sendAddedResource(project, resourcePath,
 						resource.getType());
 
 				// Nothing left of interest in this delta.
@@ -86,7 +86,7 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 				IProject project = resource.getProject();
 				IPath resourcePath = resource.getProjectRelativePath();
 
-				Activator.session.sendRemovedResource(project, resourcePath);
+				Activator.SESSION.sendRemovedResource(project, resourcePath);
 
 				// Nothing left of interest in this delta.
 				ofInterest = false;
@@ -127,7 +127,7 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 
 				IPath filePath = file.getProjectRelativePath();
 
-				Activator.session.sendContent(project, filePath, content);
+				Activator.SESSION.sendContent(project, filePath, content);
 
 				visitChildren = false;
 			}
@@ -147,9 +147,9 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 			// is now open, then it was previously closed, and vice-versa.
 			if ((flags & IResourceDelta.OPEN) != 0) {
 				System.out.println("OPEN");
-				
+
 				try {
-					Activator.session.leaveSession();
+					Activator.SESSION.leaveSession();
 				} catch (LeaveSessionException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -165,7 +165,7 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 				System.out.println("MOVED_TO: " + moveFrom.toString() + " --> "
 						+ moveTo.toString());
 
-				Activator.session.sendMove(project, moveFrom, moveTo);
+				Activator.SESSION.sendMove(project, moveFrom, moveTo);
 
 				// Children will be moved by Eclipse, no need to visit them.
 				visitChildren = false;

@@ -90,7 +90,7 @@ public class Server extends AbstractJavaTool {
 
 		ATermBlob blob = (ATermBlob) reply.getArgument(0);
 		List<SimpleSession> sessions = (List<SimpleSession>) Conversion
-				.ByteToObject(blob.getBlobData());
+				.byteToObject(blob.getBlobData());
 
 		return sessions;
 	}
@@ -156,8 +156,7 @@ public class Server extends AbstractJavaTool {
 	 *            The name of the project, to identify the session.
 	 * @param nickname
 	 *            The nickname of the client.
-	 * @return <code>true</code> is everything went ok, <code>false</code>
-	 *         otherwise.
+	 * 
 	 * @throws LeaveSessionException
 	 *             Something failed when leaving the session.
 	 */
@@ -189,6 +188,8 @@ public class Server extends AbstractJavaTool {
 	 *            The document offset.
 	 * @param text
 	 *            Text inserted into the document.
+	 * @param nickname
+	 *            The nickname of the client the move originated from.
 	 * 
 	 * @see IPath#toPortableString()
 	 */
@@ -208,7 +209,7 @@ public class Server extends AbstractJavaTool {
 	}
 
 	/**
-	 * Receive a change from the server / other clients
+	 * Receive a change from the server / other clients.
 	 * 
 	 * @param projectName
 	 *            The name of the project the change originated from.
@@ -226,7 +227,7 @@ public class Server extends AbstractJavaTool {
 	 */
 	public void receiveChange(String projectName, String filePath, int length,
 			int offset, String text, String nickname) {
-		Activator.session.receiveChange(projectName, filePath, length, offset,
+		Activator.SESSION.receiveChange(projectName, filePath, length, offset,
 				text, nickname);
 	}
 
@@ -239,6 +240,8 @@ public class Server extends AbstractJavaTool {
 	 *            Full path of original resource location, must be portable.
 	 * @param to
 	 *            Full path of new resource location, must be portable.
+	 * @param nickname
+	 *            The nickname of the client the move originated from.
 	 * 
 	 * @see IPath#toPortableString()
 	 */
@@ -270,7 +273,7 @@ public class Server extends AbstractJavaTool {
 	 */
 	public void receiveMove(String projectName, String from, String to,
 			String nickname) {
-		Activator.session.receiveMove(projectName, from, to, nickname);
+		Activator.SESSION.receiveMove(projectName, from, to, nickname);
 	}
 
 	/**
@@ -288,7 +291,7 @@ public class Server extends AbstractJavaTool {
 	 */
 	public void sendContent(String projectName, String filePath,
 			InputStream content, String nickname) {
-		byte[] blob = Conversion.InputStreamToByte(content);
+		byte[] blob = Conversion.inputStreamToByte(content);
 
 		try {
 			content.close();
@@ -352,9 +355,9 @@ public class Server extends AbstractJavaTool {
 	public void receiveContent(String projectName, String filePath,
 			byte[] contentTerm, String nickname) {
 		// TODO bug in toolbus, this method will be called.
-		InputStream content = Conversion.ByteToInputStream(contentTerm);
+		InputStream content = Conversion.byteToInputStream(contentTerm);
 
-		Activator.session.receiveContent(projectName, filePath, content,
+		Activator.SESSION.receiveContent(projectName, filePath, content,
 				nickname);
 	}
 
@@ -405,7 +408,7 @@ public class Server extends AbstractJavaTool {
 	 */
 	public void receiveAddedResource(String projectName, String resourcePath,
 			int type, String nickname) {
-		Activator.session.receiveAddedResource(projectName, resourcePath, type,
+		Activator.SESSION.receiveAddedResource(projectName, resourcePath, type,
 				nickname);
 	}
 
@@ -449,7 +452,7 @@ public class Server extends AbstractJavaTool {
 	 */
 	public void receiveRemovedResource(String projectName, String resourcePath,
 			String nickname) {
-		Activator.session.receiveRemovedResource(projectName, resourcePath,
+		Activator.SESSION.receiveRemovedResource(projectName, resourcePath,
 				nickname);
 	}
 

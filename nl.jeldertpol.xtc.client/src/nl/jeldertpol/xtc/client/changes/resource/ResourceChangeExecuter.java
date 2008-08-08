@@ -57,7 +57,7 @@ public class ResourceChangeExecuter implements IJobChangeListener {
 	@Override
 	public void aboutToRun(IJobChangeEvent event) {
 		// Temporarily remove listener, prevents round-tripping
-		Activator.session.removeResourceChangeListener();
+		Activator.SESSION.removeResourceChangeListener();
 	}
 
 	/*
@@ -82,7 +82,7 @@ public class ResourceChangeExecuter implements IJobChangeListener {
 	@Override
 	public void done(IJobChangeEvent event) {
 		// Add listener again
-		Activator.session.addResourceChangeListener();
+		Activator.SESSION.addResourceChangeListener();
 	}
 
 	/*

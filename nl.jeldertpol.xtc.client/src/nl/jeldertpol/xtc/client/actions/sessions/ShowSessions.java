@@ -36,7 +36,7 @@ public class ShowSessions {
 		String projectName = null;
 
 		try {
-			List<SimpleSession> sessions = Activator.session.getSessions();
+			List<SimpleSession> sessions = Activator.SESSION.getSessions();
 
 			// Tijdelijk vullen
 			SimpleSession session1 = new SimpleSession("testProject", 6L,

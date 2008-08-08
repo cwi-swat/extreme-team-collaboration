@@ -17,15 +17,16 @@ import org.eclipse.ui.progress.UIJob;
  */
 public class DocumentReplacerJob extends UIJob {
 
-	private IDocument document;
+	private final IDocument document;
 
-	private int length;
+	private final int length;
 
-	private int offset;
+	private final int offset;
 
-	private String text;
+	private final String text;
 
 	/**
+	 * TODO javadoc
 	 * Constructor.
 	 * 
 	 * @param document
@@ -57,11 +58,13 @@ public class DocumentReplacerJob extends UIJob {
 		
 		try {
 			document.replace(offset, length, text);
-			status = new Status(Status.OK, Activator.PLUGIN_ID, "Change applied successfully.");
+			status = new Status(Status.OK, Activator.PLUGIN_ID,
+					"Change applied successfully.");
 		} catch (BadLocationException e) {
 			e.printStackTrace();
 
-			status = new Status(Status.ERROR, Activator.PLUGIN_ID, "Change could not be applied.");
+			status = new Status(Status.ERROR, Activator.PLUGIN_ID,
+					"Change could not be applied.");
 			// TODO revert, and re-apply all changes?
 		}
 
