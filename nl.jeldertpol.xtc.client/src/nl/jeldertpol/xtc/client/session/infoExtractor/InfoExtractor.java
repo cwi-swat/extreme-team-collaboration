@@ -3,7 +3,8 @@ package nl.jeldertpol.xtc.client.session.infoExtractor;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.jeldertpol.xtc.client.exceptions.UnrevisionedProjectException;
+import nl.jeldertpol.xtc.client.exceptions.RevisionExtractorException;
+import nl.jeldertpol.xtc.client.exceptions.UnversionedProjectException;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -22,9 +23,9 @@ public abstract class InfoExtractor {
 
 	private List<IResource> getResources(IResource resource) {
 		List<IResource> resources = new ArrayList<IResource>();
-		
+
 		resources.add(resource);
-		
+
 		if (resource instanceof IFolder) {
 			IFolder folder = (IFolder) resource;
 			try {
@@ -46,11 +47,24 @@ public abstract class InfoExtractor {
 				e.printStackTrace();
 			}
 		}
-		
+
 		return resources;
 	}
 
 	public abstract List<IResource> modifiedFiles(IProject project);
 
-	public abstract Long getRevision(IProject project) throws UnrevisionedProjectException;
+	/**
+	 * Get the revision of a project.
+	 * 
+	 * @param project
+	 *            The project to get the revision from.
+	 * @return The revision of the project or <code>null</code>.
+	 * 
+	 * @throws RevisionExtractorException
+	 *             The underlying version control system throws an error.
+	 * @throws UnversionedProjectException
+	 *             Thrown when the project is not under version control.
+	 */
+	public abstract Long getRevision(IProject project)
+			throws RevisionExtractorException, UnversionedProjectException;
 }

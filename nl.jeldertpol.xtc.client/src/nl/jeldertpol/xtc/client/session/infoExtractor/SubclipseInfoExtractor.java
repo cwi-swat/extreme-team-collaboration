@@ -3,7 +3,8 @@ package nl.jeldertpol.xtc.client.session.infoExtractor;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.jeldertpol.xtc.client.exceptions.UnrevisionedProjectException;
+import nl.jeldertpol.xtc.client.exceptions.RevisionExtractorException;
+import nl.jeldertpol.xtc.client.exceptions.UnversionedProjectException;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -87,15 +88,11 @@ public class SubclipseInfoExtractor extends InfoExtractor {
 		return modifiedFiles;
 	}
 
-	/**
-	 * Get the revision of a project, or null.
-	 * 
-	 * @param project
-	 *            the project to get the revision from.
-	 * @return the revision of the project or null.
+	/* (non-Javadoc)
+	 * @see nl.jeldertpol.xtc.client.session.infoExtractor.InfoExtractor#getRevision(org.eclipse.core.resources.IProject)
 	 */
 	@Override
-	public Long getRevision(IProject project) throws UnrevisionedProjectException {
+	public Long getRevision(IProject project) throws UnversionedProjectException, RevisionExtractorException {
 		ISVNLocalResource svnResource = SVNWorkspaceRoot
 				.getSVNResourceFor(project);
 		Long number = null;
@@ -104,11 +101,12 @@ public class SubclipseInfoExtractor extends InfoExtractor {
 			SVNRevision revision = svnResource.getRevision();
 			number = new Long(revision.toString());
 		} catch (SVNException e) {
-			e.printStackTrace();
-			throw new UnrevisionedProjectException(project.getName());
+//			e.printStackTrace();
+			throw new RevisionExtractorException(e);
 		} catch (NullPointerException e) {
-			e.printStackTrace();
-			throw new UnrevisionedProjectException(project.getName());
+//			e.printStackTrace();
+			// Not a Subversion project
+			throw new UnversionedProjectException(project.getName());
 		}
 
 		return number;

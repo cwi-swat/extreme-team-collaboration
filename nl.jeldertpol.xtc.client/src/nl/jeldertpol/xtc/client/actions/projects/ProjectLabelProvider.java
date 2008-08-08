@@ -1,7 +1,8 @@
 package nl.jeldertpol.xtc.client.actions.projects;
 
 import nl.jeldertpol.xtc.client.Activator;
-import nl.jeldertpol.xtc.client.exceptions.UnrevisionedProjectException;
+import nl.jeldertpol.xtc.client.exceptions.RevisionExtractorException;
+import nl.jeldertpol.xtc.client.exceptions.UnversionedProjectException;
 import nl.jeldertpol.xtc.client.session.infoExtractor.InfoExtractor;
 import nl.jeldertpol.xtc.client.session.infoExtractor.SubclipseInfoExtractor;
 import nl.jeldertpol.xtc.common.session.SimpleSession;
@@ -54,7 +55,10 @@ public class ProjectLabelProvider implements ILabelProvider {
 			try {
 				Long revision = infoExtractor.getRevision(project);
 				text += " (revision " + revision + ")";
-			} catch (UnrevisionedProjectException e) {
+			} catch (UnversionedProjectException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (RevisionExtractorException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}

@@ -14,8 +14,9 @@ import nl.jeldertpol.xtc.client.exceptions.NicknameAlreadyTakenException;
 import nl.jeldertpol.xtc.client.exceptions.ProjectAlreadyPresentException;
 import nl.jeldertpol.xtc.client.exceptions.ProjectModifiedException;
 import nl.jeldertpol.xtc.client.exceptions.ProjectNotOnServerException;
+import nl.jeldertpol.xtc.client.exceptions.RevisionExtractorException;
 import nl.jeldertpol.xtc.client.exceptions.UnableToConnectException;
-import nl.jeldertpol.xtc.client.exceptions.UnrevisionedProjectException;
+import nl.jeldertpol.xtc.client.exceptions.UnversionedProjectException;
 import nl.jeldertpol.xtc.client.exceptions.WrongRevisionException;
 import nl.jeldertpol.xtc.client.preferences.connection.PreferenceConstants;
 import nl.jeldertpol.xtc.client.session.infoExtractor.InfoExtractor;
@@ -149,7 +150,9 @@ public class Session {
 	 *             Client is already in a session.
 	 * @throws ProjectModifiedException
 	 *             The project has local modifications.
-	 * @throws UnrevisionedProjectException
+	 * @throws RevisionExtractorException
+	 *             The underlying version control system throws an error.
+	 * @throws UnversionedProjectException
 	 *             The project is not under version control.
 	 * @throws ProjectAlreadyPresentException
 	 *             The project is already present on the server.
@@ -160,14 +163,16 @@ public class Session {
 	 *             The nickname is already present in the session.
 	 * @throws ProjectNotOnServerException
 	 *             The project is not on the server. Cannot join a session.
+	 * @throws
 	 * @see Session#startSession(IProject)
 	 * @see Session#joinSession(IProject)
 	 */
 	public void startJoinSession(IProject project)
 			throws UnableToConnectException, AlreadyInSessionException,
-			ProjectModifiedException, UnrevisionedProjectException,
-			WrongRevisionException, NicknameAlreadyTakenException,
-			ProjectAlreadyPresentException, ProjectNotOnServerException {
+			ProjectModifiedException, RevisionExtractorException,
+			UnversionedProjectException, WrongRevisionException,
+			NicknameAlreadyTakenException, ProjectAlreadyPresentException,
+			ProjectNotOnServerException {
 		List<SimpleSession> sessions = getSessions();
 		String projectName = project.getName();
 
@@ -197,14 +202,17 @@ public class Session {
 	 *             Client is already in a session.
 	 * @throws ProjectModifiedException
 	 *             The project has local modifications.
-	 * @throws UnrevisionedProjectException
+	 * @throws RevisionExtractorException
+	 *             The underlying version control system throws an error.
+	 * @throws UnversionedProjectException
 	 *             The project is not under version control.
 	 * @throws ProjectAlreadyPresentException
 	 *             The project is already present on the server.
 	 */
 	public void startSession(IProject project) throws UnableToConnectException,
 			AlreadyInSessionException, ProjectModifiedException,
-			UnrevisionedProjectException, ProjectAlreadyPresentException {
+			RevisionExtractorException, UnversionedProjectException,
+			ProjectAlreadyPresentException {
 		if (!connected) {
 			connect();
 		}
@@ -245,7 +253,9 @@ public class Session {
 	 *             Client is already in a session.
 	 * @throws ProjectModifiedException
 	 *             The project has local modifications.
-	 * @throws UnrevisionedProjectException
+	 * @throws RevisionExtractorException
+	 *             The underlying version control system throws an error.
+	 * @throws UnversionedProjectException
 	 *             The project is not under version control.
 	 * @throws WrongRevisionException
 	 *             The revision of the project does not match the revision of
@@ -254,11 +264,13 @@ public class Session {
 	 *             The nickname is already present in the session.
 	 * @throws ProjectNotOnServerException
 	 *             The project is not on the server. Cannot join a session.
+	 * @throws RevisionExtractorException
 	 */
 	public void joinSession(IProject project) throws UnableToConnectException,
 			AlreadyInSessionException, ProjectModifiedException,
-			UnrevisionedProjectException, WrongRevisionException,
-			NicknameAlreadyTakenException, ProjectNotOnServerException {
+			RevisionExtractorException, UnversionedProjectException,
+			WrongRevisionException, NicknameAlreadyTakenException,
+			ProjectNotOnServerException {
 		if (!connected) {
 			connect();
 		}
@@ -551,7 +563,7 @@ public class Session {
 			resourceChangeExecuter.addedResource(resource, type);
 		}
 	}
-	
+
 	/**
 	 * Send an removed resource to the server.
 	 * 
@@ -616,7 +628,7 @@ public class Session {
 	 * @see InfoExtractor#getRevision(IProject)
 	 */
 	private Long getRevision(IProject project)
-			throws UnrevisionedProjectException {
+			throws RevisionExtractorException, UnversionedProjectException {
 		return infoExtractor.getRevision(project);
 	}
 

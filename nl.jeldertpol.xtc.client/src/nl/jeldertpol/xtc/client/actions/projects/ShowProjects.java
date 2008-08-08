@@ -3,12 +3,14 @@ package nl.jeldertpol.xtc.client.actions.projects;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.jeldertpol.xtc.client.exceptions.UnrevisionedProjectException;
+import nl.jeldertpol.xtc.client.exceptions.RevisionExtractorException;
+import nl.jeldertpol.xtc.client.exceptions.UnversionedProjectException;
 import nl.jeldertpol.xtc.client.session.infoExtractor.InfoExtractor;
 import nl.jeldertpol.xtc.client.session.infoExtractor.SubclipseInfoExtractor;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
@@ -42,8 +44,8 @@ public class ShowProjects {
 
 		ElementListSelectionDialog projectsDialog = new ElementListSelectionDialog(
 				parent, new ProjectLabelProvider());
-		IProject[] revisionedProjects = revisionedProjects(projects);
-		projectsDialog.setElements(revisionedProjects);
+		IProject[] versionedProjects = versionControlledProjects(projects);
+		projectsDialog.setElements(versionedProjects);
 
 		projectsDialog.setTitle("Projects");
 		projectsDialog.setMessage(message);
@@ -63,28 +65,33 @@ public class ShowProjects {
 	}
 
 	/**
-	 * Get only revisioned projects from a list of projects.
+	 * Get only projects under version control from a list of projects.
 	 * 
 	 * @param projects
 	 *            The projects.
-	 * @return The revisioned projects.
+	 * @return The projects under version control.
 	 */
-	private IProject[] revisionedProjects(IProject[] projects) {
-		List<IProject> revisionedList = new ArrayList<IProject>();
+	private IProject[] versionControlledProjects(IProject[] projects) {
+		List<IProject> versionedProjects = new ArrayList<IProject>();
 
 		InfoExtractor infoExtractor = new SubclipseInfoExtractor();
 
 		for (int i = 0; i < projects.length; i++) {
 			try {
 				infoExtractor.getRevision(projects[i]);
-				revisionedList.add(projects[i]);
-			} catch (UnrevisionedProjectException e) {
-				// Project is unrevisioned. Do nothing.
+				versionedProjects.add(projects[i]);
+			} catch (RevisionExtractorException e) {
+				e.printStackTrace();
+				
+				MessageDialog.openError(null, "XTC Start/Join", e.getMessage());
+			} catch (UnversionedProjectException e) {
+				// Project is not under version control. Print notice and ignore.
+				System.err.println(e.getMessage());
 			}
 		}
 
-		IProject[] revisioned = new IProject[revisionedList.size()];
-		return revisionedList.toArray(revisioned);
+		IProject[] versioned = new IProject[versionedProjects.size()];
+		return versionedProjects.toArray(versioned);
 	}
 
 }
