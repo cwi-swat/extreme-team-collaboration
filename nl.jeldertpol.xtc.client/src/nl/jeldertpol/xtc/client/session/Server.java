@@ -1,5 +1,6 @@
 package nl.jeldertpol.xtc.client.session;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -289,7 +290,12 @@ public class Server extends AbstractJavaTool {
 			InputStream content, String nickname) {
 		byte[] blob = Conversion.InputStreamToByte(content);
 
-		// TODO close inputstream
+		try {
+			content.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		ATermBlob termBlob = factory.makeBlob(blob);
 

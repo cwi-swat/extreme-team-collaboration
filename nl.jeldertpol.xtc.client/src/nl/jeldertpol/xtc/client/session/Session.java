@@ -358,6 +358,7 @@ public class Session {
 	 * Leave the currently joined session. Does nothing when not in a session.
 	 * 
 	 * @throws LeaveSessionException
+	 *             Something failed when leaving the session.
 	 */
 	public void leaveSession() throws LeaveSessionException {
 		if (inSession) {

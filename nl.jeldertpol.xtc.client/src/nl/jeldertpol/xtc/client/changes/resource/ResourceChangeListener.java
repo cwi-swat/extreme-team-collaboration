@@ -30,6 +30,8 @@ public class ResourceChangeListener implements IResourceChangeListener {
 
 			try {
 				projectDelta.accept(new ResourceDeltaVisitor());
+			} catch (NullPointerException e) {
+				// Resource changed for a project other that the project in the session. Ignoring.
 			} catch (CoreException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

@@ -3,6 +3,7 @@ package nl.jeldertpol.xtc.client.changes.resource;
 import java.io.InputStream;
 
 import nl.jeldertpol.xtc.client.Activator;
+import nl.jeldertpol.xtc.client.exceptions.LeaveSessionException;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -38,6 +39,7 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 
 		switch (delta.getKind()) {
 		case IResourceDelta.NO_CHANGE:
+			// Obvious, this is not of interest.
 			ofInterest = false;
 			break;
 		case IResourceDelta.ADDED:
@@ -47,6 +49,7 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 			if ((flags & IResourceDelta.MOVED_FROM) != 0) {
 				// See, it is the result of a move.
 				System.out.println("No, added resource is a move...");
+
 				// Of interest, because it is a move.
 				ofInterest = true;
 			} else {
@@ -72,6 +75,7 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 			if ((flags & IResourceDelta.MOVED_TO) != 0) {
 				// See, it is the result of a remove.
 				System.out.println("No, removed resource is a move...");
+
 				// Of interest, because it is a move.
 				ofInterest = true;
 			} else {
@@ -83,7 +87,6 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 				IPath resourcePath = resource.getProjectRelativePath();
 
 				Activator.session.sendRemovedResource(project, resourcePath);
-				// Activator.session.addedResource(project, resource);
 
 				// Nothing left of interest in this delta.
 				ofInterest = false;
@@ -92,6 +95,7 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 			ofInterest = true;
 			break;
 		case IResourceDelta.CHANGED:
+			// Content of resource, or one of its children changed.
 			ofInterest = true;
 			break;
 		case IResourceDelta.ADDED_PHANTOM:
@@ -143,7 +147,13 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 			// is now open, then it was previously closed, and vice-versa.
 			if ((flags & IResourceDelta.OPEN) != 0) {
 				System.out.println("OPEN");
-				// TODO when project closed, leave the session
+				
+				try {
+					Activator.session.leaveSession();
+				} catch (LeaveSessionException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			// The resource was moved to another location. The location it
 			// was moved to is indicated by IResourceDelta.getMovedToPath.
@@ -171,6 +181,11 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 			// a file then it is now a folder, and vice-versa.
 			if ((flags & IResourceDelta.TYPE) != 0) {
 				System.out.println("TYPE");
+				// Will this ever happen?
+				// Ignoring for now.
+				System.out.println("TYPE changed!!! > "
+						+ resource.getFullPath().toPortableString()
+						+ ": is now of type " + resource.getType());
 			}
 			// The resource's synchronization information has changed. Sync
 			// info is used to determine if a resource is in sync with some
@@ -178,6 +193,8 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 			// tools. See the API interface ISynchronizer for more details.
 			if ((flags & IResourceDelta.SYNC) != 0) {
 				System.out.println("SYNC");
+				// A sync should detect a content change. Therefore ignoring
+				// this one.
 			}
 			// The resource's markers have changed. Markers are annotations
 			// to resources such as breakpoints, bookmarks, to-do items,
@@ -185,22 +202,19 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 			// find out exactly which markers have changed.
 			if ((flags & IResourceDelta.MARKERS) != 0) {
 				System.out.println("MARKERS");
+				// Markers are not part of the file itself, therefore not
+				// synchronizing.
 			}
 			// The resource has been replaced by a different resource at the
 			// same location (i.e., the resource has been deleted and then
 			// re-added).
 			if ((flags & IResourceDelta.REPLACED) != 0) {
 				System.out.println("REPLACED");
+				// When does this happen?
 			}
 
 		}
 
-		// // only interested in content changes
-		// if ((delta.getFlags() & IResourceDelta.CONTENT) == 0)
-		// return true;
-		// IResource resource = delta.getResource();
-
-		// TODO Auto-generated method stub
 		return visitChildren;
 	}
 }
