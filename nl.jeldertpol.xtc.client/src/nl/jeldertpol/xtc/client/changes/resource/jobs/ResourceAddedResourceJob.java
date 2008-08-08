@@ -1,5 +1,6 @@
 package nl.jeldertpol.xtc.client.changes.resource.jobs;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 import nl.jeldertpol.xtc.client.Activator;
@@ -50,14 +51,13 @@ public class ResourceAddedResourceJob extends ResourceJob {
 		try {
 			if (type == IResource.FILE) {
 				IFile file = (IFile) resource;
-				InputStream source = null;
+				// An empty inputstream. Needed in order to create the file
+				// locally.
+				InputStream source = new ByteArrayInputStream(new byte[0]);
 				boolean force = false;
 
 				// Resource is not local...
 				file.create(source, force, monitor);
-				
-				boolean local = true;
-				file.setLocal(local, IFile.DEPTH_ZERO, monitor);
 			} else if (type == IResource.FOLDER) {
 				IFolder folder = (IFolder) resource;
 				boolean force = false;
