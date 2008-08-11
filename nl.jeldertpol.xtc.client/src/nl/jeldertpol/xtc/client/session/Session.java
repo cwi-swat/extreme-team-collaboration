@@ -1,6 +1,6 @@
 package nl.jeldertpol.xtc.client.session;
 
-import java.io.InputStream;
+import java.io.File;
 import java.util.List;
 
 import nl.jeldertpol.xtc.client.Activator;
@@ -21,6 +21,7 @@ import nl.jeldertpol.xtc.client.exceptions.WrongRevisionException;
 import nl.jeldertpol.xtc.client.preferences.connection.PreferenceConstants;
 import nl.jeldertpol.xtc.client.session.infoExtractor.InfoExtractor;
 import nl.jeldertpol.xtc.client.session.infoExtractor.SubclipseInfoExtractor;
+import nl.jeldertpol.xtc.common.conversion.Conversion;
 import nl.jeldertpol.xtc.common.session.SimpleSession;
 
 import org.eclipse.core.resources.IFile;
@@ -480,13 +481,28 @@ public class Session {
 	 * @param content
 	 *            The actual content. Will be closed after this method finishes.
 	 */
-	public void sendContent(IProject project, IPath filePath,
-			InputStream content) {
+	public void sendContent(IProject project, IPath filePath
+			) {
 		if (shouldSend(project)) {
-			String file = filePath.toPortableString();
+			String osString = filePath.toOSString();
+			File file = new File(osString);
 
-			server.sendContent(projectName, file, content, nickname);
+			byte[] bytes = Conversion.FileToByte(file);
+			
+//			List<InputStream> list = new ArrayList<InputStream>();
+//			list.add(content);
+//			byte[] bytes = Conversion.objectToByte(list);
+//			byte[] bytes = Conversion.inputStreamToByte(content);
+			
+			String portable = filePath.toPortableString();
+			
+			server.sendContent(projectName, portable, bytes, nickname);
 		}
+	}
+	
+
+	public void sendContent(IProject project, IFile file) {
+		
 	}
 
 	/**
@@ -503,18 +519,26 @@ public class Session {
 	 *            The nickname of the client the content originated from.
 	 */
 	public void receiveContent(String remoteProjectName, String filePath,
-			InputStream content, String nickname) {
-		if (shouldReceive(remoteProjectName, nickname)) {
+			byte[] content, String nickname) {
+//		if (shouldReceive(remoteProjectName, nickname)) {
 			System.out.println("New content arrived!");
 
 			IProject project = ResourcesPlugin.getWorkspace().getRoot()
 					.getProject(projectName);
 			IResource resource = project.findMember(filePath);
 
-			IFile file = (IFile) resource;
-
-			resourceChangeExecuter.setContent(file, content);
-		}
+			IPath path = resource.getProjectRelativePath();
+			String osString = path.toOSString();
+			// TODO remove
+			osString += "123";
+			
+			File file = new File(osString);
+			Conversion.byteToFile(content, file);
+			
+//			IFile file = (IFile) resource;
+//
+//			resourceChangeExecuter.setContent(file, content);
+//		}
 	}
 
 	/**

@@ -290,17 +290,8 @@ public class Server extends AbstractJavaTool {
 	 *            The nickname of the client the content originated from.
 	 */
 	public void sendContent(String projectName, String filePath,
-			InputStream content, String nickname) {
-		byte[] blob = Conversion.inputStreamToByte(content);
-
-		try {
-			content.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		ATermBlob termBlob = factory.makeBlob(blob);
+			byte[] content, String nickname) {
+		ATermBlob termBlob = factory.makeBlob(content);
 
 		ATerm sendContent = factory.make(
 				"sendContent(<str>, <str>, <term>, <str>))", projectName,
@@ -353,9 +344,9 @@ public class Server extends AbstractJavaTool {
 	 *            The nickname of the client the content originated from.
 	 */
 	public void receiveContent(String projectName, String filePath,
-			byte[] contentTerm, String nickname) {
+			byte[] content, String nickname) {
 		// TODO bug in toolbus, this method will be called.
-		InputStream content = Conversion.byteToInputStream(contentTerm);
+//		InputStream content = Conversion.byteToInputStream(contentTerm);
 
 		Activator.SESSION.receiveContent(projectName, filePath, content,
 				nickname);

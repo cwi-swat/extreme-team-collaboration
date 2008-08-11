@@ -1,9 +1,11 @@
 package nl.jeldertpol.xtc.client.changes.resource;
 
+import java.io.File;
 import java.io.InputStream;
 
 import nl.jeldertpol.xtc.client.Activator;
 import nl.jeldertpol.xtc.client.exceptions.LeaveSessionException;
+import nl.jeldertpol.xtc.common.conversion.Conversion;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -64,7 +66,8 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 						resource.getType());
 
 				// Nothing left of interest in this delta.
-				ofInterest = false;
+				// Content of resource needs to be send.
+				ofInterest = true;
 			}
 
 			break;
@@ -123,11 +126,12 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 				IProject project = resource.getProject();
 
 				IFile file = (IFile) resource;
+				
 				InputStream content = file.getContents();
 
 				IPath filePath = file.getProjectRelativePath();
-
-				Activator.SESSION.sendContent(project, filePath, content);
+				
+				Activator.SESSION.sendContent(project, filePath);
 
 				visitChildren = false;
 			}
@@ -193,6 +197,27 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 			// tools. See the API interface ISynchronizer for more details.
 			if ((flags & IResourceDelta.SYNC) != 0) {
 				System.out.println("SYNC");
+				// TODO
+				int kind = delta.getKind();
+				if (kind == IResourceDelta.CHANGED) {
+					// Sending content
+//					Object bytes = Conversion.objectToByte(resource);
+					
+//					Activator.SESSION.sendContent(project, file);
+					
+					
+					IProject project = resource.getProject();
+
+					IFile file = (IFile) resource;
+					
+					InputStream content = file.getContents();
+					IPath filePath = file.getProjectRelativePath();
+
+					Activator.SESSION.sendContent(project, filePath);
+
+					visitChildren = false;
+					
+				}
 				// A sync should detect a content change. Therefore ignoring
 				// this one.
 			}

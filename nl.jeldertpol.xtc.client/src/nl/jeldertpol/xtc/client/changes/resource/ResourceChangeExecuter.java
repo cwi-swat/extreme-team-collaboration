@@ -27,7 +27,7 @@ public class ResourceChangeExecuter implements IJobChangeListener {
 		job.schedule();
 	}
 
-	public void setContent(IFile file, InputStream content) {
+	public void setContent(IFile file, byte[] content) {
 		ResourceSetContentJob job = new ResourceSetContentJob(file, content);
 		job.addJobChangeListener(this);
 		job.schedule();
