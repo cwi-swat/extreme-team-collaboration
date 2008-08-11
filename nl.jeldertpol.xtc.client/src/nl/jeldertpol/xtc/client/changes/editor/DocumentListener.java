@@ -53,10 +53,8 @@ public class DocumentListener implements IDocumentListener {
 	 * jface.text.DocumentEvent)
 	 */
 	@Override
-	public void documentChanged(DocumentEvent event) {
-		// TODO Auto-generated method stub
-		System.out.println("documentChanged");
-		System.out.println(event.toString());
+	public void documentChanged(final DocumentEvent event) {
+		// Nothing to do
 	}
 
 	/**
@@ -65,7 +63,7 @@ public class DocumentListener implements IDocumentListener {
 	 * @param resource
 	 *            The resource associated with the document.
 	 */
-	public void setResource(IResource resource) {
+	public void setResource(final IResource resource) {
 		this.resource = resource;
 	}
 

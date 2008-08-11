@@ -27,14 +27,14 @@ public class DocumentReplacer implements IJobChangeListener {
 
 	/**
 	 * TODO javadoc
+	 * 
 	 * @param resource
 	 * @param length
 	 * @param offset
 	 * @param text
 	 */
-	public void replace(IResource resource, int length, int offset, String text) {
-		System.out.println("wkhjlfjldksjf");
-
+	public void replace(final IResource resource, final int length,
+			final int offset, final String text) {
 		// Look for an editor that has resource open.
 		IWorkbenchWindow[] windows = PlatformUI.getWorkbench()
 				.getWorkbenchWindows();
@@ -81,34 +81,34 @@ public class DocumentReplacer implements IJobChangeListener {
 	}
 
 	@Override
-	public void aboutToRun(IJobChangeEvent event) {
+	public void aboutToRun(final IJobChangeEvent event) {
 		// Temporarily remove listener
 		document.removeDocumentListener(Activator.documentListener);
 	}
 
 	@Override
-	public void awake(IJobChangeEvent event) {
+	public void awake(final IJobChangeEvent event) {
 		// Nothing to do
 	}
 
 	@Override
-	public void done(IJobChangeEvent event) {
+	public void done(final IJobChangeEvent event) {
 		// Add listener again
 		document.addDocumentListener(Activator.documentListener);
 	}
 
 	@Override
-	public void running(IJobChangeEvent event) {
+	public void running(final IJobChangeEvent event) {
 		// Nothing to do
 	}
 
 	@Override
-	public void scheduled(IJobChangeEvent event) {
+	public void scheduled(final IJobChangeEvent event) {
 		// Nothing to do
 	}
 
 	@Override
-	public void sleeping(IJobChangeEvent event) {
+	public void sleeping(final IJobChangeEvent event) {
 		// Nothing to do
 	}
 }

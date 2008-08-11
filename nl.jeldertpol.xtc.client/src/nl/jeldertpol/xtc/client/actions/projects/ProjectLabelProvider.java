@@ -29,14 +29,16 @@ public class ProjectLabelProvider implements ILabelProvider {
 	 * @see org.eclipse.jface.viewers.ILabelProvider#getImage(java.lang.Object)
 	 */
 	@Override
-	public Image getImage(Object element) {
+	public Image getImage(final Object element) {
+		Image image = null;
+		
 		if (element instanceof IProject) {
 			Device device = Display.getCurrent();
 			ImageData session = Activator.getImageDescriptor(
 					Activator.IMAGE_PROJECT).getImageData();
-			return new Image(device, session);
+			image = new Image(device, session);
 		}
-		return null;
+		return image;
 	}
 
 	/*
@@ -45,10 +47,12 @@ public class ProjectLabelProvider implements ILabelProvider {
 	 * @see org.eclipse.jface.viewers.ILabelProvider#getText(java.lang.Object)
 	 */
 	@Override
-	public String getText(Object element) {
+	public String getText(final Object element) {
+		String text = null;
+		
 		if (element instanceof IProject) {
 			IProject project = (IProject) element;
-			String text = project.getName();
+			text = project.getName();
 			
 			InfoExtractor infoExtractor = new SubclipseInfoExtractor();
 			
@@ -62,9 +66,8 @@ public class ProjectLabelProvider implements ILabelProvider {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			return text;
 		}
-		return null;
+		return text;
 	}
 
 	/*
@@ -75,7 +78,7 @@ public class ProjectLabelProvider implements ILabelProvider {
 	 * jface.viewers.ILabelProviderListener)
 	 */
 	@Override
-	public void addListener(ILabelProviderListener listener) {
+	public void addListener(final ILabelProviderListener listener) {
 		// TODO Auto-generated method stub
 
 	}
@@ -99,7 +102,7 @@ public class ProjectLabelProvider implements ILabelProvider {
 	 * .Object, java.lang.String)
 	 */
 	@Override
-	public boolean isLabelProperty(Object element, String property) {
+	public boolean isLabelProperty(final Object element, final String property) {
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -112,7 +115,7 @@ public class ProjectLabelProvider implements ILabelProvider {
 	 * .jface.viewers.ILabelProviderListener)
 	 */
 	@Override
-	public void removeListener(ILabelProviderListener listener) {
+	public void removeListener(final ILabelProviderListener listener) {
 		// TODO Auto-generated method stub
 
 	}

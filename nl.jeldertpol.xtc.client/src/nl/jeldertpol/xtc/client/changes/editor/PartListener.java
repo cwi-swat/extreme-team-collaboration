@@ -43,7 +43,7 @@ public class PartListener implements IPartListener2 {
 	 * @return the {@link IDocument}, or <code>null</code> when no
 	 *         {@link IDocument} is found.
 	 */
-	private IDocument getDocument(IWorkbenchPartReference partRef) {
+	private IDocument getDocument(final IWorkbenchPartReference partRef) {
 		IWorkbenchPage workbenchPage = partRef.getPage();
 		IEditorPart editorPart = workbenchPage.getActiveEditor();
 
@@ -97,7 +97,7 @@ public class PartListener implements IPartListener2 {
 	 * @param document
 	 *            the {@link IDocument} the listener should be added.
 	 */
-	private void addDocumentListener(IDocument document) {
+	private void addDocumentListener(final IDocument document) {
 		// Listen to another document than the current one.
 		if (!document.equals(currentDocument)) {
 			if (currentDocument != null) {
@@ -116,7 +116,7 @@ public class PartListener implements IPartListener2 {
 	 * IWorkbenchPartReference)
 	 */
 	@Override
-	public void partActivated(IWorkbenchPartReference partRef) {
+	public void partActivated(final IWorkbenchPartReference partRef) {
 		System.out.println("partActivated " + partRef.getTitle());
 
 		// Document afluisteren, linken met IResource
@@ -143,9 +143,8 @@ public class PartListener implements IPartListener2 {
 	 * IWorkbenchPartReference)
 	 */
 	@Override
-	public void partBroughtToTop(IWorkbenchPartReference partRef) {
-		// TODO Auto-generated method stub
-		System.out.println("partBroughtToTop " + partRef.getTitle());
+	public void partBroughtToTop(final IWorkbenchPartReference partRef) {
+		// Nothing to do
 	}
 
 	/*
@@ -155,9 +154,8 @@ public class PartListener implements IPartListener2 {
 	 * IWorkbenchPartReference)
 	 */
 	@Override
-	public void partClosed(IWorkbenchPartReference partRef) {
-		// TODO Auto-generated method stub
-		System.out.println("partClosed " + partRef.getTitle());
+	public void partClosed(final IWorkbenchPartReference partRef) {
+		// Nothing to do
 	}
 
 	/*
@@ -167,10 +165,8 @@ public class PartListener implements IPartListener2 {
 	 * IWorkbenchPartReference)
 	 */
 	@Override
-	public void partDeactivated(IWorkbenchPartReference partRef) {
-		// TODO Auto-generated method stub
-		System.out.println("partDeactivated " + partRef.getTitle());
-		// removeDocumentListener(getDocument(partRef));
+	public void partDeactivated(final IWorkbenchPartReference partRef) {
+		// Nothing to do
 	}
 
 	/*
@@ -180,9 +176,8 @@ public class PartListener implements IPartListener2 {
 	 * IWorkbenchPartReference)
 	 */
 	@Override
-	public void partHidden(IWorkbenchPartReference partRef) {
-		// TODO Auto-generated method stub
-		System.out.println("partHidden " + partRef.getTitle());
+	public void partHidden(final IWorkbenchPartReference partRef) {
+		// Nothing to do
 	}
 
 	/*
@@ -192,9 +187,8 @@ public class PartListener implements IPartListener2 {
 	 * IWorkbenchPartReference)
 	 */
 	@Override
-	public void partInputChanged(IWorkbenchPartReference partRef) {
-		// TODO Auto-generated method stub
-		System.out.println("partInputChanged " + partRef.getTitle());
+	public void partInputChanged(final IWorkbenchPartReference partRef) {
+		// Nothing to do
 	}
 
 	/*
@@ -204,9 +198,8 @@ public class PartListener implements IPartListener2 {
 	 * IWorkbenchPartReference)
 	 */
 	@Override
-	public void partOpened(IWorkbenchPartReference partRef) {
-		// TODO Auto-generated method stub
-		System.out.println("partOpened " + partRef.getTitle());
+	public void partOpened(final IWorkbenchPartReference partRef) {
+		// Nothing to do
 	}
 
 	/*
@@ -216,9 +209,8 @@ public class PartListener implements IPartListener2 {
 	 * IWorkbenchPartReference)
 	 */
 	@Override
-	public void partVisible(IWorkbenchPartReference partRef) {
-		// TODO Auto-generated method stub
-		System.out.println("partVisible " + partRef.getTitle());
+	public void partVisible(final IWorkbenchPartReference partRef) {
+		// Nothing to do
 	}
 
 }

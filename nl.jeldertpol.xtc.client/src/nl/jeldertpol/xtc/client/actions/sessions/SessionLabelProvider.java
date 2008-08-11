@@ -25,7 +25,9 @@ public class SessionLabelProvider implements ILabelProvider {
 	 * @see org.eclipse.jface.viewers.ILabelProvider#getImage(java.lang.Object)
 	 */
 	@Override
-	public Image getImage(Object element) {
+	public Image getImage(final Object element) {
+		Image image = null;
+		
 		if (element instanceof TreeNode) {
 			TreeNode treeNode = (TreeNode) element;
 			Object value = treeNode.getValue();
@@ -34,14 +36,14 @@ public class SessionLabelProvider implements ILabelProvider {
 			if (value instanceof SimpleSession) {
 				ImageData session = Activator.getImageDescriptor(
 						Activator.IMAGE_SESSION).getImageData();
-				return new Image(device, session);
+				image = new Image(device, session);
 			} else if (value instanceof String) {
 				ImageData client = Activator.getImageDescriptor(
 						Activator.IMAGE_CLIENT).getImageData();
-				return new Image(device, client);
+				image = new Image(device, client);
 			}
 		}
-		return null;
+		return image;
 	}
 
 	/*
@@ -50,22 +52,21 @@ public class SessionLabelProvider implements ILabelProvider {
 	 * @see org.eclipse.jface.viewers.ILabelProvider#getText(java.lang.Object)
 	 */
 	@Override
-	public String getText(Object element) {
+	public String getText(final Object element) {
+		String text = null;
 		if (element instanceof TreeNode) {
 			TreeNode treeNode = (TreeNode) element;
 			Object value = treeNode.getValue();
 
 			if (value instanceof SimpleSession) {
 				SimpleSession simpleSession = (SimpleSession) value;
-				String text = simpleSession.getProjectName() + " (revision "
+				text = simpleSession.getProjectName() + " (revision "
 						+ simpleSession.getRevision() + ")";
-				return text;
 			} else if (value instanceof String) {
-				String text = (String) value;
-				return text;
+				text = (String) value;
 			}
 		}
-		return null;
+		return text;
 	}
 
 	/*
@@ -76,7 +77,7 @@ public class SessionLabelProvider implements ILabelProvider {
 	 * jface.viewers.ILabelProviderListener)
 	 */
 	@Override
-	public void addListener(ILabelProviderListener listener) {
+	public void addListener(final ILabelProviderListener listener) {
 		// TODO Auto-generated method stub
 
 	}
@@ -100,7 +101,7 @@ public class SessionLabelProvider implements ILabelProvider {
 	 * .Object, java.lang.String)
 	 */
 	@Override
-	public boolean isLabelProperty(Object element, String property) {
+	public boolean isLabelProperty(final Object element, final String property) {
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -113,7 +114,7 @@ public class SessionLabelProvider implements ILabelProvider {
 	 * .jface.viewers.ILabelProviderListener)
 	 */
 	@Override
-	public void removeListener(ILabelProviderListener listener) {
+	public void removeListener(final ILabelProviderListener listener) {
 		// TODO Auto-generated method stub
 
 	}

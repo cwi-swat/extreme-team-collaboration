@@ -17,7 +17,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 public class StartSessionAction extends AbstractHandler {
 
 	@Override
-	public Object execute(ExecutionEvent event) throws ExecutionException {
+	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		ShowProjects showProjects = new ShowProjects();
 		IProject project = showProjects.showProjects("Projects in workspace.");
 

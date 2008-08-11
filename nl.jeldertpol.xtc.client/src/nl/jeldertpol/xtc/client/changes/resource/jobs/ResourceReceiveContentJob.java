@@ -27,7 +27,7 @@ public class ResourceReceiveContentJob extends HighPriorityJob {
 	private byte[] content;
 
 	/**
-	 * Set the content of a file.
+	 * Set the content of a file. Schedules itself to be run.
 	 * 
 	 * @param file
 	 *            The file the content should be set of.
@@ -41,6 +41,8 @@ public class ResourceReceiveContentJob extends HighPriorityJob {
 		this.filePath = filePath;
 		this.file = file;
 		this.content = content;
+		
+		schedule();
 	}
 
 	/*

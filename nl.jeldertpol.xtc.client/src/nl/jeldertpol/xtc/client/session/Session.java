@@ -6,8 +6,11 @@ import java.util.List;
 import nl.jeldertpol.xtc.client.Activator;
 import nl.jeldertpol.xtc.client.changes.editor.DocumentReplacer;
 import nl.jeldertpol.xtc.client.changes.editor.PartListener;
-import nl.jeldertpol.xtc.client.changes.resource.ResourceChangeExecuter;
 import nl.jeldertpol.xtc.client.changes.resource.ResourceChangeListener;
+import nl.jeldertpol.xtc.client.changes.resource.jobs.ResourceAddedResourceJob;
+import nl.jeldertpol.xtc.client.changes.resource.jobs.ResourceMoveJob;
+import nl.jeldertpol.xtc.client.changes.resource.jobs.ResourceReceiveContentJob;
+import nl.jeldertpol.xtc.client.changes.resource.jobs.ResourceRemovedResourceJob;
 import nl.jeldertpol.xtc.client.changes.resource.jobs.ResourceSendContentJob;
 import nl.jeldertpol.xtc.client.exceptions.AlreadyInSessionException;
 import nl.jeldertpol.xtc.client.exceptions.LeaveSessionException;
@@ -47,7 +50,6 @@ import org.eclipse.ui.PlatformUI;
  */
 public class Session {
 	private InfoExtractor infoExtractor;
-	private ResourceChangeExecuter resourceChangeExecuter;
 
 	/**
 	 * Holds the connection state with the server.
@@ -83,7 +85,6 @@ public class Session {
 		super();
 
 		infoExtractor = new SubclipseInfoExtractor();
-		resourceChangeExecuter = new ResourceChangeExecuter();
 		connected = false;
 		inSession = false;
 		projectName = "";
@@ -466,7 +467,9 @@ public class Session {
 			IResource resource = ResourcesPlugin.getWorkspace().getRoot()
 					.findMember(moveFrom);
 
-			resourceChangeExecuter.move(resource, moveTo);
+			// resourceChangeExecuter.move(resource, moveTo);
+			ResourceMoveJob job = new ResourceMoveJob(resource, moveTo);
+			// job.schedule();
 		}
 	}
 
@@ -484,7 +487,7 @@ public class Session {
 	public void sendContent(IProject project, IPath filePath, File file) {
 		if (shouldSend(project)) {
 			// Create new job to do the conversion.
-			resourceChangeExecuter.sendContent(project, filePath, file);
+			new ResourceSendContentJob(project, filePath, file);
 		}
 	}
 
@@ -535,7 +538,7 @@ public class Session {
 			File file = location.toFile();
 
 			// Create new job to do the conversion.
-			resourceChangeExecuter.receiveContent(project, path, file, content);
+			new ResourceReceiveContentJob(project, path, file, content);
 		}
 	}
 
@@ -586,7 +589,7 @@ public class Session {
 				resource = project.getFolder(resourcePath);
 			}
 
-			resourceChangeExecuter.addedResource(resource, type);
+			new ResourceAddedResourceJob(resource, type);
 		}
 	}
 
@@ -624,7 +627,7 @@ public class Session {
 
 			IResource resource = project.findMember(resourcePath);
 
-			resourceChangeExecuter.removedResource(resource);
+			new ResourceRemovedResourceJob(resource);
 		}
 	}
 

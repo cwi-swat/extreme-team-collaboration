@@ -19,7 +19,7 @@ import org.eclipse.ui.dialogs.PreferencesUtil;
 public class PreferencesAction extends AbstractHandler {
 
 	@Override
-	public Object execute(ExecutionEvent event) throws ExecutionException {
+	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		PreferenceDialog preferenceDialog = PreferencesUtil
 				.createPreferenceDialogOn(null, XtcPreferencePage.class
 						.getName(), null, null);

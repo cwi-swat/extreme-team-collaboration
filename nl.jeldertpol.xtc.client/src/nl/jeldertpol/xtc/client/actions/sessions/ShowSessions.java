@@ -32,22 +32,11 @@ public class ShowSessions {
 	 * @return The name of the selected session, or <code>null</code> when no
 	 *         session was selected, or cancel was pressed.
 	 */
-	public String showSessions(String message) {
+	public String showSessions(final String message) {
 		String projectName = null;
 
 		try {
 			List<SimpleSession> sessions = Activator.SESSION.getSessions();
-
-			// Tijdelijk vullen
-			SimpleSession session1 = new SimpleSession("testProject", 6L,
-					"Rick");
-			sessions.add(session1);
-
-			SimpleSession session2 = new SimpleSession("XTCproject", 534L,
-					"Jeldert");
-			session2.addClient("Sjon");
-			sessions.add(session2);
-			// Eind tijdelijk vullen
 
 			Shell parent = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
 					.getShell();
@@ -93,7 +82,7 @@ public class ShowSessions {
 	 *            The sessions to convert.
 	 * @return The converted sessions.
 	 */
-	private TreeNode[] createTreeNodes(List<SimpleSession> simpleSessions) {
+	private TreeNode[] createTreeNodes(final List<SimpleSession> simpleSessions) {
 		TreeNode[] sessions = new TreeNode[simpleSessions.size()];
 
 		for (int i = 0; i < sessions.length; i++) {
@@ -123,7 +112,7 @@ public class ShowSessions {
 	 *            The selected {@link TreeNode}.
 	 * @return The name of the selected project, or <code>null</code>.
 	 */
-	private String getProjectNameFromSelection(Object selection) {
+	private String getProjectNameFromSelection(final Object selection) {
 		String projectName = null;
 
 		if (selection instanceof TreeNode) {

@@ -33,7 +33,7 @@ public class ShowProjects {
 	 * @return The selected project, or <code>null</code> when no project was
 	 *         selected, or cancel was pressed.
 	 */
-	public IProject showProjects(String message) {
+	public IProject showProjects(final String message) {
 		IProject project = null;
 
 		IProject[] projects = ResourcesPlugin.getWorkspace().getRoot()
@@ -71,7 +71,7 @@ public class ShowProjects {
 	 *            The projects.
 	 * @return The projects under version control.
 	 */
-	private IProject[] versionControlledProjects(IProject[] projects) {
+	private IProject[] versionControlledProjects(final IProject[] projects) {
 		List<IProject> versionedProjects = new ArrayList<IProject>();
 
 		InfoExtractor infoExtractor = new SubclipseInfoExtractor();

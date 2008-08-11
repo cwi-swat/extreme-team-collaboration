@@ -26,16 +26,15 @@ public class DocumentReplacerJob extends UIJob {
 	private final String text;
 
 	/**
-	 * TODO javadoc
-	 * Constructor.
+	 * TODO javadoc Constructor.
 	 * 
 	 * @param document
 	 * @param length
 	 * @param offset
 	 * @param text
 	 */
-	public DocumentReplacerJob(IDocument document, int length, int offset,
-			String text) {
+	public DocumentReplacerJob(final IDocument document, final int length,
+			final int offset, final String text) {
 		super(document.toString());
 
 		this.document = document;
@@ -52,10 +51,10 @@ public class DocumentReplacerJob extends UIJob {
 	 * IProgressMonitor)
 	 */
 	@Override
-	public IStatus runInUIThread(IProgressMonitor monitor) {
+	public IStatus runInUIThread(final IProgressMonitor monitor) {
 		System.out.println("Que?");
 		IStatus status;
-		
+
 		try {
 			document.replace(offset, length, text);
 			status = new Status(Status.OK, Activator.PLUGIN_ID,

@@ -20,7 +20,7 @@ public class ResourceMoveJob extends HighPriorityJob {
 	private IPath moveTo;
 
 	/**
-	 * Move a resource to a new location.
+	 * Move a resource to a new location. Schedules itself to be run.
 	 * 
 	 * @param resource
 	 *            The resource to move.
@@ -32,6 +32,8 @@ public class ResourceMoveJob extends HighPriorityJob {
 
 		this.resource = resource;
 		this.moveTo = moveTo;
+		
+		schedule();
 	}
 
 	/*

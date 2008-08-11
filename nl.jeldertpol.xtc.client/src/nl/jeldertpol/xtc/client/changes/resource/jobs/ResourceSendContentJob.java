@@ -23,7 +23,7 @@ public class ResourceSendContentJob extends HighPriorityJob {
 	private File file;
 
 	/**
-	 * Send the content of a file to the server.
+	 * Send the content of a file to the server. Schedules itself to be run.
 	 * 
 	 * @param project
 	 *            The project the content belongs to.
@@ -38,6 +38,8 @@ public class ResourceSendContentJob extends HighPriorityJob {
 		this.project = project;
 		this.filePath = filePath;
 		this.file = file;
+		
+		schedule();
 	}
 
 	/*

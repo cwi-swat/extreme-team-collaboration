@@ -18,7 +18,7 @@ public class ResourceRemovedResourceJob extends HighPriorityJob {
 	private IResource resource;
 
 	/**
-	 * Remove a resource.
+	 * Remove a resource. Schedules itself to be run.
 	 * 
 	 * @param resource
 	 *            The resource to remove.
@@ -27,6 +27,8 @@ public class ResourceRemovedResourceJob extends HighPriorityJob {
 		super(resource.toString());
 
 		this.resource = resource;
+		
+		schedule();
 	}
 
 	/*

@@ -24,7 +24,7 @@ public class ResourceAddedResourceJob extends HighPriorityJob {
 	private int type;
 
 	/**
-	 * Add a resource.
+	 * Add a resource. Schedules itself to be run.
 	 * 
 	 * @param resource
 	 *            The resource to add.
@@ -37,6 +37,8 @@ public class ResourceAddedResourceJob extends HighPriorityJob {
 
 		this.resource = resource;
 		this.type = type;
+		
+		schedule();
 	}
 
 	/*

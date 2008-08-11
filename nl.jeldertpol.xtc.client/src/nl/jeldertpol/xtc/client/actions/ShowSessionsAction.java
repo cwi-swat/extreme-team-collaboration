@@ -20,7 +20,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 public class ShowSessionsAction extends AbstractHandler {
 
 	@Override
-	public Object execute(ExecutionEvent event) throws ExecutionException {
+	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		// Only show the sessions
 		ShowSessions showSessions = new ShowSessions();
 		String projectName = showSessions
