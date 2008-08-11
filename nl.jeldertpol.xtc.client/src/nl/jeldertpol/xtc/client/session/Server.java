@@ -1,7 +1,5 @@
 package nl.jeldertpol.xtc.client.session;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 import nl.jeldertpol.xtc.client.Activator;
@@ -321,13 +319,13 @@ public class Server extends AbstractJavaTool {
 	 */
 	public void receiveContent(String projectName, String filePath,
 			ATerm contentTerm, String nickname) {
-		// TODO bug in toolbus, needed for handshaking only.
-		// ATermBlob blob = (ATermBlob) contentTerm;
-		// InputStream content = (InputStream) Conversion.ByteToObject(blob
-		// .getBlobData());
-		//
-		// Activator.session.receiveContent(projectName, filePath, content,
-		// nickname);
+		// TODO bug in Toolbus, needed for handshaking only.
+		// If bug gets fixed, this will still work.
+		System.err.println("Server: receiveContent: Toolbus is fixed. Jeldert, please fix this method.");
+		
+		ATermBlob blob = (ATermBlob) contentTerm;
+		byte[] content = blob.getBlobData();
+		receiveContent(projectName, filePath, content, nickname);
 	}
 
 	/**
@@ -345,8 +343,7 @@ public class Server extends AbstractJavaTool {
 	 */
 	public void receiveContent(String projectName, String filePath,
 			byte[] content, String nickname) {
-		// TODO bug in toolbus, this method will be called.
-//		InputStream content = Conversion.byteToInputStream(contentTerm);
+		// TODO bug in Toolbus, this method will be called.
 
 		Activator.SESSION.receiveContent(projectName, filePath, content,
 				nickname);

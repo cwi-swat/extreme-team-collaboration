@@ -8,6 +8,7 @@ import nl.jeldertpol.xtc.client.changes.editor.DocumentReplacer;
 import nl.jeldertpol.xtc.client.changes.editor.PartListener;
 import nl.jeldertpol.xtc.client.changes.resource.ResourceChangeExecuter;
 import nl.jeldertpol.xtc.client.changes.resource.ResourceChangeListener;
+import nl.jeldertpol.xtc.client.changes.resource.jobs.ResourceSendContentJob;
 import nl.jeldertpol.xtc.client.exceptions.AlreadyInSessionException;
 import nl.jeldertpol.xtc.client.exceptions.LeaveSessionException;
 import nl.jeldertpol.xtc.client.exceptions.NicknameAlreadyTakenException;
@@ -21,10 +22,8 @@ import nl.jeldertpol.xtc.client.exceptions.WrongRevisionException;
 import nl.jeldertpol.xtc.client.preferences.connection.PreferenceConstants;
 import nl.jeldertpol.xtc.client.session.infoExtractor.InfoExtractor;
 import nl.jeldertpol.xtc.client.session.infoExtractor.SubclipseInfoExtractor;
-import nl.jeldertpol.xtc.common.conversion.Conversion;
 import nl.jeldertpol.xtc.common.session.SimpleSession;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -472,37 +471,44 @@ public class Session {
 	}
 
 	/**
-	 * Send new content to the server.
+	 * Send new content to the server. Creates a new
+	 * {@link ResourceSendContentJob} to do this.
+	 * 
+	 * @param project
+	 *            The project the content belongs to.
+	 * @param filePath
+	 *            The file, path must be relative to the project.
+	 * @param file
+	 *            The actual file which holds the content.
+	 */
+	public void sendContent(IProject project, IPath filePath, File file) {
+		if (shouldSend(project)) {
+			// Create new job to do the conversion.
+			resourceChangeExecuter.sendContent(project, filePath, file);
+		}
+	}
+
+	/**
+	 * Send new content to the server. Should only be called from
+	 * {@link ResourceSendContentJob}.
 	 * 
 	 * @param project
 	 *            The project the content belongs to.
 	 * @param filePath
 	 *            The file, path must be relative to the project.
 	 * @param content
-	 *            The actual content. Will be closed after this method finishes.
+	 *            The actual content of the file.
+	 * 
+	 * @see #sendContent(IProject, IPath)
 	 */
-	public void sendContent(IProject project, IPath filePath
-			) {
+	public void sendContent(IProject project, IPath filePath, byte[] content) {
 		if (shouldSend(project)) {
-			String osString = filePath.toOSString();
-			File file = new File(osString);
+			String portableFilePath = filePath.toPortableString();
 
-			byte[] bytes = Conversion.FileToByte(file);
-			
-//			List<InputStream> list = new ArrayList<InputStream>();
-//			list.add(content);
-//			byte[] bytes = Conversion.objectToByte(list);
-//			byte[] bytes = Conversion.inputStreamToByte(content);
-			
-			String portable = filePath.toPortableString();
-			
-			server.sendContent(projectName, portable, bytes, nickname);
+			server
+					.sendContent(projectName, portableFilePath, content,
+							nickname);
 		}
-	}
-	
-
-	public void sendContent(IProject project, IFile file) {
-		
 	}
 
 	/**
@@ -520,25 +526,17 @@ public class Session {
 	 */
 	public void receiveContent(String remoteProjectName, String filePath,
 			byte[] content, String nickname) {
-//		if (shouldReceive(remoteProjectName, nickname)) {
-			System.out.println("New content arrived!");
-
+		if (shouldReceive(remoteProjectName, nickname)) {
 			IProject project = ResourcesPlugin.getWorkspace().getRoot()
 					.getProject(projectName);
 			IResource resource = project.findMember(filePath);
-
 			IPath path = resource.getProjectRelativePath();
-			String osString = path.toOSString();
-			// TODO remove
-			osString += "123";
-			
-			File file = new File(osString);
-			Conversion.byteToFile(content, file);
-			
-//			IFile file = (IFile) resource;
-//
-//			resourceChangeExecuter.setContent(file, content);
-//		}
+			IPath location = resource.getLocation();
+			File file = location.toFile();
+
+			// Create new job to do the conversion.
+			resourceChangeExecuter.receiveContent(project, path, file, content);
+		}
 	}
 
 	/**

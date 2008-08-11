@@ -1,13 +1,10 @@
 package nl.jeldertpol.xtc.client.changes.resource;
 
 import java.io.File;
-import java.io.InputStream;
 
 import nl.jeldertpol.xtc.client.Activator;
 import nl.jeldertpol.xtc.client.exceptions.LeaveSessionException;
-import nl.jeldertpol.xtc.common.conversion.Conversion;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
@@ -41,7 +38,7 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 
 		switch (delta.getKind()) {
 		case IResourceDelta.NO_CHANGE:
-			// Obvious, this is not of interest.
+			// Obviously, this is not of interest.
 			ofInterest = false;
 			break;
 		case IResourceDelta.ADDED:
@@ -61,9 +58,17 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 
 				IProject project = resource.getProject();
 				IPath resourcePath = resource.getProjectRelativePath();
+				int type = resource.getType();
 
-				Activator.SESSION.sendAddedResource(project, resourcePath,
-						resource.getType());
+				Activator.SESSION
+						.sendAddedResource(project, resourcePath, type);
+
+				// If it is a file, send the content of the file
+				File file = resource.getLocation().toFile();
+
+				if (file.isFile()) {
+					Activator.SESSION.sendContent(project, resourcePath, file);
+				}
 
 				// Nothing left of interest in this delta.
 				// Content of resource needs to be send.
@@ -95,10 +100,10 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 				ofInterest = false;
 			}
 
-			ofInterest = true;
 			break;
 		case IResourceDelta.CHANGED:
 			// Content of resource, or one of its children changed.
+			System.out.println("CHANGED");
 			ofInterest = true;
 			break;
 		case IResourceDelta.ADDED_PHANTOM:
@@ -109,10 +114,10 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 			// TODO of interest?
 			ofInterest = true;
 			break;
-		default:
-			// TODO default needed? All cases are covered above...
-			ofInterest = true;
-			break;
+		// default:
+		// // TODO default needed? All cases are covered above...
+		// ofInterest = true;
+		// break;
 		}
 
 		if (ofInterest) {
@@ -124,14 +129,12 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 				System.out.println("CONTENT");
 
 				IProject project = resource.getProject();
+				IPath filePath = resource.getProjectRelativePath();
+				File file = resource.getLocation().toFile();
 
-				IFile file = (IFile) resource;
-				
-				InputStream content = file.getContents();
-
-				IPath filePath = file.getProjectRelativePath();
-				
-				Activator.SESSION.sendContent(project, filePath);
+				// if (file.isFile()) {
+				Activator.SESSION.sendContent(project, filePath, file);
+				// }
 
 				visitChildren = false;
 			}
@@ -195,29 +198,22 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 			// info is used to determine if a resource is in sync with some
 			// remote server, and is not typically of interest to local
 			// tools. See the API interface ISynchronizer for more details.
+			//
+			// Is true when importing files in Eclipse, and when changes are
+			// detected after refreshing the workspace tree.
 			if ((flags & IResourceDelta.SYNC) != 0) {
 				System.out.println("SYNC");
-				// TODO
-				int kind = delta.getKind();
-				if (kind == IResourceDelta.CHANGED) {
-					// Sending content
-//					Object bytes = Conversion.objectToByte(resource);
-					
-//					Activator.SESSION.sendContent(project, file);
-					
-					
-					IProject project = resource.getProject();
 
-					IFile file = (IFile) resource;
-					
-					InputStream content = file.getContents();
-					IPath filePath = file.getProjectRelativePath();
-
-					Activator.SESSION.sendContent(project, filePath);
-
-					visitChildren = false;
-					
-				}
+				// int kind = delta.getKind();
+				// if (kind == IResourceDelta.CHANGED) {
+				// IProject project = resource.getProject();
+				// IPath filePath = resource.getProjectRelativePath();
+				// File file = resource.getLocation().toFile();
+				//
+				// Activator.SESSION.sendContent(project, filePath, file);
+				//
+				// visitChildren = false;
+				// }
 				// A sync should detect a content change. Therefore ignoring
 				// this one.
 			}
@@ -242,4 +238,5 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 
 		return visitChildren;
 	}
+
 }

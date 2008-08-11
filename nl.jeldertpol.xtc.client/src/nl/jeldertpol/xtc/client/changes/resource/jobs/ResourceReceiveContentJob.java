@@ -1,0 +1,82 @@
+package nl.jeldertpol.xtc.client.changes.resource.jobs;
+
+import java.io.File;
+
+import nl.jeldertpol.xtc.client.Activator;
+import nl.jeldertpol.xtc.common.conversion.Conversion;
+
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+
+/**
+ * Set content of a file.
+ * 
+ * @author Jeldert Pol
+ */
+public class ResourceReceiveContentJob extends HighPriorityJob {
+
+	private IProject project;
+	private IPath filePath;
+	private File file;
+	private byte[] content;
+
+	/**
+	 * Set the content of a file.
+	 * 
+	 * @param file
+	 *            The file the content should be set of.
+	 * @param content
+	 *            The actual content for the file.
+	 */
+	public ResourceReceiveContentJob(IProject project, IPath filePath, File file, byte[] content) {
+		super(file.toString());
+
+		this.project = project;
+		this.filePath = filePath;
+		this.file = file;
+		this.content = content;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @seeorg.eclipse.core.runtime.jobs.Job#run(org.eclipse.core.runtime.
+	 * IProgressMonitor)
+	 */
+	@Override
+	protected IStatus run(IProgressMonitor monitor) {
+		System.out.println("Receiving new content: " + filePath.toPortableString());
+		IStatus status;
+
+		// try {
+		Activator.SESSION.removeResourceChangeListener();
+		Conversion.byteToFile(content, file);
+		
+		IFile ifile = project.getFile(filePath);
+		try {
+			ifile.refreshLocal(IResource.NONE, monitor);
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Activator.SESSION.addResourceChangeListener();
+
+		status = new Status(Status.OK, Activator.PLUGIN_ID,
+				"Resource content set successfully.");
+		// } catch (CoreException e) {
+		// e.printStackTrace();
+		//
+		// status = new Status(Status.ERROR, Activator.PLUGIN_ID,
+		// "Resource content could not be set.");
+		// // TODO revert, and re-apply all changes?
+		// }
+
+		return status;
+	}
+}

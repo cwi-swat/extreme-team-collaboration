@@ -45,7 +45,10 @@ public class ResourceMoveJob extends HighPriorityJob {
 		IStatus status;
 
 		try {
+			Activator.SESSION.removeResourceChangeListener();
 			resource.move(moveTo, true, null);
+			Activator.SESSION.addResourceChangeListener();
+			
 			status = new Status(Status.OK, Activator.PLUGIN_ID,
 					"Move applied successfully.");
 		} catch (CoreException e) {

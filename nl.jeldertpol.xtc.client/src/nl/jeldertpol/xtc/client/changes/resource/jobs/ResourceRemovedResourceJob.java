@@ -41,8 +41,11 @@ public class ResourceRemovedResourceJob extends HighPriorityJob {
 
 		try {
 			boolean force = true;
+			
+			Activator.SESSION.removeResourceChangeListener();
 			resource.delete(force, monitor);
-
+			Activator.SESSION.addResourceChangeListener();
+			
 			status = new Status(Status.OK, Activator.PLUGIN_ID,
 					"Resource content set successfully.");
 		} catch (CoreException e) {

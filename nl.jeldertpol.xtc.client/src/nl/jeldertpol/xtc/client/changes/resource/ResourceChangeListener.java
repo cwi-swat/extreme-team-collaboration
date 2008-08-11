@@ -28,6 +28,8 @@ public class ResourceChangeListener implements IResourceChangeListener {
 			IResourceDelta projectDelta = delta.findMember(new Path(
 					Activator.SESSION.getCurrentProject()));
 
+			System.out.println("resourceChanged");
+
 			try {
 				projectDelta.accept(new ResourceDeltaVisitor());
 			} catch (NullPointerException e) {
@@ -36,8 +38,6 @@ public class ResourceChangeListener implements IResourceChangeListener {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
-			System.out.println("resourceChanged");
 		}
 	}
 
