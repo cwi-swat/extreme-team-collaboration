@@ -39,6 +39,9 @@ public class Server extends AbstractJavaTool {
 	 *             arguments or the establishing of the connection.
 	 */
 	public static void main(final String[] args) throws Exception {
+		System.out
+				.println("Arguments: -TB_TOOL_NAME server -TB_HOST localhost -TB_PORT 60000");
+		System.out.println("-TB_HOST and -TB_PORT can be redefined.");
 		new Server().connect(args);
 	}
 
@@ -267,13 +270,16 @@ public class Server extends AbstractJavaTool {
 	 * @return The session, or <code>null</code> if it does not exist.
 	 */
 	private Session getSession(final String projectName) {
+		Session foundSession = null;
+
 		// Check if project exists
 		for (Session session : sessions) {
 			if (session.getProjectName().equals(projectName)) {
-				return session;
+				foundSession = session;
+				break;
 			}
 		}
-		return null;
+		return foundSession;
 	}
 
 	/**

@@ -50,7 +50,8 @@ public class SimpleSession implements Serializable {
 	 * @param nickname
 	 *            The client that started this session.
 	 */
-	public SimpleSession(final String projectName, final Long revision, final String nickname) {
+	public SimpleSession(final String projectName, final Long revision,
+			final String nickname) {
 		this(projectName, revision);
 
 		addClient(nickname);

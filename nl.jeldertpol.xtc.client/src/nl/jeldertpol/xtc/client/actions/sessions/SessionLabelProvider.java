@@ -27,7 +27,7 @@ public class SessionLabelProvider implements ILabelProvider {
 	@Override
 	public Image getImage(final Object element) {
 		Image image = null;
-		
+
 		if (element instanceof TreeNode) {
 			TreeNode treeNode = (TreeNode) element;
 			Object value = treeNode.getValue();

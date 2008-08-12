@@ -31,7 +31,7 @@ public class ProjectLabelProvider implements ILabelProvider {
 	@Override
 	public Image getImage(final Object element) {
 		Image image = null;
-		
+
 		if (element instanceof IProject) {
 			Device device = Display.getCurrent();
 			ImageData session = Activator.getImageDescriptor(
@@ -49,13 +49,13 @@ public class ProjectLabelProvider implements ILabelProvider {
 	@Override
 	public String getText(final Object element) {
 		String text = null;
-		
+
 		if (element instanceof IProject) {
 			IProject project = (IProject) element;
 			text = project.getName();
-			
+
 			InfoExtractor infoExtractor = new SubclipseInfoExtractor();
-			
+
 			try {
 				Long revision = infoExtractor.getRevision(project);
 				text += " (revision " + revision + ")";

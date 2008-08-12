@@ -18,9 +18,9 @@ import org.eclipse.core.runtime.Status;
  */
 public class ResourceSendContentJob extends HighPriorityJob {
 
-	private IProject project;
-	private IPath filePath;
-	private File file;
+	final private IProject project;
+	final private IPath filePath;
+	final private File file;
 
 	/**
 	 * Send the content of a file to the server. Schedules itself to be run.
@@ -32,13 +32,14 @@ public class ResourceSendContentJob extends HighPriorityJob {
 	 * @param file
 	 *            A reference to the actual file.
 	 */
-	public ResourceSendContentJob(IProject project, IPath filePath, File file) {
+	public ResourceSendContentJob(final IProject project, final IPath filePath,
+			final File file) {
 		super(file.toString());
 
 		this.project = project;
 		this.filePath = filePath;
 		this.file = file;
-		
+
 		schedule();
 	}
 
@@ -49,8 +50,9 @@ public class ResourceSendContentJob extends HighPriorityJob {
 	 * IProgressMonitor)
 	 */
 	@Override
-	protected IStatus run(IProgressMonitor monitor) {
-		System.out.println("Sending new content: " + filePath.toPortableString());
+	protected IStatus run(final IProgressMonitor monitor) {
+		System.out.println("Sending new content: "
+				+ filePath.toPortableString());
 		IStatus status;
 
 		// try {

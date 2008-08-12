@@ -17,11 +17,11 @@ import org.eclipse.core.runtime.CoreException;
  */
 public abstract class InfoExtractor {
 
-	public final List<IResource> getResources(IProject project) {
+	public final List<IResource> getResources(final IProject project) {
 		return getResources((IResource) project);
 	}
 
-	private List<IResource> getResources(IResource resource) {
+	private List<IResource> getResources(final IResource resource) {
 		List<IResource> resources = new ArrayList<IResource>();
 
 		resources.add(resource);
@@ -51,7 +51,7 @@ public abstract class InfoExtractor {
 		return resources;
 	}
 
-	public abstract List<IResource> modifiedFiles(IProject project);
+	public abstract List<IResource> modifiedFiles(final IProject project);
 
 	/**
 	 * Get the revision of a project.
@@ -65,6 +65,6 @@ public abstract class InfoExtractor {
 	 * @throws UnversionedProjectException
 	 *             Thrown when the project is not under version control.
 	 */
-	public abstract Long getRevision(IProject project)
+	public abstract Long getRevision(final IProject project)
 			throws RevisionExtractorException, UnversionedProjectException;
 }

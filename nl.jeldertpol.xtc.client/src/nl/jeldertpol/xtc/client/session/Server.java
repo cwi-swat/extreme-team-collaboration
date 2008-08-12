@@ -36,13 +36,13 @@ public class Server extends AbstractJavaTool {
 	private final String toolname = "client";
 
 	@Override
-	public void receiveAckEvent(ATerm term) {
+	public void receiveAckEvent(final ATerm term) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void receiveTerminate(ATerm term) {
+	public void receiveTerminate(final ATerm term) {
 		// TODO Auto-generated method stub
 
 	}
@@ -57,7 +57,7 @@ public class Server extends AbstractJavaTool {
 	 * @throws UnableToConnectException
 	 *             thrown when establishing the connection failed.
 	 */
-	public void connect(String host, String port)
+	public void connect(final String host, final String port)
 			throws UnableToConnectException {
 		try {
 			String[] connectioninfo = { "-TB_TOOL_NAME", toolname, "-TB_HOST",
@@ -105,8 +105,8 @@ public class Server extends AbstractJavaTool {
 	 * @throws ProjectAlreadyPresentException
 	 *             The project is already present on the server.
 	 */
-	public void startSession(String projectName, Long revision, String nickname)
-			throws ProjectAlreadyPresentException {
+	public void startSession(final String projectName, final Long revision,
+			final String nickname) throws ProjectAlreadyPresentException {
 		ATermLong revisionLong = factory.makeLong(revision);
 
 		ATerm startSession = factory.make("startSession(<str>, <term>, <str>)",
@@ -131,7 +131,7 @@ public class Server extends AbstractJavaTool {
 	 * @throws NicknameAlreadyTakenException
 	 *             The nickname is already present in the session.
 	 */
-	public void joinSession(String projectName, String nickname)
+	public void joinSession(final String projectName, final String nickname)
 			throws NicknameAlreadyTakenException {
 		ATerm joinSession = factory.make("joinSession(<str>, <str>)",
 				projectName, nickname);
@@ -158,7 +158,7 @@ public class Server extends AbstractJavaTool {
 	 * @throws LeaveSessionException
 	 *             Something failed when leaving the session.
 	 */
-	public void leaveSession(String projectName, String nickname)
+	public void leaveSession(final String projectName, final String nickname)
 			throws LeaveSessionException {
 		ATerm leaveSession = factory.make("leaveSession(<str>, <str>)",
 				projectName, nickname);
@@ -191,8 +191,9 @@ public class Server extends AbstractJavaTool {
 	 * 
 	 * @see IPath#toPortableString()
 	 */
-	public void sendChange(String projectName, String filePath, int length,
-			int offset, String text, String nickname) {
+	public void sendChange(final String projectName, final String filePath,
+			final int length, final int offset, final String text,
+			final String nickname) {
 		ATerm sendChange = factory.make(
 				"sendChange(<str>, <str>, <int>, <int>, <str>, <str>)",
 				projectName, filePath, length, offset, text, nickname);
@@ -223,8 +224,9 @@ public class Server extends AbstractJavaTool {
 	 * @param nickname
 	 *            The nickname of the client the change originated from.
 	 */
-	public void receiveChange(String projectName, String filePath, int length,
-			int offset, String text, String nickname) {
+	public void receiveChange(final String projectName, final String filePath,
+			final int length, final int offset, final String text,
+			final String nickname) {
 		Activator.SESSION.receiveChange(projectName, filePath, length, offset,
 				text, nickname);
 	}
@@ -243,8 +245,8 @@ public class Server extends AbstractJavaTool {
 	 * 
 	 * @see IPath#toPortableString()
 	 */
-	public void sendMove(String projectName, String from, String to,
-			String nickname) {
+	public void sendMove(final String projectName, final String from,
+			final String to, final String nickname) {
 		ATerm sendMove = factory.make("sendMove(<str>, <str>, <str>, <str>)",
 				projectName, from, to, nickname);
 		ATermAppl reply = sendRequest(sendMove);
@@ -269,8 +271,8 @@ public class Server extends AbstractJavaTool {
 	 * @param nickname
 	 *            The nickname of the client the move originated from.
 	 */
-	public void receiveMove(String projectName, String from, String to,
-			String nickname) {
+	public void receiveMove(final String projectName, final String from,
+			final String to, final String nickname) {
 		Activator.SESSION.receiveMove(projectName, from, to, nickname);
 	}
 
@@ -287,8 +289,8 @@ public class Server extends AbstractJavaTool {
 	 * @param nickname
 	 *            The nickname of the client the content originated from.
 	 */
-	public void sendContent(String projectName, String filePath,
-			byte[] content, String nickname) {
+	public void sendContent(final String projectName, final String filePath,
+			final byte[] content, final String nickname) {
 		ATermBlob termBlob = factory.makeBlob(content);
 
 		ATerm sendContent = factory.make(
@@ -317,12 +319,13 @@ public class Server extends AbstractJavaTool {
 	 * @param nickname
 	 *            The nickname of the client the content originated from.
 	 */
-	public void receiveContent(String projectName, String filePath,
-			ATerm contentTerm, String nickname) {
+	public void receiveContent(final String projectName, final String filePath,
+			final ATerm contentTerm, final String nickname) {
 		// TODO bug in Toolbus, needed for handshaking only.
 		// If bug gets fixed, this will still work.
-		System.err.println("Server: receiveContent: Toolbus is fixed. Jeldert, please fix this method.");
-		
+		System.err
+				.println("Server: receiveContent: Toolbus is fixed. Jeldert, please fix this method.");
+
 		ATermBlob blob = (ATermBlob) contentTerm;
 		byte[] content = blob.getBlobData();
 		receiveContent(projectName, filePath, content, nickname);
@@ -341,8 +344,8 @@ public class Server extends AbstractJavaTool {
 	 * @param nickname
 	 *            The nickname of the client the content originated from.
 	 */
-	public void receiveContent(String projectName, String filePath,
-			byte[] content, String nickname) {
+	public void receiveContent(final String projectName, final String filePath,
+			final byte[] content, final String nickname) {
 		// TODO bug in Toolbus, this method will be called.
 
 		Activator.SESSION.receiveContent(projectName, filePath, content,
@@ -364,8 +367,8 @@ public class Server extends AbstractJavaTool {
 	 * 
 	 * @see IResource#getType()
 	 */
-	public void sendAddedResource(String projectName, String resourcePath,
-			int type, String nickname) {
+	public void sendAddedResource(final String projectName,
+			final String resourcePath, final int type, final String nickname) {
 		ATerm sendAddedResource = factory.make(
 				"sendAddedResource(<str>, <str>, <int>, <str>)", projectName,
 				resourcePath, type, nickname);
@@ -394,8 +397,8 @@ public class Server extends AbstractJavaTool {
 	 * 
 	 * @see IResource#getType()
 	 */
-	public void receiveAddedResource(String projectName, String resourcePath,
-			int type, String nickname) {
+	public void receiveAddedResource(final String projectName,
+			final String resourcePath, final int type, final String nickname) {
 		Activator.SESSION.receiveAddedResource(projectName, resourcePath, type,
 				nickname);
 	}
@@ -411,8 +414,8 @@ public class Server extends AbstractJavaTool {
 	 *            The nickname of the client the removed resource originated
 	 *            from.
 	 */
-	public void sendRemovedResource(String projectName, String resourcePath,
-			String nickname) {
+	public void sendRemovedResource(final String projectName,
+			final String resourcePath, final String nickname) {
 		ATerm sendRemovedResource = factory.make(
 				"sendRemovedResource(<str>, <str>, <str>)", projectName,
 				resourcePath, nickname);
@@ -438,8 +441,8 @@ public class Server extends AbstractJavaTool {
 	 *            The nickname of the client the removed resource originated
 	 *            from.
 	 */
-	public void receiveRemovedResource(String projectName, String resourcePath,
-			String nickname) {
+	public void receiveRemovedResource(final String projectName,
+			final String resourcePath, final String nickname) {
 		Activator.SESSION.receiveRemovedResource(projectName, resourcePath,
 				nickname);
 	}

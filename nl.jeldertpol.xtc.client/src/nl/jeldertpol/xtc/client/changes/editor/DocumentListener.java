@@ -14,7 +14,7 @@ import org.eclipse.jface.text.IDocumentListener;
  * @author Jeldert Pol
  */
 public class DocumentListener implements IDocumentListener {
-	
+
 	private IResource resource;
 
 	/*

@@ -2,7 +2,6 @@ package nl.jeldertpol.xtc.server.session;
 
 import nl.jeldertpol.xtc.common.session.SimpleSession;
 
-
 /**
  * Representation of a project. Also holds changes.
  * 
@@ -14,8 +13,8 @@ public class Session extends SimpleSession {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	//private HashMap<String, LinkedList<Change>> changes;
+
+	// private HashMap<String, LinkedList<Change>> changes;
 	// TODO changes bijhouden
 
 	/**
@@ -28,11 +27,12 @@ public class Session extends SimpleSession {
 	 * @param nickname
 	 *            The client that started this session.
 	 */
-	public Session(String projectName, Long revision, String nickname) {
+	public Session(final String projectName, final Long revision,
+			final String nickname) {
 		// naam project, revision, resources, changes to resources,
 		super(projectName, revision, nickname);
 
-		//changes = new HashMap<String, LinkedList<Change>>(resources.size());
+		// changes = new HashMap<String, LinkedList<Change>>(resources.size());
 	}
 
 }

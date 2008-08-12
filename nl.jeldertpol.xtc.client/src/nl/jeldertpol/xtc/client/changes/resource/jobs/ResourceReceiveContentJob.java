@@ -21,10 +21,10 @@ import org.eclipse.core.runtime.Status;
  */
 public class ResourceReceiveContentJob extends HighPriorityJob {
 
-	private IProject project;
-	private IPath filePath;
-	private File file;
-	private byte[] content;
+	final private IProject project;
+	final private IPath filePath;
+	final private File file;
+	final private byte[] content;
 
 	/**
 	 * Set the content of a file. Schedules itself to be run.
@@ -34,14 +34,15 @@ public class ResourceReceiveContentJob extends HighPriorityJob {
 	 * @param content
 	 *            The actual content for the file.
 	 */
-	public ResourceReceiveContentJob(IProject project, IPath filePath, File file, byte[] content) {
+	public ResourceReceiveContentJob(final IProject project,
+			final IPath filePath, final File file, final byte[] content) {
 		super(file.toString());
 
 		this.project = project;
 		this.filePath = filePath;
 		this.file = file;
 		this.content = content;
-		
+
 		schedule();
 	}
 
@@ -52,14 +53,15 @@ public class ResourceReceiveContentJob extends HighPriorityJob {
 	 * IProgressMonitor)
 	 */
 	@Override
-	protected IStatus run(IProgressMonitor monitor) {
-		System.out.println("Receiving new content: " + filePath.toPortableString());
+	protected IStatus run(final IProgressMonitor monitor) {
+		System.out.println("Receiving new content: "
+				+ filePath.toPortableString());
 		IStatus status;
 
 		// try {
 		Activator.SESSION.removeResourceChangeListener();
 		Conversion.byteToFile(content, file);
-		
+
 		IFile ifile = project.getFile(filePath);
 		try {
 			ifile.refreshLocal(IResource.NONE, monitor);

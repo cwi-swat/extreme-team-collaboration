@@ -15,7 +15,7 @@ import org.eclipse.core.runtime.Status;
  */
 public class ResourceRemovedResourceJob extends HighPriorityJob {
 
-	private IResource resource;
+	final private IResource resource;
 
 	/**
 	 * Remove a resource. Schedules itself to be run.
@@ -23,11 +23,11 @@ public class ResourceRemovedResourceJob extends HighPriorityJob {
 	 * @param resource
 	 *            The resource to remove.
 	 */
-	public ResourceRemovedResourceJob(IResource resource) {
+	public ResourceRemovedResourceJob(final IResource resource) {
 		super(resource.toString());
 
 		this.resource = resource;
-		
+
 		schedule();
 	}
 
@@ -38,16 +38,16 @@ public class ResourceRemovedResourceJob extends HighPriorityJob {
 	 * IProgressMonitor)
 	 */
 	@Override
-	protected IStatus run(IProgressMonitor monitor) {
+	protected IStatus run(final IProgressMonitor monitor) {
 		IStatus status;
 
 		try {
 			boolean force = true;
-			
+
 			Activator.SESSION.removeResourceChangeListener();
 			resource.delete(force, monitor);
 			Activator.SESSION.addResourceChangeListener();
-			
+
 			status = new Status(Status.OK, Activator.PLUGIN_ID,
 					"Resource content set successfully.");
 		} catch (CoreException e) {

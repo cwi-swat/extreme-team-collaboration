@@ -26,7 +26,7 @@ public class Activator extends AbstractUIPlugin {
 	public static final ResourceChangeListener resourceChangeListener = new ResourceChangeListener();
 
 	public static final InfoExtractor infoExtractor = new SubclipseInfoExtractor();
-	
+
 	public static boolean fakeStart = false;
 
 	/**

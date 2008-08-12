@@ -16,8 +16,8 @@ import org.eclipse.core.runtime.Status;
  */
 public class ResourceMoveJob extends HighPriorityJob {
 
-	private IResource resource;
-	private IPath moveTo;
+	final private IResource resource;
+	final private IPath moveTo;
 
 	/**
 	 * Move a resource to a new location. Schedules itself to be run.
@@ -27,12 +27,12 @@ public class ResourceMoveJob extends HighPriorityJob {
 	 * @param moveTo
 	 *            The new location of the resource.
 	 */
-	public ResourceMoveJob(IResource resource, IPath moveTo) {
+	public ResourceMoveJob(final IResource resource, final IPath moveTo) {
 		super(resource.toString());
 
 		this.resource = resource;
 		this.moveTo = moveTo;
-		
+
 		schedule();
 	}
 
@@ -43,14 +43,14 @@ public class ResourceMoveJob extends HighPriorityJob {
 	 * IProgressMonitor)
 	 */
 	@Override
-	protected IStatus run(IProgressMonitor monitor) {
+	protected IStatus run(final IProgressMonitor monitor) {
 		IStatus status;
 
 		try {
 			Activator.SESSION.removeResourceChangeListener();
 			resource.move(moveTo, true, null);
 			Activator.SESSION.addResourceChangeListener();
-			
+
 			status = new Status(Status.OK, Activator.PLUGIN_ID,
 					"Move applied successfully.");
 		} catch (CoreException e) {

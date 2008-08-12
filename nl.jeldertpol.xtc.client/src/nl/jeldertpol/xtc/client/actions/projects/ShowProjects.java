@@ -82,7 +82,7 @@ public class ShowProjects {
 				versionedProjects.add(projects[i]);
 			} catch (RevisionExtractorException e) {
 				e.printStackTrace();
-				
+
 				MessageDialog.openError(null, "XTC Start/Join", e.getMessage());
 			} catch (UnversionedProjectException e) {
 				// Project is not under version control. Print notice and

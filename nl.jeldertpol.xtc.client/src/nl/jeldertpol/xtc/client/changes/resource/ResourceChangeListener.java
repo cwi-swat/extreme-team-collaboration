@@ -16,13 +16,13 @@ import org.eclipse.core.runtime.Path;
 public class ResourceChangeListener implements IResourceChangeListener {
 
 	@Override
-	public void resourceChanged(IResourceChangeEvent event) {
+	public void resourceChanged(final IResourceChangeEvent event) {
 		// TODO ignore bin? (build map)
 
 		// TODO remove fakeStart before production
 		if (Activator.SESSION.inSession() || Activator.fakeStart) {
 			assert (event.getType() == IResourceChangeEvent.POST_CHANGE);
-			
+
 			// Only listen to project in current session.
 			IResourceDelta delta = event.getDelta();
 			IResourceDelta projectDelta = delta.findMember(new Path(
@@ -33,7 +33,8 @@ public class ResourceChangeListener implements IResourceChangeListener {
 			try {
 				projectDelta.accept(new ResourceDeltaVisitor());
 			} catch (NullPointerException e) {
-				// Resource changed for a project other that the project in the session. Ignoring.
+				// Resource changed for a project other that the project in the
+				// session. Ignoring.
 			} catch (CoreException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

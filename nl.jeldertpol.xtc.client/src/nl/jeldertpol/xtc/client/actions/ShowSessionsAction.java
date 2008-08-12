@@ -49,7 +49,8 @@ public class ShowSessionsAction extends AbstractHandler {
 					throw new ProjectNotOnClientException(projectName);
 				} catch (ProjectNotOnClientException e) {
 					e.printStackTrace();
-					MessageDialog.openError(null, "XTC Start/Join", e.getMessage());
+					MessageDialog.openError(null, "XTC Start/Join", e
+							.getMessage());
 				}
 			}
 		}

@@ -17,7 +17,7 @@ public abstract class HighPriorityJob extends Job {
 	 * 
 	 * @see Job#INTERACTIVE
 	 */
-	public HighPriorityJob(String name) {
+	public HighPriorityJob(final String name) {
 		super(name);
 
 		setPriority(INTERACTIVE);

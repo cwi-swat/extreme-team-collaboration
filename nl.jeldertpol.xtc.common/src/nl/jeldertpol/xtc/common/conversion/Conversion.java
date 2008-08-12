@@ -71,7 +71,7 @@ public class Conversion {
 	 * 
 	 *         TODO move to client side, or stay in common?
 	 */
-	public static byte[] fileToByte(File file) {
+	public static byte[] fileToByte(final File file) {
 		byte[] bytes = null;
 
 		try {
@@ -106,7 +106,7 @@ public class Conversion {
 	 * 
 	 *            TODO move to client side, or stay in common?
 	 */
-	public static void byteToFile(byte[] bytes, File file) {
+	public static void byteToFile(final byte[] bytes, final File file) {
 		try {
 			FileOutputStream fos = new FileOutputStream(file);
 

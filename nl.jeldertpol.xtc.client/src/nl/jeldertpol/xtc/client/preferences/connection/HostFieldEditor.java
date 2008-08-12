@@ -14,13 +14,14 @@ import org.eclipse.swt.widgets.Composite;
 public class HostFieldEditor extends StringFieldEditor {
 
 	// TODO javadoc
-	
+
 	private final String errorMessage = "Invalid host";
 
 	/**
 	 * @see StringFieldEditor#StringFieldEditor(String, String, Composite)
 	 */
-	public HostFieldEditor(String name, String labelText, Composite parent) {
+	public HostFieldEditor(final String name, final String labelText,
+			final Composite parent) {
 		super(name, labelText, parent);
 		setEmptyStringAllowed(false);
 	}
@@ -28,8 +29,8 @@ public class HostFieldEditor extends StringFieldEditor {
 	/**
 	 * @see StringFieldEditor#StringFieldEditor(String, String, int, Composite)
 	 */
-	public HostFieldEditor(String name, String labelText, int width,
-			Composite parent) {
+	public HostFieldEditor(final String name, final String labelText,
+			final int width, final Composite parent) {
 		super(name, labelText, width, parent);
 		setEmptyStringAllowed(false);
 	}
@@ -38,8 +39,8 @@ public class HostFieldEditor extends StringFieldEditor {
 	 * @see StringFieldEditor#StringFieldEditor(String, String, int, int,
 	 *      Composite)
 	 */
-	public HostFieldEditor(String name, String labelText, int width,
-			int strategy, Composite parent) {
+	public HostFieldEditor(final String name, final String labelText,
+			final int width, final int strategy, final Composite parent) {
 		super(name, labelText, width, strategy, parent);
 		setEmptyStringAllowed(false);
 	}
@@ -50,8 +51,8 @@ public class HostFieldEditor extends StringFieldEditor {
 	 * @see org.eclipse.jface.preference.StringFieldEditor#checkState()
 	 */
 	protected boolean checkState() {
+		boolean validHost = false;
 		if (super.checkState()) {
-			boolean validHost;
 			try {
 				InetAddress.getByName(getStringValue());
 				validHost = true;
@@ -65,10 +66,8 @@ public class HostFieldEditor extends StringFieldEditor {
 				showErrorMessage();
 				setErrorMessage(oldErrorMessage);
 			}
-			return validHost;
-		} else {
-			return false;
 		}
+		return validHost;
 	}
 
 }

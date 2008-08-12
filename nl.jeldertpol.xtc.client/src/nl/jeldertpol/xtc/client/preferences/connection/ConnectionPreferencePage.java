@@ -21,7 +21,7 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 
 public class ConnectionPreferencePage extends FieldEditorPreferencePage
 		implements IWorkbenchPreferencePage {
-	
+
 	private final int portMin = 1;
 	private final int portMax = 65535;
 
@@ -62,7 +62,8 @@ public class ConnectionPreferencePage extends FieldEditorPreferencePage
 	 * @see
 	 * org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
 	 */
-	public void init(IWorkbench workbench) {
+	public void init(final IWorkbench workbench) {
+		// Nothing to do
 	}
 
 }

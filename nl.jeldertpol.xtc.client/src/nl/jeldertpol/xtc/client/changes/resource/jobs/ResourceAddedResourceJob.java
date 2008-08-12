@@ -20,24 +20,25 @@ import org.eclipse.core.runtime.Status;
  */
 public class ResourceAddedResourceJob extends HighPriorityJob {
 
-	private IResource resource;
-	private int type;
+	final private IResource resource;
+	final private int type;
 
 	/**
 	 * Add a resource. Schedules itself to be run.
 	 * 
 	 * @param resource
 	 *            The resource to add.
-	 * @param type The type of resource.
+	 * @param type
+	 *            The type of resource.
 	 * 
 	 * @see IResource#getType()
 	 */
-	public ResourceAddedResourceJob(IResource resource, int type) {
+	public ResourceAddedResourceJob(final IResource resource, final int type) {
 		super(resource.toString());
 
 		this.resource = resource;
 		this.type = type;
-		
+
 		schedule();
 	}
 
@@ -48,7 +49,7 @@ public class ResourceAddedResourceJob extends HighPriorityJob {
 	 * IProgressMonitor)
 	 */
 	@Override
-	protected IStatus run(IProgressMonitor monitor) {
+	protected IStatus run(final IProgressMonitor monitor) {
 		IStatus status;
 
 		try {
@@ -71,9 +72,9 @@ public class ResourceAddedResourceJob extends HighPriorityJob {
 				folder.create(force, local, monitor);
 				Activator.SESSION.addResourceChangeListener();
 			}
-			
+
 			resource.refreshLocal(IResource.NONE, monitor);
-			
+
 			status = new Status(Status.OK, Activator.PLUGIN_ID,
 					"Resource content set successfully.");
 		} catch (CoreException e) {

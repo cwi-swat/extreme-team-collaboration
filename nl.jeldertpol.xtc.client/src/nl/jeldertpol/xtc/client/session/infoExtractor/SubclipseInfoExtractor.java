@@ -32,7 +32,7 @@ public class SubclipseInfoExtractor extends InfoExtractor {
 	 *            the project in which to look for modified {@link IResource}.
 	 * @return a list containing each modified {@link IResource}.
 	 */
-	public List<IResource> modifiedFiles(IProject project) {
+	public List<IResource> modifiedFiles(final IProject project) {
 		return modifiedFiles((IResource) project);
 	}
 
@@ -44,7 +44,7 @@ public class SubclipseInfoExtractor extends InfoExtractor {
 	 *            the resource in which to look for modified {@link IResource}.
 	 * @return a list containing each modified {@link IResource}.
 	 */
-	private List<IResource> modifiedFiles(IResource resource) {
+	private List<IResource> modifiedFiles(final IResource resource) {
 		List<IResource> modifiedFiles = new ArrayList<IResource>();
 
 		ISVNLocalResource svnResource = SVNWorkspaceRoot
@@ -88,23 +88,28 @@ public class SubclipseInfoExtractor extends InfoExtractor {
 		return modifiedFiles;
 	}
 
-	/* (non-Javadoc)
-	 * @see nl.jeldertpol.xtc.client.session.infoExtractor.InfoExtractor#getRevision(org.eclipse.core.resources.IProject)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * nl.jeldertpol.xtc.client.session.infoExtractor.InfoExtractor#getRevision
+	 * (org.eclipse.core.resources.IProject)
 	 */
 	@Override
-	public Long getRevision(IProject project) throws UnversionedProjectException, RevisionExtractorException {
+	public Long getRevision(final IProject project)
+			throws UnversionedProjectException, RevisionExtractorException {
 		ISVNLocalResource svnResource = SVNWorkspaceRoot
 				.getSVNResourceFor(project);
 		Long number = null;
 
 		try {
 			SVNRevision revision = svnResource.getRevision();
-			number = new Long(revision.toString());
+			number = Long.valueOf(revision.toString());
 		} catch (SVNException e) {
-//			e.printStackTrace();
+			// e.printStackTrace();
 			throw new RevisionExtractorException(e);
 		} catch (NullPointerException e) {
-//			e.printStackTrace();
+			// e.printStackTrace();
 			// Not a Subversion project
 			throw new UnversionedProjectException(project.getName());
 		}

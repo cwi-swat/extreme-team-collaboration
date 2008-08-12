@@ -3,7 +3,7 @@ package nl.jeldertpol.xtc.client.preferences.connection;
 /**
  * Constant definitions for plug-in preferences.
  */
-public class PreferenceConstants {
+public final class PreferenceConstants {
 
 	/**
 	 * Constant for referring to the host preference.
@@ -24,6 +24,7 @@ public class PreferenceConstants {
 	 * Private constructor, so this class cannot be created.
 	 */
 	private PreferenceConstants() {
+		// Nothing to do
 	}
 
 }

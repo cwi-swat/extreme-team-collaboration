@@ -49,7 +49,7 @@ import org.eclipse.ui.PlatformUI;
  * @author Jeldert Pol
  */
 public class Session {
-	private InfoExtractor infoExtractor;
+	final private InfoExtractor infoExtractor;
 
 	/**
 	 * Holds the connection state with the server.
@@ -75,7 +75,7 @@ public class Session {
 	/**
 	 * Holds the server.
 	 */
-	private Server server;
+	final private Server server;
 
 	/**
 	 * Create a new session. Will not connect to the Toolbus. This will be done
@@ -171,7 +171,7 @@ public class Session {
 	 * @see Session#startSession(IProject)
 	 * @see Session#joinSession(IProject)
 	 */
-	public void startJoinSession(IProject project)
+	public void startJoinSession(final IProject project)
 			throws UnableToConnectException, AlreadyInSessionException,
 			ProjectModifiedException, RevisionExtractorException,
 			UnversionedProjectException, WrongRevisionException,
@@ -213,10 +213,10 @@ public class Session {
 	 * @throws ProjectAlreadyPresentException
 	 *             The project is already present on the server.
 	 */
-	public void startSession(IProject project) throws UnableToConnectException,
-			AlreadyInSessionException, ProjectModifiedException,
-			RevisionExtractorException, UnversionedProjectException,
-			ProjectAlreadyPresentException {
+	public void startSession(final IProject project)
+			throws UnableToConnectException, AlreadyInSessionException,
+			ProjectModifiedException, RevisionExtractorException,
+			UnversionedProjectException, ProjectAlreadyPresentException {
 		if (!connected) {
 			connect();
 		}
@@ -270,11 +270,11 @@ public class Session {
 	 *             The project is not on the server. Cannot join a session.
 	 * @throws RevisionExtractorException
 	 */
-	public void joinSession(IProject project) throws UnableToConnectException,
-			AlreadyInSessionException, ProjectModifiedException,
-			RevisionExtractorException, UnversionedProjectException,
-			WrongRevisionException, NicknameAlreadyTakenException,
-			ProjectNotOnServerException {
+	public void joinSession(final IProject project)
+			throws UnableToConnectException, AlreadyInSessionException,
+			ProjectModifiedException, RevisionExtractorException,
+			UnversionedProjectException, WrongRevisionException,
+			NicknameAlreadyTakenException, ProjectNotOnServerException {
 		if (!connected) {
 			connect();
 		}
@@ -390,8 +390,8 @@ public class Session {
 	 * @see IResource#getProjectRelativePath()
 	 * @see DocumentEvent
 	 */
-	public void sendChange(IProject project, IPath filePath, int length,
-			int offset, String text) {
+	public void sendChange(final IProject project, final IPath filePath,
+			final int length, final int offset, final String text) {
 		if (shouldSend(project)) {
 			String filename = filePath.toPortableString();
 			server.sendChange(projectName, filename, length, offset, text,
@@ -416,8 +416,9 @@ public class Session {
 	 * @param nickname
 	 *            The nickname of the client the change originated from.
 	 */
-	public void receiveChange(String remoteProjectName, String filePath,
-			int length, int offset, String text, String nickname) {
+	public void receiveChange(final String remoteProjectName,
+			final String filePath, final int length, final int offset,
+			final String text, final String nickname) {
 		if (shouldReceive(remoteProjectName, nickname)) {
 			IProject project = ResourcesPlugin.getWorkspace().getRoot()
 					.getProject(projectName);
@@ -438,7 +439,8 @@ public class Session {
 	 * @param moveTo
 	 *            Full path of new resource location.
 	 */
-	public void sendMove(IProject project, IPath moveFrom, IPath moveTo) {
+	public void sendMove(final IProject project, final IPath moveFrom,
+			final IPath moveTo) {
 		if (shouldSend(project)) {
 			String from = moveFrom.toPortableString();
 			String to = moveTo.toPortableString();
@@ -458,8 +460,8 @@ public class Session {
 	 * @param nickname
 	 *            The nickname of the client the move originated from.
 	 */
-	public void receiveMove(String remoteProjectName, String from, String to,
-			String nickname) {
+	public void receiveMove(final String remoteProjectName, final String from,
+			final String to, final String nickname) {
 		if (shouldReceive(remoteProjectName, nickname)) {
 			IPath moveFrom = Path.fromPortableString(from);
 			IPath moveTo = Path.fromPortableString(to);
@@ -468,8 +470,7 @@ public class Session {
 					.findMember(moveFrom);
 
 			// resourceChangeExecuter.move(resource, moveTo);
-			ResourceMoveJob job = new ResourceMoveJob(resource, moveTo);
-			// job.schedule();
+			new ResourceMoveJob(resource, moveTo);
 		}
 	}
 
@@ -484,7 +485,8 @@ public class Session {
 	 * @param file
 	 *            The actual file which holds the content.
 	 */
-	public void sendContent(IProject project, IPath filePath, File file) {
+	public void sendContent(final IProject project, final IPath filePath,
+			final File file) {
 		if (shouldSend(project)) {
 			// Create new job to do the conversion.
 			new ResourceSendContentJob(project, filePath, file);
@@ -504,7 +506,8 @@ public class Session {
 	 * 
 	 * @see #sendContent(IProject, IPath)
 	 */
-	public void sendContent(IProject project, IPath filePath, byte[] content) {
+	public void sendContent(final IProject project, final IPath filePath,
+			final byte[] content) {
 		if (shouldSend(project)) {
 			String portableFilePath = filePath.toPortableString();
 
@@ -527,8 +530,8 @@ public class Session {
 	 * @param nickname
 	 *            The nickname of the client the content originated from.
 	 */
-	public void receiveContent(String remoteProjectName, String filePath,
-			byte[] content, String nickname) {
+	public void receiveContent(final String remoteProjectName,
+			final String filePath, final byte[] content, final String nickname) {
 		if (shouldReceive(remoteProjectName, nickname)) {
 			IProject project = ResourcesPlugin.getWorkspace().getRoot()
 					.getProject(projectName);
@@ -554,7 +557,8 @@ public class Session {
 	 * 
 	 * @see IResource#getType()
 	 */
-	public void sendAddedResource(IProject project, IPath resourcePath, int type) {
+	public void sendAddedResource(final IProject project,
+			final IPath resourcePath, final int type) {
 		if (shouldSend(project)) {
 			String resource = resourcePath.toPortableString();
 			server.sendAddedResource(projectName, resource, type, nickname);
@@ -576,8 +580,8 @@ public class Session {
 	 * 
 	 * @see IResource#getType()
 	 */
-	public void receiveAddedResource(String remoteProjectName,
-			String resourcePath, int type, String nickname) {
+	public void receiveAddedResource(final String remoteProjectName,
+			final String resourcePath, final int type, final String nickname) {
 		if (shouldReceive(remoteProjectName, nickname)) {
 			IProject project = ResourcesPlugin.getWorkspace().getRoot()
 					.getProject(projectName);
@@ -601,7 +605,8 @@ public class Session {
 	 * @param resourcePath
 	 *            The added resource, path must be relative to the project.
 	 */
-	public void sendRemovedResource(IProject project, IPath resourcePath) {
+	public void sendRemovedResource(final IProject project,
+			final IPath resourcePath) {
 		if (shouldSend(project)) {
 			String resource = resourcePath.toPortableString();
 			server.sendRemovedResource(projectName, resource, nickname);
@@ -619,8 +624,8 @@ public class Session {
 	 * @param nickname
 	 *            The nickname of the client the added resource originated from.
 	 */
-	public void receiveRemovedResource(String remoteProjectName,
-			String resourcePath, String nickname) {
+	public void receiveRemovedResource(final String remoteProjectName,
+			final String resourcePath, final String nickname) {
 		if (shouldReceive(remoteProjectName, nickname)) {
 			IProject project = ResourcesPlugin.getWorkspace().getRoot()
 					.getProject(projectName);
@@ -656,7 +661,7 @@ public class Session {
 	 * 
 	 * @see InfoExtractor#getRevision(IProject)
 	 */
-	private Long getRevision(IProject project)
+	private Long getRevision(final IProject project)
 			throws RevisionExtractorException, UnversionedProjectException {
 		return infoExtractor.getRevision(project);
 	}
@@ -669,7 +674,7 @@ public class Session {
 	 * @return <code>true</code> if project is unmodified, <code>false</code>
 	 *         otherwise.
 	 */
-	private boolean unmodifiedProject(IProject project) {
+	private boolean unmodifiedProject(final IProject project) {
 		List<IResource> modifiedFiles = infoExtractor.modifiedFiles(project);
 
 		return modifiedFiles.isEmpty();
@@ -683,7 +688,7 @@ public class Session {
 	 * @return <code>true</code> if change should be send to server,
 	 *         <code>false</code> otherwise.
 	 */
-	private boolean shouldSend(IProject project) {
+	private boolean shouldSend(final IProject project) {
 		String remoteProjectName = project.getName();
 
 		return inSession() && remoteProjectName.equals(projectName);
@@ -699,7 +704,8 @@ public class Session {
 	 * @return <code>true</code> if change should be received,
 	 *         <code>false</code> otherwise.
 	 */
-	private boolean shouldReceive(String remoteProjectName, String nickname) {
+	private boolean shouldReceive(final String remoteProjectName,
+			final String nickname) {
 		// Only act when in a session. Should always be true.
 		// Only react if current project is the same as remote.
 		// This will ignore changes from the client itself.

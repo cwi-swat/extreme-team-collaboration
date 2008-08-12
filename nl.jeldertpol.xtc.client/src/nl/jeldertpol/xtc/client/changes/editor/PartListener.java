@@ -125,10 +125,10 @@ public class PartListener implements IPartListener2 {
 		if (document != null) {
 			// Listen to document changes.
 			addDocumentListener(document);
-			
+
 			// Get the IResource of the document.
-			String documentName = partRef.getPage().getActiveEditor().getEditorInput()
-					.getToolTipText();
+			String documentName = partRef.getPage().getActiveEditor()
+					.getEditorInput().getToolTipText();
 			IResource resouce = ResourcesPlugin.getWorkspace().getRoot()
 					.findMember(documentName);
 			Activator.documentListener.setResource(resouce);

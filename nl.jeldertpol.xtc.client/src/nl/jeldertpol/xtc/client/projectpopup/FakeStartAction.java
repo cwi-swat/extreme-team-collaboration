@@ -16,7 +16,7 @@ import org.eclipse.ui.IWorkbenchPart;
  */
 public class FakeStartAction implements IObjectActionDelegate {
 
-//	private ISelection selection;
+	// private ISelection selection;
 
 	/**
 	 * 
@@ -26,8 +26,12 @@ public class FakeStartAction implements IObjectActionDelegate {
 		Activator.fakeStart = true;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IObjectActionDelegate#setActivePart(org.eclipse.jface.action.IAction, org.eclipse.ui.IWorkbenchPart)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.ui.IObjectActionDelegate#setActivePart(org.eclipse.jface.
+	 * action.IAction, org.eclipse.ui.IWorkbenchPart)
 	 */
 	@Override
 	public void setActivePart(IAction action, IWorkbenchPart targetPart) {
@@ -35,25 +39,31 @@ public class FakeStartAction implements IObjectActionDelegate {
 
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
 	 */
 	@Override
 	public void run(IAction action) {
-//		if (selection instanceof TreeSelection) {
-//			ITreeSelection treeSelection = (ITreeSelection) selection;
-//			IProject project = (IProject) treeSelection.getFirstElement();
-//
-//			//new StartJoin().startJoin(project);
-//		}
+		// if (selection instanceof TreeSelection) {
+		// ITreeSelection treeSelection = (ITreeSelection) selection;
+		// IProject project = (IProject) treeSelection.getFirstElement();
+		//
+		// //new StartJoin().startJoin(project);
+		// }
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IActionDelegate#selectionChanged(org.eclipse.jface.action.IAction, org.eclipse.jface.viewers.ISelection)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.ui.IActionDelegate#selectionChanged(org.eclipse.jface.action
+	 * .IAction, org.eclipse.jface.viewers.ISelection)
 	 */
 	@Override
 	public void selectionChanged(IAction action, ISelection selection) {
-//		this.selection = selection;
+		// this.selection = selection;
 	}
 
 }

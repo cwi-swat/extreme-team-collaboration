@@ -27,7 +27,7 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 	 * .resources.IResourceDelta)
 	 */
 	@Override
-	public boolean visit(IResourceDelta delta) throws CoreException {
+	public boolean visit(final IResourceDelta delta) throws CoreException {
 		boolean ofInterest = false;
 		boolean visitChildren = true;
 
