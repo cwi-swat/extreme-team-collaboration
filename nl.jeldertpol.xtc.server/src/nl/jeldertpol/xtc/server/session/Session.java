@@ -1,5 +1,9 @@
 package nl.jeldertpol.xtc.server.session;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import nl.jeldertpol.xtc.common.changes.AbstractChange;
 import nl.jeldertpol.xtc.common.session.SimpleSession;
 
 /**
@@ -9,13 +13,12 @@ import nl.jeldertpol.xtc.common.session.SimpleSession;
  */
 public class Session extends SimpleSession {
 
+	private List<AbstractChange> changes;
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
-	// private HashMap<String, LinkedList<Change>> changes;
-	// TODO changes bijhouden
 
 	/**
 	 * Create a new project.
@@ -29,10 +32,29 @@ public class Session extends SimpleSession {
 	 */
 	public Session(final String projectName, final Long revision,
 			final String nickname) {
-		// naam project, revision, resources, changes to resources,
 		super(projectName, revision, nickname);
 
-		// changes = new HashMap<String, LinkedList<Change>>(resources.size());
+		changes = new ArrayList<AbstractChange>();
+	}
+
+	/**
+	 * Add a change to this session.
+	 * 
+	 * @param change
+	 *            The change.
+	 */
+	public void addChange(final AbstractChange change) {
+		changes.add(change);
+		System.out.println(change.toString());
+	}
+
+	/**
+	 * Get all changes made in this session.
+	 * 
+	 * @return All changes, in order from first, to last.
+	 */
+	public List<AbstractChange> getChanges() {
+		return changes;
 	}
 
 }

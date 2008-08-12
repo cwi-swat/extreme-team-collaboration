@@ -187,7 +187,7 @@ public class Server extends AbstractJavaTool {
 	 * @param text
 	 *            Text inserted into the document.
 	 * @param nickname
-	 *            The nickname of the client the move originated from.
+	 *            The nickname of the client the change originated from.
 	 * 
 	 * @see IPath#toPortableString()
 	 */

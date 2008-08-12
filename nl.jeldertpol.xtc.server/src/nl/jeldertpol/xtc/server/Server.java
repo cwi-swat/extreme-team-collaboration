@@ -3,6 +3,11 @@ package nl.jeldertpol.xtc.server;
 import java.util.ArrayList;
 import java.util.List;
 
+import nl.jeldertpol.xtc.common.changes.AddedResourceChange;
+import nl.jeldertpol.xtc.common.changes.ContentChange;
+import nl.jeldertpol.xtc.common.changes.MoveChange;
+import nl.jeldertpol.xtc.common.changes.RemovedResourceChange;
+import nl.jeldertpol.xtc.common.changes.TextualChange;
 import nl.jeldertpol.xtc.common.conversion.Conversion;
 import nl.jeldertpol.xtc.common.session.SimpleSession;
 import nl.jeldertpol.xtc.server.session.Session;
@@ -199,7 +204,13 @@ public class Server extends AbstractJavaTool {
 			final String nickname) {
 		boolean success = false;
 
-		// TODO change bewaren
+		Session session = getSession(projectName);
+		if (session != null) {
+			TextualChange change = new TextualChange(filename, length, offset,
+					text, nickname);
+			session.addChange(change);
+			success = true;
+		}
 
 		ATerm sendChange = factory.make("sendChange(<bool>)", success);
 		return sendChange;
@@ -218,7 +229,12 @@ public class Server extends AbstractJavaTool {
 			final String to, final String nickname) {
 		boolean success = false;
 
-		// TODO move bewaren
+		Session session = getSession(projectName);
+		if (session != null) {
+			MoveChange change = new MoveChange(from, to, nickname);
+			session.addChange(change);
+			success = true;
+		}
 
 		ATerm sendMove = factory.make("sendMove(<bool>)", success);
 		return sendMove;
@@ -234,7 +250,13 @@ public class Server extends AbstractJavaTool {
 			final byte[] content, final String nickname) {
 		boolean success = false;
 
-		// TODO content bewaren
+		Session session = getSession(projectName);
+		if (session != null) {
+			ContentChange change = new ContentChange(filename, content,
+					nickname);
+			session.addChange(change);
+			success = true;
+		}
 
 		ATerm sendChange = factory.make("sendContent(<bool>)", success);
 		return sendChange;
@@ -244,7 +266,13 @@ public class Server extends AbstractJavaTool {
 			final String resourcePath, final int type, final String nickname) {
 		boolean success = false;
 
-		// TODO bewaren
+		Session session = getSession(projectName);
+		if (session != null) {
+			AddedResourceChange change = new AddedResourceChange(resourcePath,
+					type, nickname);
+			session.addChange(change);
+			success = true;
+		}
 
 		ATerm sendAddedResource = factory.make("sendAddedResource(<bool>)",
 				success);
@@ -255,7 +283,13 @@ public class Server extends AbstractJavaTool {
 			final String resourcePath, final String nickname) {
 		boolean success = false;
 
-		// TODO bewaren
+		Session session = getSession(projectName);
+		if (session != null) {
+			RemovedResourceChange change = new RemovedResourceChange(
+					resourcePath, nickname);
+			session.addChange(change);
+			success = true;
+		}
 
 		ATerm sendRemovedResource = factory.make("sendRemovedResource(<bool>)",
 				success);
