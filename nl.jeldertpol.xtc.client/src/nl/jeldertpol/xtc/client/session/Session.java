@@ -424,8 +424,7 @@ public class Session {
 					.getProject(projectName);
 			IResource resource = project.findMember(filePath);
 
-			DocumentReplacer documentReplacer = new DocumentReplacer();
-			documentReplacer.replace(resource, length, offset, text);
+			DocumentReplacer.replace(resource, length, offset, text);
 		}
 	}
 

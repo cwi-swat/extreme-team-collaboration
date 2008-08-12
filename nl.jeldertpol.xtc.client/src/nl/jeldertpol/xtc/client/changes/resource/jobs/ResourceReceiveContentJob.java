@@ -3,6 +3,7 @@ package nl.jeldertpol.xtc.client.changes.resource.jobs;
 import java.io.File;
 
 import nl.jeldertpol.xtc.client.Activator;
+import nl.jeldertpol.xtc.client.changes.editor.DocumentReplacer;
 import nl.jeldertpol.xtc.common.conversion.Conversion;
 
 import org.eclipse.core.resources.IFile;
@@ -13,6 +14,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.ui.texteditor.ITextEditor;
 
 /**
  * Set content of a file.
@@ -66,6 +68,14 @@ public class ResourceReceiveContentJob extends HighPriorityJob {
 			IFile ifile = project.getFile(filePath);
 			try {
 				ifile.refreshLocal(IResource.NONE, monitor);
+				
+				// Look if there is an open editor with this resource
+				ITextEditor editor = DocumentReplacer.findEditor(ifile);
+				if (editor != null) {
+					System.out.println("Reverting to saved file.");
+					editor.doRevertToSaved();
+				}
+				
 			} catch (CoreException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

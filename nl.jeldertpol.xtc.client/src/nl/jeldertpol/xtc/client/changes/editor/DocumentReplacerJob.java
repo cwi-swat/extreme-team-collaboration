@@ -41,6 +41,10 @@ public class DocumentReplacerJob extends UIJob {
 		this.length = length;
 		this.offset = offset;
 		this.text = text;
+		
+		setPriority(INTERACTIVE);
+		
+		schedule();
 	}
 
 	/*
@@ -56,7 +60,12 @@ public class DocumentReplacerJob extends UIJob {
 		IStatus status;
 
 		try {
-			document.replace(offset, length, text);
+			synchronized (Activator.documentListener) {
+				document.removeDocumentListener(Activator.documentListener);
+				document.replace(offset, length, text);
+				document.addDocumentListener(Activator.documentListener);
+			}
+
 			status = new Status(Status.OK, Activator.PLUGIN_ID,
 					"Change applied successfully.");
 		} catch (BadLocationException e) {
