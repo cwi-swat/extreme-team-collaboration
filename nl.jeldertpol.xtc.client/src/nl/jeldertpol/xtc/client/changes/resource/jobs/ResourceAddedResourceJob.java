@@ -71,10 +71,12 @@ public class ResourceAddedResourceJob extends HighPriorityJob {
 				boolean force = false;
 				boolean local = true;
 
-				Activator.SESSION.removeResourceChangeListener();
-				folder.create(force, local, monitor);
-				resource.refreshLocal(IResource.NONE, monitor);
-				Activator.SESSION.addResourceChangeListener();
+				synchronized (Activator.resourceChangeListener) {
+					Activator.SESSION.removeResourceChangeListener();
+					folder.create(force, local, monitor);
+					resource.refreshLocal(IResource.NONE, monitor);
+					Activator.SESSION.addResourceChangeListener();
+				}
 			}
 
 			status = new Status(Status.OK, Activator.PLUGIN_ID,

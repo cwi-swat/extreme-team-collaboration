@@ -40,6 +40,8 @@ public class SubclipseInfoExtractor extends InfoExtractor {
 	 * Returns a list of modified {@link IResource} in a {@link IResource}
 	 * (inclusive), based on information from Subclipse.
 	 * 
+	 * TODO unmanaged files are ignored, this is OK for bin files etc, but not for new files.
+	 * 
 	 * @param resource
 	 *            the resource in which to look for modified {@link IResource}.
 	 * @return a list containing each modified {@link IResource}.
