@@ -316,6 +316,9 @@ public class Session {
 			throw new ProjectNotOnServerException(projectName);
 		}
 
+		// Request and apply all changes made so far.
+		server.requestChanges(projectName);
+
 		registerListeners();
 	}
 

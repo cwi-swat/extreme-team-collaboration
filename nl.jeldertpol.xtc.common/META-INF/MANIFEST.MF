@@ -5,5 +5,6 @@ Bundle-SymbolicName: nl.jeldertpol.xtc.common
 Bundle-Version: 0.0.1
 Bundle-Vendor: Jeldert Pol
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Export-Package: nl.jeldertpol.xtc.common.conversion,
+Export-Package: nl.jeldertpol.xtc.common.changes,
+ nl.jeldertpol.xtc.common.conversion,
  nl.jeldertpol.xtc.common.session

@@ -7,6 +7,12 @@ import nl.jeldertpol.xtc.client.exceptions.LeaveSessionException;
 import nl.jeldertpol.xtc.client.exceptions.NicknameAlreadyTakenException;
 import nl.jeldertpol.xtc.client.exceptions.ProjectAlreadyPresentException;
 import nl.jeldertpol.xtc.client.exceptions.UnableToConnectException;
+import nl.jeldertpol.xtc.common.changes.AbstractChange;
+import nl.jeldertpol.xtc.common.changes.AddedResourceChange;
+import nl.jeldertpol.xtc.common.changes.ContentChange;
+import nl.jeldertpol.xtc.common.changes.MoveChange;
+import nl.jeldertpol.xtc.common.changes.RemovedResourceChange;
+import nl.jeldertpol.xtc.common.changes.TextualChange;
 import nl.jeldertpol.xtc.common.conversion.Conversion;
 import nl.jeldertpol.xtc.common.session.SimpleSession;
 
@@ -144,6 +150,47 @@ public class Server extends AbstractJavaTool {
 			// Everything else should already be checked, this is the only
 			// exception left.
 			throw new NicknameAlreadyTakenException(nickname);
+		}
+	}
+
+	/**
+	 * Request all changes made so far from the server, and send them back to
+	 * session.
+	 */
+	public void requestChanges(final String projectName) {
+		ATerm requestChanges = factory.make("requestChanges(<str>)",
+				projectName);
+		ATermAppl reply = sendRequest(requestChanges);
+
+		ATermBlob blob = (ATermBlob) reply.getArgument(0);
+		List<AbstractChange> changes = (List<AbstractChange>) Conversion
+				.byteToObject(blob.getBlobData());
+
+		for (AbstractChange abstractChange : changes) {
+			if (abstractChange instanceof AddedResourceChange) {
+				AddedResourceChange change = (AddedResourceChange) abstractChange;
+				Activator.SESSION.receiveAddedResource(projectName, change
+						.getResourcePath(), change.getType(), change
+						.getNickname());
+			} else if (abstractChange instanceof ContentChange) {
+				ContentChange change = (ContentChange) abstractChange;
+				Activator.SESSION.receiveContent(projectName, change
+						.getFilename(), change.getContent(), change
+						.getNickname());
+			} else if (abstractChange instanceof MoveChange) {
+				MoveChange change = (MoveChange) abstractChange;
+				Activator.SESSION.receiveMove(projectName, change.getFrom(),
+						change.getTo(), change.getNickname());
+			} else if (abstractChange instanceof RemovedResourceChange) {
+				RemovedResourceChange change = (RemovedResourceChange) abstractChange;
+				Activator.SESSION.receiveRemovedResource(projectName, change
+						.getResourcePath(), change.getNickname());
+			} else if (abstractChange instanceof TextualChange) {
+				TextualChange change = (TextualChange) abstractChange;
+				Activator.SESSION.receiveChange(projectName, change
+						.getFilename(), change.getLength(), change.getOffset(),
+						change.getText(), change.getNickname());
+			}
 		}
 	}
 

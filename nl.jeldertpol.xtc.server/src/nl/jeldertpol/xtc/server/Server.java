@@ -3,6 +3,7 @@ package nl.jeldertpol.xtc.server;
 import java.util.ArrayList;
 import java.util.List;
 
+import nl.jeldertpol.xtc.common.changes.AbstractChange;
 import nl.jeldertpol.xtc.common.changes.AddedResourceChange;
 import nl.jeldertpol.xtc.common.changes.ContentChange;
 import nl.jeldertpol.xtc.common.changes.MoveChange;
@@ -157,6 +158,19 @@ public class Server extends AbstractJavaTool {
 		return joinSession;
 	}
 
+	public ATerm requestChanges(final String projectName) {
+		List<AbstractChange> changes = null;
+
+		Session session = getSession(projectName);
+		changes = session.getChanges();
+
+		byte[] blob = Conversion.objectToByte(changes);
+		ATermBlob termBlob = factory.makeBlob(blob);
+
+		ATerm response = factory.make("requestChanges(<term>)", termBlob);
+		return response;
+	}
+
 	/**
 	 * A client leaves an existing session.
 	 * 
@@ -181,9 +195,11 @@ public class Server extends AbstractJavaTool {
 				session.removeClient(nickname);
 				success = true;
 			}
-		}
 
-		// TODO remove session when no clients are left.
+			if (session.getClients().isEmpty()) {
+				sessions.remove(session);
+			}
+		}
 
 		ATerm leaveSession = factory.make("leaveSession(<bool>)", success);
 		return leaveSession;
