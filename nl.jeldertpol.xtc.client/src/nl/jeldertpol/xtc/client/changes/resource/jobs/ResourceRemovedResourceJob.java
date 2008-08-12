@@ -2,6 +2,7 @@ package nl.jeldertpol.xtc.client.changes.resource.jobs;
 
 import nl.jeldertpol.xtc.client.Activator;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -44,9 +45,21 @@ public class ResourceRemovedResourceJob extends HighPriorityJob {
 		try {
 			boolean force = true;
 
-			Activator.SESSION.removeResourceChangeListener();
-			resource.delete(force, monitor);
-			Activator.SESSION.addResourceChangeListener();
+			IContainer parent = resource.getParent();
+
+			synchronized (Activator.resourceChangeListener) {
+				Activator.SESSION.removeResourceChangeListener();
+
+				resource.delete(force, monitor);
+				try {
+					parent.refreshLocal(IResource.NONE, monitor);
+				} catch (CoreException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				Activator.SESSION.addResourceChangeListener();
+			}
 
 			status = new Status(Status.OK, Activator.PLUGIN_ID,
 					"Resource content set successfully.");

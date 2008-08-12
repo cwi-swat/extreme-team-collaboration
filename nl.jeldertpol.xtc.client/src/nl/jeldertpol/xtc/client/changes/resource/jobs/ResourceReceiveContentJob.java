@@ -59,17 +59,19 @@ public class ResourceReceiveContentJob extends HighPriorityJob {
 		IStatus status;
 
 		// try {
-		Activator.SESSION.removeResourceChangeListener();
-		Conversion.byteToFile(content, file);
+		synchronized (Activator.resourceChangeListener) {
+			Activator.SESSION.removeResourceChangeListener();
+			Conversion.byteToFile(content, file);
 
-		IFile ifile = project.getFile(filePath);
-		try {
-			ifile.refreshLocal(IResource.NONE, monitor);
-		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			IFile ifile = project.getFile(filePath);
+			try {
+				ifile.refreshLocal(IResource.NONE, monitor);
+			} catch (CoreException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			Activator.SESSION.addResourceChangeListener();
 		}
-		Activator.SESSION.addResourceChangeListener();
 
 		status = new Status(Status.OK, Activator.PLUGIN_ID,
 				"Resource content set successfully.");

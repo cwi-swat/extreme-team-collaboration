@@ -60,9 +60,12 @@ public class ResourceAddedResourceJob extends HighPriorityJob {
 				InputStream source = new ByteArrayInputStream(new byte[0]);
 				boolean force = false;
 
-				Activator.SESSION.removeResourceChangeListener();
-				file.create(source, force, monitor);
-				Activator.SESSION.addResourceChangeListener();
+				synchronized (Activator.resourceChangeListener) {
+					Activator.SESSION.removeResourceChangeListener();
+					file.create(source, force, monitor);
+					resource.refreshLocal(IResource.NONE, monitor);
+					Activator.SESSION.addResourceChangeListener();
+				}
 			} else if (type == IResource.FOLDER) {
 				IFolder folder = (IFolder) resource;
 				boolean force = false;
@@ -70,10 +73,9 @@ public class ResourceAddedResourceJob extends HighPriorityJob {
 
 				Activator.SESSION.removeResourceChangeListener();
 				folder.create(force, local, monitor);
+				resource.refreshLocal(IResource.NONE, monitor);
 				Activator.SESSION.addResourceChangeListener();
 			}
-
-			resource.refreshLocal(IResource.NONE, monitor);
 
 			status = new Status(Status.OK, Activator.PLUGIN_ID,
 					"Resource content set successfully.");
