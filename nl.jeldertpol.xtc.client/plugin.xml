@@ -2,50 +2,6 @@
 <?eclipse version="3.2"?>
 <plugin>
    <extension
-         point="org.eclipse.ui.popupMenus">
-      <objectContribution
-            id="nl.jeldertpol.xtc.client.projectpopup"
-            objectClass="org.eclipse.core.resources.IProject">
-         <menu
-               id="nl.jeldertpol.xtc.client.projectpopup.xtc"
-               label="XTC"
-               path="additions">
-            <separator
-                  name="session">
-            </separator>
-            <separator
-                  name="preferences">
-            </separator>
-         </menu>
-         <action
-               class="nl.jeldertpol.xtc.client.projectpopup.StartJoinAction"
-               enablesFor="1"
-               id="nl.jeldertpol.xtc.client.projectpopup.xtc.startjoin"
-               label="Start / Join"
-               menubarPath="nl.jeldertpol.xtc.client.projectpopup.xtc/session">
-         </action>
-         <action
-               class="nl.jeldertpol.xtc.client.projectpopup.DisconnectAction"
-               enablesFor="1"
-               id="nl.jeldertpol.xtc.client.projectpopup.xtc.disconnect"
-               label="Disconnect"
-               menubarPath="nl.jeldertpol.xtc.client.projectpopup.xtc/session">
-         </action>
-         <action
-               class="nl.jeldertpol.xtc.client.projectpopup.PreferencesAction"
-               id="nl.jeldertpol.xtc.client.projectpopup.xtc.preferences"
-               label="Preferences"
-               menubarPath="nl.jeldertpol.xtc.client.projectpopup.xtc/preferences">
-         </action>
-         <action
-               class="nl.jeldertpol.xtc.client.projectpopup.FakeStartAction"
-               id="nl.jeldertpol.xtc.client.projectpopup.xtc.fakestart"
-               label="Fake start"
-               menubarPath="nl.jeldertpol.xtc.client.projectpopup.xtc/session">
-         </action>
-      </objectContribution>
-   </extension>
-   <extension
          point="org.eclipse.ui.commands">
       <command
             description="Shows the current sessions on the server."
@@ -141,27 +97,6 @@
       <initializer
             class="nl.jeldertpol.xtc.client.preferences.connection.PreferenceInitializer">
       </initializer>
-   </extension>
-   <extension
-         point="org.eclipse.ui.views">
-      <category
-            id="nl.jeldertpol.xtc.client.views.xtc"
-            name="XTC">
-      </category>
-      <view
-            allowMultiple="false"
-            category="nl.jeldertpol.xtc.client.views.xtc"
-            class="nl.jeldertpol.xtc.client.views.EditorViewPart"
-            id="nl.jeldertpol.xtc.client.views.editor"
-            name="XTC editor"
-            restorable="true">
-      </view>
-      <stickyView
-            closeable="false"
-            id="nl.jeldertpol.xtc.client.views.editor"
-            location="RIGHT"
-            moveable="true">
-      </stickyView>
    </extension>
 
 </plugin>

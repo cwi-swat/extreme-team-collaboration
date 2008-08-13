@@ -1,17 +1,13 @@
 package nl.jeldertpol.xtc.client.changes.editor;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.jface.text.IDocument;
-import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
-import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 /**
@@ -79,13 +75,7 @@ public class DocumentReplacer {
 
 		// There is no editor open with this resource
 		if (editor == null) {
-			IFile file = (IFile) resource;
-			IEditorDescriptor desc = PlatformUI.getWorkbench()
-					.getEditorRegistry().getDefaultEditor("foo.txt");
-
-			// Try to create an editor
-			new ClosedDocumentReplacerJob(length, offset, text, file, desc
-					.getId());
+			// Ignoring change, will be requested when opening editor
 		} else {
 			new OpenedDocumentReplacerJob(editor, length, offset, text, false);
 		}
