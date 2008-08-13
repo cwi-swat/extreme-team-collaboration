@@ -23,7 +23,7 @@ public class Activator extends AbstractUIPlugin {
 	public static final Session SESSION = new Session();
 
 	public static final DocumentListener documentListener = new DocumentListener();
-	
+
 	public static final DocumentReplacer documentReplacer = new DocumentReplacer();
 
 	public static final ResourceChangeListener resourceChangeListener = new ResourceChangeListener();
@@ -57,6 +57,7 @@ public class Activator extends AbstractUIPlugin {
 	 * org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext
 	 * )
 	 */
+	@Override
 	public void start(final BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
@@ -69,6 +70,7 @@ public class Activator extends AbstractUIPlugin {
 	 * org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext
 	 * )
 	 */
+	@Override
 	public void stop(final BundleContext context) throws Exception {
 		ResourcesPlugin.getWorkspace().removeResourceChangeListener(
 				resourceChangeListener);
