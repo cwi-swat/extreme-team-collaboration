@@ -1,6 +1,7 @@
 package nl.jeldertpol.xtc.client;
 
 import nl.jeldertpol.xtc.client.changes.editor.DocumentListener;
+import nl.jeldertpol.xtc.client.changes.editor.DocumentReplacer;
 import nl.jeldertpol.xtc.client.changes.resource.ResourceChangeListener;
 import nl.jeldertpol.xtc.client.session.Session;
 import nl.jeldertpol.xtc.client.session.infoExtractor.InfoExtractor;
@@ -22,6 +23,8 @@ public class Activator extends AbstractUIPlugin {
 	public static final Session SESSION = new Session();
 
 	public static final DocumentListener documentListener = new DocumentListener();
+	
+	public static final DocumentReplacer documentReplacer = new DocumentReplacer();
 
 	public static final ResourceChangeListener resourceChangeListener = new ResourceChangeListener();
 

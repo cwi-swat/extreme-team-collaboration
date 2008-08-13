@@ -77,6 +77,19 @@ process XTCclient(Client : client, Server : server) is
 		)
 		+
 		(
+			// Request changes in session
+			let
+				Project : str,
+				Changes : term
+			in
+				rec-request(Client, requestChanges(Project?))
+				. snd-eval(Server, requestChanges(Project))
+				. rec-value(Server, requestChanges(Changes?))
+				. snd-response(Client, requestChanges(Changes))
+			endlet
+		)
+		+
+		(
 			// Leave a session
 			let
 				Project : str,
@@ -87,6 +100,10 @@ process XTCclient(Client : client, Server : server) is
 				. snd-eval(Server, leaveSession(Project, Nickname))
 				. rec-value(Server, leaveSession(Success?))
 				. unsubscribe(change(<str>, <str>, <int>, <int>, <str>, <str>))	// Project, Filename, Length, Offset, Text, Nickname
+				. unsubscribe(move(<str>, <str>, <str>, <str>))	// Project, From, To, Nickname
+				. unsubscribe(content(<str>, <str>, <term>, <str>))	// Project, File, Content, Nickname
+				. unsubscribe(addedResource(<str>, <str>, <int>, <str>))	// Project, Resource, Type, Nickname
+				. unsubscribe(removedResource(<str>, <str>, <str>))	// Project, Resource, Nickname
 				. snd-response(Client, leaveSession(Success))
 			endlet
 		)

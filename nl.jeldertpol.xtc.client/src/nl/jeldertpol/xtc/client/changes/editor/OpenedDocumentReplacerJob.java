@@ -8,6 +8,8 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.ui.progress.UIJob;
+import org.eclipse.ui.texteditor.IDocumentProvider;
+import org.eclipse.ui.texteditor.ITextEditor;
 
 /**
  * An {@link UIJob} that can safely replaces text in an {@link IDocument}. Needs
@@ -15,15 +17,17 @@ import org.eclipse.ui.progress.UIJob;
  * 
  * @author Jeldert Pol
  */
-public class DocumentReplacerJob extends UIJob {
+public class OpenedDocumentReplacerJob extends UIJob {
 
-	private final IDocument document;
+	private final ITextEditor editor;
 
 	private final int length;
 
 	private final int offset;
 
 	private final String text;
+
+	private final boolean save;
 
 	/**
 	 * TODO javadoc Constructor.
@@ -33,17 +37,19 @@ public class DocumentReplacerJob extends UIJob {
 	 * @param offset
 	 * @param text
 	 */
-	public DocumentReplacerJob(final IDocument document, final int length,
-			final int offset, final String text) {
-		super(document.toString());
+	public OpenedDocumentReplacerJob(final ITextEditor editor,
+			final int length, final int offset, final String text,
+			final boolean save) {
+		super(editor.toString());
 
-		this.document = document;
+		this.editor = editor;
 		this.length = length;
 		this.offset = offset;
 		this.text = text;
-		
+		this.save = save;
+
 		setPriority(INTERACTIVE);
-		
+
 		schedule();
 	}
 
@@ -56,13 +62,21 @@ public class DocumentReplacerJob extends UIJob {
 	 */
 	@Override
 	public IStatus runInUIThread(final IProgressMonitor monitor) {
-		System.out.println("Que?");
+		System.out.println("Replacing text");
 		IStatus status;
 
 		try {
 			synchronized (Activator.documentListener) {
+				IDocumentProvider documentProvider = editor
+						.getDocumentProvider();
+				IDocument document = documentProvider.getDocument(editor
+						.getEditorInput());
+
 				document.removeDocumentListener(Activator.documentListener);
 				document.replace(offset, length, text);
+				if (save) {
+					editor.doSave(monitor);
+				}
 				document.addDocumentListener(Activator.documentListener);
 			}
 

@@ -70,7 +70,7 @@ public class ResourceReceiveContentJob extends HighPriorityJob {
 				ifile.refreshLocal(IResource.NONE, monitor);
 				
 				// Look if there is an open editor with this resource
-				ITextEditor editor = DocumentReplacer.findEditor(ifile);
+				ITextEditor editor = Activator.documentReplacer.findEditor(ifile);
 				if (editor != null) {
 					System.out.println("Reverting to saved file.");
 					editor.doRevertToSaved();

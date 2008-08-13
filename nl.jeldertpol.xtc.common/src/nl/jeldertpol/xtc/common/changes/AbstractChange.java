@@ -1,11 +1,18 @@
 package nl.jeldertpol.xtc.common.changes;
 
+import java.io.Serializable;
+
 /**
  * A change to a resource made during a session.
  * 
  * @author Jeldert Pol
  */
-public abstract class AbstractChange {
+public abstract class AbstractChange implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	private final String nickname;
 
 	public AbstractChange(final String nickname) {

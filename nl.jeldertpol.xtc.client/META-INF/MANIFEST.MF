@@ -20,3 +20,4 @@ Require-Bundle: nl.jeldertpol.xtc.common;bundle-version="0.0.1",
  org.junit4
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
+Import-Package: org.eclipse.ui.part

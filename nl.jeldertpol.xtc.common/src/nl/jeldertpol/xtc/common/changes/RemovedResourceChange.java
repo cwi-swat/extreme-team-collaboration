@@ -7,6 +7,11 @@ package nl.jeldertpol.xtc.common.changes;
  * 
  */
 public class RemovedResourceChange extends AbstractChange {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	private final String resourcePath;
 
 	/**

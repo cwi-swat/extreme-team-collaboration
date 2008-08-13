@@ -142,5 +142,26 @@
             class="nl.jeldertpol.xtc.client.preferences.connection.PreferenceInitializer">
       </initializer>
    </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            id="nl.jeldertpol.xtc.client.views.xtc"
+            name="XTC">
+      </category>
+      <view
+            allowMultiple="false"
+            category="nl.jeldertpol.xtc.client.views.xtc"
+            class="nl.jeldertpol.xtc.client.views.EditorViewPart"
+            id="nl.jeldertpol.xtc.client.views.editor"
+            name="XTC editor"
+            restorable="true">
+      </view>
+      <stickyView
+            closeable="false"
+            id="nl.jeldertpol.xtc.client.views.editor"
+            location="RIGHT"
+            moveable="true">
+      </stickyView>
+   </extension>
 
 </plugin>

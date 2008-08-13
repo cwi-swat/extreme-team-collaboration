@@ -1,8 +1,10 @@
 package nl.jeldertpol.xtc.client.changes.editor;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IWorkbenchPage;
@@ -19,7 +21,7 @@ import org.eclipse.ui.texteditor.ITextEditor;
  */
 public class DocumentReplacer {
 
-	public static ITextEditor findEditor(final IResource resource) {
+	public ITextEditor findEditor(final IResource resource) {
 		ITextEditor editor = null;
 
 		// Look for an editor that has resource open.
@@ -40,13 +42,14 @@ public class DocumentReplacer {
 					IEditorPart part = editorReference.getEditor(false);
 
 					if (part instanceof AbstractTextEditor) {
-						editor = (ITextEditor) part;
+						ITextEditor anEditor = (ITextEditor) part;
 
-						String filename = editor.getEditorInput()
+						String filename = anEditor.getEditorInput()
 								.getToolTipText();
 						IResource editorResouce = ResourcesPlugin
 								.getWorkspace().getRoot().findMember(filename);
 						if (resource.equals(editorResouce)) {
+							editor = anEditor;
 							break mainloop; // Break out of all loops
 						}
 					}
@@ -57,6 +60,11 @@ public class DocumentReplacer {
 		return editor;
 	}
 
+	public ITextEditor findXtcEditor(final IResource resource) {
+		return null;
+
+	}
+
 	/**
 	 * TODO javadoc
 	 * 
@@ -65,15 +73,21 @@ public class DocumentReplacer {
 	 * @param offset
 	 * @param text
 	 */
-	public static void replace(final IResource resource, final int length,
+	public void replace(final IResource resource, final int length,
 			final int offset, final String text) {
 		ITextEditor editor = findEditor(resource);
 
-		IDocumentProvider documentProvider = editor.getDocumentProvider();
-		IDocument document = documentProvider.getDocument(editor
-				.getEditorInput());
+		// There is no editor open with this resource
+		if (editor == null) {
+			IFile file = (IFile) resource;
+			IEditorDescriptor desc = PlatformUI.getWorkbench()
+					.getEditorRegistry().getDefaultEditor("foo.txt");
 
-		new DocumentReplacerJob(document, length, offset, text);
+			// Try to create an editor
+			new ClosedDocumentReplacerJob(length, offset, text, file, desc
+					.getId());
+		} else {
+			new OpenedDocumentReplacerJob(editor, length, offset, text, false);
+		}
 	}
-
 }

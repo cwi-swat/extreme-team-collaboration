@@ -6,6 +6,11 @@ package nl.jeldertpol.xtc.common.changes;
  * @author Jeldert Pol
  */
 public class TextualChange extends AbstractChange {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	private final String filename;
 	private final int length;
 	private final int offset;

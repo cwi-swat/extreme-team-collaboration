@@ -6,6 +6,11 @@ package nl.jeldertpol.xtc.common.changes;
  * @author Jeldert Pol
  */
 public class MoveChange extends AbstractChange {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	private final String from;
 	private final String to;
 
