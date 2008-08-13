@@ -90,6 +90,20 @@ process XTCclient(Client : client, Server : server) is
 		)
 		+
 		(
+			// Request textual changes of resource
+			let
+				Project : str,
+				Resource : str,
+				Changes : term
+			in
+				rec-request(Client, requestTextualChanges(Project?, Resource?))
+				. snd-eval(Server, requestTextualChanges(Project, Resource))
+				. rec-value(Server, requestTextualChanges(Changes?))
+				. snd-response(Client, requestTextualChanges(Changes))
+			endlet
+		)
+		+
+		(
 			// Leave a session
 			let
 				Project : str,

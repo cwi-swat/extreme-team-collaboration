@@ -5,6 +5,7 @@ import nl.jeldertpol.xtc.client.Activator;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
@@ -199,7 +200,13 @@ public class PartListener implements IPartListener2 {
 	 */
 	@Override
 	public void partOpened(final IWorkbenchPartReference partRef) {
-		// Nothing to do
+		// Request changes from server
+		String documentName = partRef.getTitleToolTip();
+		IResource resource = ResourcesPlugin.getWorkspace().getRoot()
+				.findMember(documentName);
+		IPath resourcePath = resource.getProjectRelativePath();
+
+		Activator.SESSION.requestTextualChanges(resourcePath);
 	}
 
 	/*

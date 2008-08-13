@@ -158,8 +158,14 @@ public class Server extends AbstractJavaTool {
 		return joinSession;
 	}
 
+	/**
+	 * Request all changes made in a session.
+	 * 
+	 * @param projectName
+	 * @return
+	 */
 	public ATerm requestChanges(final String projectName) {
-		List<AbstractChange> changes = null;
+		List<AbstractChange> changes = new ArrayList<AbstractChange>();
 
 		Session session = getSession(projectName);
 		changes = session.getChanges();
@@ -168,6 +174,54 @@ public class Server extends AbstractJavaTool {
 		ATermBlob termBlob = factory.makeBlob(blob);
 
 		ATerm response = factory.make("requestChanges(<term>)", termBlob);
+		return response;
+	}
+
+	/**
+	 * Request most recent textual changes for a resource since last
+	 * {@link ContentChange}.
+	 * 
+	 * @param projectName
+	 * @param resource
+	 * @return
+	 */
+	public ATerm requestTextualChanges(final String projectName,
+			final String resource) {
+		System.out.println("requestTextualChanges: " + resource);
+		List<AbstractChange> changes = new ArrayList<AbstractChange>();
+
+		Session session = getSession(projectName);
+		List<AbstractChange> allChanges = session.getChanges();
+
+		// Looping backwards through changes, until a ContentChange is found.
+		for (int i = allChanges.size() - 1; i >= 0; i--) {
+			AbstractChange change = allChanges.get(i);
+			if (change instanceof TextualChange) {
+				TextualChange textualChange = (TextualChange) change;
+				if (textualChange.getFilename().equals(resource)) {
+					changes.add(change);
+				}
+			} else if (change instanceof ContentChange) {
+				ContentChange contentChange = (ContentChange) change;
+				if (contentChange.getFilename().equals(resource)) {
+					break;
+				}
+			}
+		}
+
+		// Since changes are backwards, order them again properly.
+		List<AbstractChange> orderedChanges = new ArrayList<AbstractChange>(
+				changes.size());
+		for (int i = changes.size() - 1; i >= 0; i--) {
+			orderedChanges.add(changes.get(i));
+		}
+		System.out.println("Size: " + orderedChanges.size());
+
+		byte[] blob = Conversion.objectToByte(orderedChanges);
+		ATermBlob termBlob = factory.makeBlob(blob);
+
+		ATerm response = factory
+				.make("requestTextualChanges(<term>)", termBlob);
 		return response;
 	}
 

@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.List;
 
 import nl.jeldertpol.xtc.client.Activator;
-import nl.jeldertpol.xtc.client.changes.editor.DocumentReplacer;
 import nl.jeldertpol.xtc.client.changes.editor.PartListener;
 import nl.jeldertpol.xtc.client.changes.resource.ResourceChangeListener;
 import nl.jeldertpol.xtc.client.changes.resource.jobs.ResourceAddedResourceJob;
@@ -636,6 +635,19 @@ public class Session {
 
 			new ResourceRemovedResourceJob(resource);
 		}
+	}
+
+	/**
+	 * Request and apply textual changes made to this resource.
+	 * 
+	 * @param resourcePath
+	 */
+	public void requestTextualChanges(final IPath resourcePath) {
+		String resource = resourcePath.toPortableString();
+
+		System.out.println("Requesting textual changes for: " + resource);
+
+		server.requestTextualChanges(projectName, resource);
 	}
 
 	/**

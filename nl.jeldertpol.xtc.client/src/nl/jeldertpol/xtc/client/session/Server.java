@@ -154,8 +154,9 @@ public class Server extends AbstractJavaTool {
 	}
 
 	/**
-	 * Request all changes made so far from the server, and send them back to
-	 * session.
+	 * Request and apply all changes made so far from the server.
+	 * 
+	 * @param projectName
 	 */
 	public void requestChanges(final String projectName) {
 		ATerm requestChanges = factory.make("requestChanges(<str>)",
@@ -166,32 +167,27 @@ public class Server extends AbstractJavaTool {
 		List<AbstractChange> changes = (List<AbstractChange>) Conversion
 				.byteToObject(blob.getBlobData());
 
-		for (AbstractChange abstractChange : changes) {
-			if (abstractChange instanceof AddedResourceChange) {
-				AddedResourceChange change = (AddedResourceChange) abstractChange;
-				Activator.SESSION.receiveAddedResource(projectName, change
-						.getResourcePath(), change.getType(), change
-						.getNickname());
-			} else if (abstractChange instanceof ContentChange) {
-				ContentChange change = (ContentChange) abstractChange;
-				Activator.SESSION.receiveContent(projectName, change
-						.getFilename(), change.getContent(), change
-						.getNickname());
-			} else if (abstractChange instanceof MoveChange) {
-				MoveChange change = (MoveChange) abstractChange;
-				Activator.SESSION.receiveMove(projectName, change.getFrom(),
-						change.getTo(), change.getNickname());
-			} else if (abstractChange instanceof RemovedResourceChange) {
-				RemovedResourceChange change = (RemovedResourceChange) abstractChange;
-				Activator.SESSION.receiveRemovedResource(projectName, change
-						.getResourcePath(), change.getNickname());
-			} else if (abstractChange instanceof TextualChange) {
-				TextualChange change = (TextualChange) abstractChange;
-				Activator.SESSION.receiveChange(projectName, change
-						.getFilename(), change.getLength(), change.getOffset(),
-						change.getText(), change.getNickname());
-			}
-		}
+		applyChanges(projectName, changes);
+	}
+
+	/**
+	 * Request and apply textual changes made to this resource.
+	 * 
+	 * @param projectName
+	 * @param resource
+	 */
+	public void requestTextualChanges(final String projectName,
+			final String resource) {
+		ATerm requestTextualChanges = factory.make(
+				"requestTextualChanges(<str>, <str>)", projectName,
+				resource);
+		ATermAppl reply = sendRequest(requestTextualChanges);
+
+		ATermBlob blob = (ATermBlob) reply.getArgument(0);
+		List<AbstractChange> changes = (List<AbstractChange>) Conversion
+				.byteToObject(blob.getBlobData());
+
+		applyChanges(projectName, changes);
 	}
 
 	/**
@@ -492,6 +488,36 @@ public class Server extends AbstractJavaTool {
 			final String resourcePath, final String nickname) {
 		Activator.SESSION.receiveRemovedResource(projectName, resourcePath,
 				nickname);
+	}
+
+	private void applyChanges(final String projectName,
+			final List<AbstractChange> changes) {
+		for (AbstractChange abstractChange : changes) {
+			if (abstractChange instanceof AddedResourceChange) {
+				AddedResourceChange change = (AddedResourceChange) abstractChange;
+				Activator.SESSION.receiveAddedResource(projectName, change
+						.getResourcePath(), change.getType(), change
+						.getNickname());
+			} else if (abstractChange instanceof ContentChange) {
+				ContentChange change = (ContentChange) abstractChange;
+				Activator.SESSION.receiveContent(projectName, change
+						.getFilename(), change.getContent(), change
+						.getNickname());
+			} else if (abstractChange instanceof MoveChange) {
+				MoveChange change = (MoveChange) abstractChange;
+				Activator.SESSION.receiveMove(projectName, change.getFrom(),
+						change.getTo(), change.getNickname());
+			} else if (abstractChange instanceof RemovedResourceChange) {
+				RemovedResourceChange change = (RemovedResourceChange) abstractChange;
+				Activator.SESSION.receiveRemovedResource(projectName, change
+						.getResourcePath(), change.getNickname());
+			} else if (abstractChange instanceof TextualChange) {
+				TextualChange change = (TextualChange) abstractChange;
+				Activator.SESSION.receiveChange(projectName, change
+						.getFilename(), change.getLength(), change.getOffset(),
+						change.getText(), change.getNickname());
+			}
+		}
 	}
 
 }
