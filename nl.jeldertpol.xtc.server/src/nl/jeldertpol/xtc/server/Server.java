@@ -4,10 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.jeldertpol.xtc.common.changes.AbstractChange;
-import nl.jeldertpol.xtc.common.changes.AddedResourceChange;
 import nl.jeldertpol.xtc.common.changes.ContentChange;
-import nl.jeldertpol.xtc.common.changes.MoveChange;
-import nl.jeldertpol.xtc.common.changes.RemovedResourceChange;
 import nl.jeldertpol.xtc.common.changes.TextualChange;
 import nl.jeldertpol.xtc.common.conversion.Conversion;
 import nl.jeldertpol.xtc.common.session.SimpleSession;
@@ -263,107 +260,50 @@ public class Server extends AbstractJavaTool {
 	 * A client sends a change.
 	 * 
 	 * @param projectName
-	 * @param filename
-	 * @param length
-	 * @param offset
-	 * @param text
-	 * @return
+	 *            Name of the project, to identify the session.
+	 * @param changeTerm
+	 *            An {@link ATermBlob} containing an {@link AbstractChange}.
+	 * @param nickname
+	 *            The nickname of the client.
+	 * 
+	 * @return <code>true</code> if the session was found, and changeTerm
+	 *         contains an {@link AbstractChange}, <code>false</code> otherwise.
 	 */
-	public ATerm sendChange(final String projectName, final String filename,
-			final int length, final int offset, final String text,
+	public ATerm sendChange(final String projectName, final ATerm changeTerm,
 			final String nickname) {
+		System.out.println("Jeldert, toolbus is fixed, please remove other method!");
+		System.exit(1);
 		boolean success = false;
 
 		Session session = getSession(projectName);
 		if (session != null) {
-			TextualChange change = new TextualChange(filename, length, offset,
-					text, nickname);
-			session.addChange(change);
-			success = true;
+			if (changeTerm.getType() == ATerm.BLOB) {
+				ATermBlob blobTerm = (ATermBlob) changeTerm;
+				AbstractChange change = (AbstractChange) Conversion
+						.byteToObject(blobTerm.getBlobData());
+				session.addChange(change);
+				success = true;
+			}
 		}
 
 		ATerm sendChange = factory.make("sendChange(<bool>)", success);
 		return sendChange;
 	}
 
-	/**
-	 * A client sends a move.
-	 * 
-	 * @param projectName
-	 * @param from
-	 * @param to
-	 * @param nickname
-	 * @return
-	 */
-	public ATerm sendMove(final String projectName, final String from,
-			final String to, final String nickname) {
+	public ATerm sendChange(final String projectName, final byte[] changeBlob,
+			final String nickname) {
 		boolean success = false;
 
 		Session session = getSession(projectName);
 		if (session != null) {
-			MoveChange change = new MoveChange(from, to, nickname);
+			AbstractChange change = (AbstractChange) Conversion
+					.byteToObject(changeBlob);
 			session.addChange(change);
 			success = true;
 		}
 
-		ATerm sendMove = factory.make("sendMove(<bool>)", success);
-		return sendMove;
-	}
-
-	public ATerm sendContent(final String projectName, final String filename,
-			final ATerm content, final String nickname) {
-		// bug in Toolbus, only needed for handshake.
-		return null;
-	}
-
-	public ATerm sendContent(final String projectName, final String filename,
-			final byte[] content, final String nickname) {
-		boolean success = false;
-
-		Session session = getSession(projectName);
-		if (session != null) {
-			ContentChange change = new ContentChange(filename, content,
-					nickname);
-			session.addChange(change);
-			success = true;
-		}
-
-		ATerm sendChange = factory.make("sendContent(<bool>)", success);
+		ATerm sendChange = factory.make("sendChange(<bool>)", success);
 		return sendChange;
-	}
-
-	public ATerm sendAddedResource(final String projectName,
-			final String resourcePath, final int type, final String nickname) {
-		boolean success = false;
-
-		Session session = getSession(projectName);
-		if (session != null) {
-			AddedResourceChange change = new AddedResourceChange(resourcePath,
-					type, nickname);
-			session.addChange(change);
-			success = true;
-		}
-
-		ATerm sendAddedResource = factory.make("sendAddedResource(<bool>)",
-				success);
-		return sendAddedResource;
-	}
-
-	public ATerm sendRemovedResource(final String projectName,
-			final String resourcePath, final String nickname) {
-		boolean success = false;
-
-		Session session = getSession(projectName);
-		if (session != null) {
-			RemovedResourceChange change = new RemovedResourceChange(
-					resourcePath, nickname);
-			session.addChange(change);
-			success = true;
-		}
-
-		ATerm sendRemovedResource = factory.make("sendRemovedResource(<bool>)",
-				success);
-		return sendRemovedResource;
 	}
 
 	/**

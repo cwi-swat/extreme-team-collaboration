@@ -16,7 +16,6 @@ import nl.jeldertpol.xtc.common.changes.TextualChange;
 import nl.jeldertpol.xtc.common.conversion.Conversion;
 import nl.jeldertpol.xtc.common.session.SimpleSession;
 
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 
 import toolbus.adapter.java.AbstractJavaTool;
@@ -179,8 +178,7 @@ public class Server extends AbstractJavaTool {
 	public void requestTextualChanges(final String projectName,
 			final String resource) {
 		ATerm requestTextualChanges = factory.make(
-				"requestTextualChanges(<str>, <str>)", projectName,
-				resource);
+				"requestTextualChanges(<str>, <str>)", projectName, resource);
 		ATermAppl reply = sendRequest(requestTextualChanges);
 
 		ATermBlob blob = (ATermBlob) reply.getArgument(0);
@@ -250,273 +248,82 @@ public class Server extends AbstractJavaTool {
 		}
 	}
 
+	public void sendChange(final String projectName,
+			final AbstractChange change, final String nickname) {
+		byte[] blob = Conversion.objectToByte(change);
+		ATermBlob changeTerm = factory.makeBlob(blob);
+		
+		ATerm sendChange = factory.make("sendChange(<str>, <term>, <str>)",
+				projectName, changeTerm, nickname);
+		ATermAppl reply = sendRequest(sendChange);
+
+		ATerm answer = reply.getArgument(0);
+		boolean success = Boolean.parseBoolean(answer.toString());
+
+		if (!success) {
+			//throw new LeaveSessionException(projectName);
+		}
+	}
+
 	/**
 	 * Receive a change from the server / other clients.
 	 * 
 	 * @param projectName
 	 *            The name of the project the change originated from.
-	 * @param filePath
-	 *            The file the change originated from, path is relative to the
-	 *            project, and portable.
-	 * @param length
-	 *            Length of the replaced document text.
-	 * @param offset
-	 *            The document offset.
-	 * @param text
-	 *            Text inserted into the document.
+	 * @param changeTerm
+	 *            An {@link ATermBlob} containing an {@link AbstractChange}.
 	 * @param nickname
 	 *            The nickname of the client the change originated from.
 	 */
-	public void receiveChange(final String projectName, final String filePath,
-			final int length, final int offset, final String text,
+	public void receiveChange(final String projectName, final ATerm changeTerm,
 			final String nickname) {
-		Activator.SESSION.receiveChange(projectName, filePath, length, offset,
-				text, nickname);
-	}
-
-	/**
-	 * Send a move to the server.
-	 * 
-	 * @param projectName
-	 *            The name of the project the move originated from.
-	 * @param from
-	 *            Full path of original resource location, must be portable.
-	 * @param to
-	 *            Full path of new resource location, must be portable.
-	 * @param nickname
-	 *            The nickname of the client the move originated from.
-	 * 
-	 * @see IPath#toPortableString()
-	 */
-	public void sendMove(final String projectName, final String from,
-			final String to, final String nickname) {
-		ATerm sendMove = factory.make("sendMove(<str>, <str>, <str>, <str>)",
-				projectName, from, to, nickname);
-		ATermAppl reply = sendRequest(sendMove);
-
-		ATerm answer = reply.getArgument(0);
-		boolean success = Boolean.parseBoolean(answer.toString());
-
-		if (!success) {
-			// throw new LeaveSessionException(projectName);
+		System.out.println("Jeldert, toolbus is fixed, please remove other method!");
+		System.exit(1);
+		if (changeTerm.getType() == ATerm.BLOB) {
+			ATermBlob blobTerm = (ATermBlob) changeTerm;
+			AbstractChange change = (AbstractChange) Conversion
+					.byteToObject(blobTerm.getBlobData());
+			applyChange(projectName, change);
 		}
 	}
-
-	/**
-	 * Receive a move from the server / other clients.
-	 * 
-	 * @param projectName
-	 *            The name of the project the move originated from.
-	 * @param from
-	 *            Full path of original resource location, must be portable.
-	 * @param to
-	 *            Full path of new resource location, must be portable.
-	 * @param nickname
-	 *            The nickname of the client the move originated from.
-	 */
-	public void receiveMove(final String projectName, final String from,
-			final String to, final String nickname) {
-		Activator.SESSION.receiveMove(projectName, from, to, nickname);
-	}
-
-	/**
-	 * Send new content to the server.
-	 * 
-	 * @param projectName
-	 *            The name of the project the content belongs to.
-	 * @param filePath
-	 *            The file the content belongs to, path is relative to the
-	 *            project, and portable.
-	 * @param content
-	 *            The actual content. Will be closed.
-	 * @param nickname
-	 *            The nickname of the client the content originated from.
-	 */
-	public void sendContent(final String projectName, final String filePath,
-			final byte[] content, final String nickname) {
-		ATermBlob termBlob = factory.makeBlob(content);
-
-		ATerm sendContent = factory.make(
-				"sendContent(<str>, <str>, <term>, <str>))", projectName,
-				filePath, termBlob, nickname);
-		ATermAppl reply = sendRequest(sendContent);
-
-		ATerm answer = reply.getArgument(0);
-		boolean success = Boolean.parseBoolean(answer.toString());
-
-		if (!success) {
-			// throw new LeaveSessionException(projectName);
-		}
-	}
-
-	/**
-	 * Receive new content from the server / other clients.
-	 * 
-	 * @param projectName
-	 *            The name of the project the content belongs to.
-	 * @param filePath
-	 *            The file the content belongs to, path is relative to the
-	 *            project, and portable.
-	 * @param contentTerm
-	 *            The actual content.
-	 * @param nickname
-	 *            The nickname of the client the content originated from.
-	 */
-	public void receiveContent(final String projectName, final String filePath,
-			final ATerm contentTerm, final String nickname) {
-		// TODO bug in Toolbus, needed for handshaking only.
-		// If bug gets fixed, this will still work.
-		System.err
-				.println("Server: receiveContent: Toolbus is fixed. Jeldert, please fix this method.");
-
-		ATermBlob blob = (ATermBlob) contentTerm;
-		byte[] content = blob.getBlobData();
-		receiveContent(projectName, filePath, content, nickname);
-	}
-
-	/**
-	 * Receive new content from the server / other clients.
-	 * 
-	 * @param projectName
-	 *            The name of the project the content belongs to.
-	 * @param filePath
-	 *            The file the content belongs to, path is relative to the
-	 *            project, and portable.
-	 * @param contentTerm
-	 *            The actual content.
-	 * @param nickname
-	 *            The nickname of the client the content originated from.
-	 */
-	public void receiveContent(final String projectName, final String filePath,
-			final byte[] content, final String nickname) {
-		// TODO bug in Toolbus, this method will be called.
-
-		Activator.SESSION.receiveContent(projectName, filePath, content,
-				nickname);
-	}
-
-	/**
-	 * Send an added resource to the server.
-	 * 
-	 * @param projectName
-	 *            The name of the project the resource is added to.
-	 * @param resourcePath
-	 *            The added resource, path is relative to the project, and
-	 *            portable.
-	 * @param type
-	 *            The type of resource added.
-	 * @param nickname
-	 *            The nickname of the client the added resource originated from.
-	 * 
-	 * @see IResource#getType()
-	 */
-	public void sendAddedResource(final String projectName,
-			final String resourcePath, final int type, final String nickname) {
-		ATerm sendAddedResource = factory.make(
-				"sendAddedResource(<str>, <str>, <int>, <str>)", projectName,
-				resourcePath, type, nickname);
-		ATermAppl reply = sendRequest(sendAddedResource);
-
-		ATerm answer = reply.getArgument(0);
-		boolean success = Boolean.parseBoolean(answer.toString());
-
-		if (!success) {
-			// throw new LeaveSessionException(projectName);
-		}
-	}
-
-	/**
-	 * Receive an added resource from the server / other clients.
-	 * 
-	 * @param projectName
-	 *            The name of the project the resource is added to.
-	 * @param resourcePath
-	 *            The added resource, path is relative to the project, and
-	 *            portable.
-	 * @param type
-	 *            The type of resource added.
-	 * @param nickname
-	 *            The nickname of the client the added resource originated from.
-	 * 
-	 * @see IResource#getType()
-	 */
-	public void receiveAddedResource(final String projectName,
-			final String resourcePath, final int type, final String nickname) {
-		Activator.SESSION.receiveAddedResource(projectName, resourcePath, type,
-				nickname);
-	}
-
-	/**
-	 * Send an removed resource to the server.
-	 * 
-	 * @param projectName
-	 *            The name of the project the resource belongs to.
-	 * @param resourcePath
-	 *            The removed resource, path must be relative to the project.
-	 * @param nickname
-	 *            The nickname of the client the removed resource originated
-	 *            from.
-	 */
-	public void sendRemovedResource(final String projectName,
-			final String resourcePath, final String nickname) {
-		ATerm sendRemovedResource = factory.make(
-				"sendRemovedResource(<str>, <str>, <str>)", projectName,
-				resourcePath, nickname);
-		ATermAppl reply = sendRequest(sendRemovedResource);
-
-		ATerm answer = reply.getArgument(0);
-		boolean success = Boolean.parseBoolean(answer.toString());
-
-		if (!success) {
-			// throw new LeaveSessionException(projectName);
-		}
-	}
-
-	/**
-	 * Receive an removed resource from the server / other clients.
-	 * 
-	 * @param projectName
-	 *            The name of the project the resource is added to.
-	 * @param resourcePath
-	 *            The removed resource, path is relative to the project, and
-	 *            portable.
-	 * @param nickname
-	 *            The nickname of the client the removed resource originated
-	 *            from.
-	 */
-	public void receiveRemovedResource(final String projectName,
-			final String resourcePath, final String nickname) {
-		Activator.SESSION.receiveRemovedResource(projectName, resourcePath,
-				nickname);
+	
+	public void receiveChange(final String projectName, final byte[] changeBlob,
+			final String nickname) {
+			AbstractChange change = (AbstractChange) Conversion
+					.byteToObject(changeBlob);
+			applyChange(projectName, change);
 	}
 
 	private void applyChanges(final String projectName,
 			final List<AbstractChange> changes) {
 		for (AbstractChange abstractChange : changes) {
-			if (abstractChange instanceof AddedResourceChange) {
-				AddedResourceChange change = (AddedResourceChange) abstractChange;
-				Activator.SESSION.receiveAddedResource(projectName, change
-						.getResourcePath(), change.getType(), change
-						.getNickname());
-			} else if (abstractChange instanceof ContentChange) {
-				ContentChange change = (ContentChange) abstractChange;
-				Activator.SESSION.receiveContent(projectName, change
-						.getFilename(), change.getContent(), change
-						.getNickname());
-			} else if (abstractChange instanceof MoveChange) {
-				MoveChange change = (MoveChange) abstractChange;
-				Activator.SESSION.receiveMove(projectName, change.getFrom(),
-						change.getTo(), change.getNickname());
-			} else if (abstractChange instanceof RemovedResourceChange) {
-				RemovedResourceChange change = (RemovedResourceChange) abstractChange;
-				Activator.SESSION.receiveRemovedResource(projectName, change
-						.getResourcePath(), change.getNickname());
-			} else if (abstractChange instanceof TextualChange) {
-				TextualChange change = (TextualChange) abstractChange;
-				Activator.SESSION.receiveChange(projectName, change
-						.getFilename(), change.getLength(), change.getOffset(),
-						change.getText(), change.getNickname());
-			}
+			applyChange(projectName, abstractChange);
+		}
+	}
+
+	private void applyChange(final String projectName,
+			final AbstractChange abstractChange) {
+		if (abstractChange instanceof AddedResourceChange) {
+			AddedResourceChange change = (AddedResourceChange) abstractChange;
+			Activator.SESSION.receiveAddedResource(projectName, change
+					.getResourceName(), change.getType(), change.getNickname());
+		} else if (abstractChange instanceof ContentChange) {
+			ContentChange change = (ContentChange) abstractChange;
+			Activator.SESSION.receiveContent(projectName, change.getFilename(),
+					change.getContent(), change.getNickname());
+		} else if (abstractChange instanceof MoveChange) {
+			MoveChange change = (MoveChange) abstractChange;
+			Activator.SESSION.receiveMove(projectName, change.getFrom(), change
+					.getTo(), change.getNickname());
+		} else if (abstractChange instanceof RemovedResourceChange) {
+			RemovedResourceChange change = (RemovedResourceChange) abstractChange;
+			Activator.SESSION.receiveRemovedResource(projectName, change
+					.getResourcePath(), change.getNickname());
+		} else if (abstractChange instanceof TextualChange) {
+			TextualChange change = (TextualChange) abstractChange;
+			Activator.SESSION.receiveTextualChange(projectName, change
+					.getFilename(), change.getLength(), change.getOffset(),
+					change.getText(), change.getNickname());
 		}
 	}
 

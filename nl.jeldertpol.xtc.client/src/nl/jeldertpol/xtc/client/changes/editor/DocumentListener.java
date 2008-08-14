@@ -42,7 +42,7 @@ public class DocumentListener implements IDocumentListener {
 		// Text inserted into the document.
 		String text = event.getText();
 
-		Activator.SESSION.sendChange(project, file, length, offset, text);
+		Activator.SESSION.sendTextualChange(project, file, length, offset, text);
 	}
 
 	/*

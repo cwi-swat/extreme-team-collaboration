@@ -24,6 +24,11 @@ import nl.jeldertpol.xtc.client.exceptions.WrongRevisionException;
 import nl.jeldertpol.xtc.client.preferences.connection.PreferenceConstants;
 import nl.jeldertpol.xtc.client.session.infoExtractor.InfoExtractor;
 import nl.jeldertpol.xtc.client.session.infoExtractor.SubclipseInfoExtractor;
+import nl.jeldertpol.xtc.common.changes.AddedResourceChange;
+import nl.jeldertpol.xtc.common.changes.ContentChange;
+import nl.jeldertpol.xtc.common.changes.MoveChange;
+import nl.jeldertpol.xtc.common.changes.RemovedResourceChange;
+import nl.jeldertpol.xtc.common.changes.TextualChange;
 import nl.jeldertpol.xtc.common.session.SimpleSession;
 
 import org.eclipse.core.resources.IProject;
@@ -392,12 +397,15 @@ public class Session {
 	 * @see IResource#getProjectRelativePath()
 	 * @see DocumentEvent
 	 */
-	public void sendChange(final IProject project, final IPath filePath,
+	public void sendTextualChange(final IProject project, final IPath filePath,
 			final int length, final int offset, final String text) {
 		if (shouldSend(project)) {
 			String filename = filePath.toPortableString();
-			server.sendChange(projectName, filename, length, offset, text,
-					nickname);
+
+			TextualChange change = new TextualChange(filename, length, offset,
+					text, nickname);
+
+			server.sendChange(projectName, change, nickname);
 		}
 	}
 
@@ -418,7 +426,7 @@ public class Session {
 	 * @param nickname
 	 *            The nickname of the client the change originated from.
 	 */
-	public void receiveChange(final String remoteProjectName,
+	public void receiveTextualChange(final String remoteProjectName,
 			final String filePath, final int length, final int offset,
 			final String text, final String nickname) {
 		if (shouldReceive(remoteProjectName, nickname)) {
@@ -445,7 +453,10 @@ public class Session {
 		if (shouldSend(project)) {
 			String from = moveFrom.toPortableString();
 			String to = moveTo.toPortableString();
-			server.sendMove(projectName, from, to, nickname);
+
+			MoveChange change = new MoveChange(from, to, nickname);
+
+			server.sendChange(projectName, change, nickname);
 		}
 	}
 
@@ -510,11 +521,12 @@ public class Session {
 	public void sendContent(final IProject project, final IPath filePath,
 			final byte[] content) {
 		if (shouldSend(project)) {
-			String portableFilePath = filePath.toPortableString();
+			String filename = filePath.toPortableString();
 
-			server
-					.sendContent(projectName, portableFilePath, content,
-							nickname);
+			ContentChange change = new ContentChange(filename, content,
+					nickname);
+
+			server.sendChange(projectName, change, nickname);
 		}
 	}
 
@@ -561,8 +573,12 @@ public class Session {
 	public void sendAddedResource(final IProject project,
 			final IPath resourcePath, final int type) {
 		if (shouldSend(project)) {
-			String resource = resourcePath.toPortableString();
-			server.sendAddedResource(projectName, resource, type, nickname);
+			String resourceName = resourcePath.toPortableString();
+
+			AddedResourceChange change = new AddedResourceChange(resourceName,
+					type, nickname);
+
+			server.sendChange(projectName, change, nickname);
 		}
 	}
 
@@ -609,8 +625,12 @@ public class Session {
 	public void sendRemovedResource(final IProject project,
 			final IPath resourcePath) {
 		if (shouldSend(project)) {
-			String resource = resourcePath.toPortableString();
-			server.sendRemovedResource(projectName, resource, nickname);
+			String resourceName = resourcePath.toPortableString();
+
+			RemovedResourceChange change = new RemovedResourceChange(
+					resourceName, nickname);
+
+			server.sendChange(projectName, change, nickname);
 		}
 	}
 

@@ -11,13 +11,13 @@ public class AddedResourceChange extends AbstractChange {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private final String resourcePath;
+	private final String resourceName;
 	private final int type;
 
 	/**
 	 * A resource has been added.
 	 * 
-	 * @param resourcePath
+	 * @param resourceName
 	 *            The added resource, path is relative to the project, and
 	 *            portable.
 	 * @param type
@@ -25,19 +25,19 @@ public class AddedResourceChange extends AbstractChange {
 	 * @param nickname
 	 *            The nickname of the client the added resource originated from.
 	 */
-	public AddedResourceChange(final String resourcePath, final int type,
+	public AddedResourceChange(final String resourceName, final int type,
 			final String nickname) {
 		super(nickname);
 
-		this.resourcePath = resourcePath;
+		this.resourceName = resourceName;
 		this.type = type;
 	}
 
 	/**
-	 * @return the resourcePath
+	 * @return the resourceName
 	 */
-	public String getResourcePath() {
-		return resourcePath;
+	public String getResourceName() {
+		return resourceName;
 	}
 
 	/**
@@ -49,7 +49,7 @@ public class AddedResourceChange extends AbstractChange {
 
 	@Override
 	public String toString() {
-		String string = "AddedResource: " + resourcePath + "\n\t type: " + type
+		String string = "AddedResource: " + resourceName + "\n\t type: " + type
 				+ "\n\t client: " + getNickname();
 		return string;
 	}
