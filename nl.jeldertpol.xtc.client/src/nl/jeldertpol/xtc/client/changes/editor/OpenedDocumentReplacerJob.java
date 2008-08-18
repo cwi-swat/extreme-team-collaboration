@@ -40,7 +40,8 @@ public class OpenedDocumentReplacerJob extends UIJob {
 	public OpenedDocumentReplacerJob(final ITextEditor editor,
 			final int length, final int offset, final String text,
 			final boolean save) {
-		super(editor.toString());
+		// Name of project + file
+		super(editor.getTitleToolTip());
 
 		this.editor = editor;
 		this.length = length;

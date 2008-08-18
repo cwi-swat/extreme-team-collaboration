@@ -56,11 +56,6 @@ public class DocumentReplacer {
 		return editor;
 	}
 
-	public ITextEditor findXtcEditor(final IResource resource) {
-		return null;
-
-	}
-
 	/**
 	 * TODO javadoc
 	 * 
