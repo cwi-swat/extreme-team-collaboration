@@ -1,6 +1,7 @@
 package nl.jeldertpol.xtc.client.session;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import nl.jeldertpol.xtc.client.Activator;
@@ -24,6 +25,7 @@ import nl.jeldertpol.xtc.client.exceptions.WrongRevisionException;
 import nl.jeldertpol.xtc.client.preferences.connection.PreferenceConstants;
 import nl.jeldertpol.xtc.client.session.infoExtractor.InfoExtractor;
 import nl.jeldertpol.xtc.client.session.infoExtractor.SubclipseInfoExtractor;
+import nl.jeldertpol.xtc.common.changes.AbstractChange;
 import nl.jeldertpol.xtc.common.changes.AddedResourceChange;
 import nl.jeldertpol.xtc.common.changes.ContentChange;
 import nl.jeldertpol.xtc.common.changes.MoveChange;
@@ -66,6 +68,16 @@ public class Session {
 	private boolean inSession;
 
 	/**
+	 * Holds whether the client is paused or not.
+	 */
+	private boolean paused;
+
+	/**
+	 * Holds all changes while client is paused.
+	 */
+	private List<AbstractChange> pauseList;
+
+	/**
 	 * Holds the project of the current session, or an empty String.
 	 */
 	private String projectName;
@@ -91,6 +103,8 @@ public class Session {
 		infoExtractor = new SubclipseInfoExtractor();
 		connected = false;
 		inSession = false;
+		paused = false;
+		pauseList = new ArrayList<AbstractChange>();
 		projectName = "";
 		nickname = "";
 
@@ -380,6 +394,14 @@ public class Session {
 		}
 	}
 
+	private void sendChange(AbstractChange change) {
+		if (paused) {
+			resume();
+		}
+
+		server.sendChange(projectName, change, nickname);
+	}
+
 	/**
 	 * Send a change to the server.
 	 * 
@@ -405,7 +427,7 @@ public class Session {
 			TextualChange change = new TextualChange(filename, length, offset,
 					text, nickname);
 
-			server.sendChange(projectName, change, nickname);
+			sendChange(change);
 		}
 	}
 
@@ -429,13 +451,11 @@ public class Session {
 	public void receiveTextualChange(final String remoteProjectName,
 			final String filePath, final int length, final int offset,
 			final String text, final String nickname) {
-		if (shouldReceive(remoteProjectName, nickname)) {
-			IProject project = ResourcesPlugin.getWorkspace().getRoot()
-					.getProject(projectName);
-			IResource resource = project.findMember(filePath);
+		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(
+				projectName);
+		IResource resource = project.findMember(filePath);
 
-			Activator.documentReplacer.replace(resource, length, offset, text);
-		}
+		Activator.documentReplacer.replace(resource, length, offset, text);
 	}
 
 	/**
@@ -456,7 +476,7 @@ public class Session {
 
 			MoveChange change = new MoveChange(from, to, nickname);
 
-			server.sendChange(projectName, change, nickname);
+			sendChange(change);
 		}
 	}
 
@@ -474,16 +494,14 @@ public class Session {
 	 */
 	public void receiveMove(final String remoteProjectName, final String from,
 			final String to, final String nickname) {
-		if (shouldReceive(remoteProjectName, nickname)) {
-			IPath moveFrom = Path.fromPortableString(from);
-			IPath moveTo = Path.fromPortableString(to);
+		IPath moveFrom = Path.fromPortableString(from);
+		IPath moveTo = Path.fromPortableString(to);
 
-			IResource resource = ResourcesPlugin.getWorkspace().getRoot()
-					.findMember(moveFrom);
+		IResource resource = ResourcesPlugin.getWorkspace().getRoot()
+				.findMember(moveFrom);
 
-			// resourceChangeExecuter.move(resource, moveTo);
-			new ResourceMoveJob(resource, moveTo);
-		}
+		// resourceChangeExecuter.move(resource, moveTo);
+		new ResourceMoveJob(resource, moveTo);
 	}
 
 	/**
@@ -526,7 +544,7 @@ public class Session {
 			ContentChange change = new ContentChange(filename, content,
 					nickname);
 
-			server.sendChange(projectName, change, nickname);
+			sendChange(change);
 		}
 	}
 
@@ -545,17 +563,15 @@ public class Session {
 	 */
 	public void receiveContent(final String remoteProjectName,
 			final String filePath, final byte[] content, final String nickname) {
-		if (shouldReceive(remoteProjectName, nickname)) {
-			IProject project = ResourcesPlugin.getWorkspace().getRoot()
-					.getProject(projectName);
-			IResource resource = project.findMember(filePath);
-			IPath path = resource.getProjectRelativePath();
-			IPath location = resource.getLocation();
-			File file = location.toFile();
+		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(
+				projectName);
+		IResource resource = project.findMember(filePath);
+		IPath path = resource.getProjectRelativePath();
+		IPath location = resource.getLocation();
+		File file = location.toFile();
 
-			// Create new job to do the conversion.
-			new ResourceReceiveContentJob(project, path, file, content);
-		}
+		// Create new job to do the conversion.
+		new ResourceReceiveContentJob(project, path, file, content);
 	}
 
 	/**
@@ -578,7 +594,7 @@ public class Session {
 			AddedResourceChange change = new AddedResourceChange(resourceName,
 					type, nickname);
 
-			server.sendChange(projectName, change, nickname);
+			sendChange(change);
 		}
 	}
 
@@ -599,19 +615,18 @@ public class Session {
 	 */
 	public void receiveAddedResource(final String remoteProjectName,
 			final String resourcePath, final int type, final String nickname) {
-		if (shouldReceive(remoteProjectName, nickname)) {
-			IProject project = ResourcesPlugin.getWorkspace().getRoot()
-					.getProject(projectName);
 
-			IResource resource = null;
-			if (type == IResource.FILE) {
-				resource = project.getFile(resourcePath);
-			} else if (type == IResource.FOLDER) {
-				resource = project.getFolder(resourcePath);
-			}
+		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(
+				projectName);
 
-			new ResourceAddedResourceJob(resource, type);
+		IResource resource = null;
+		if (type == IResource.FILE) {
+			resource = project.getFile(resourcePath);
+		} else if (type == IResource.FOLDER) {
+			resource = project.getFolder(resourcePath);
 		}
+
+		new ResourceAddedResourceJob(resource, type);
 	}
 
 	/**
@@ -630,7 +645,7 @@ public class Session {
 			RemovedResourceChange change = new RemovedResourceChange(
 					resourceName, nickname);
 
-			server.sendChange(projectName, change, nickname);
+			sendChange(change);
 		}
 	}
 
@@ -647,14 +662,12 @@ public class Session {
 	 */
 	public void receiveRemovedResource(final String remoteProjectName,
 			final String resourcePath, final String nickname) {
-		if (shouldReceive(remoteProjectName, nickname)) {
-			IProject project = ResourcesPlugin.getWorkspace().getRoot()
-					.getProject(projectName);
+		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(
+				projectName);
 
-			IResource resource = project.findMember(resourcePath);
+		IResource resource = project.findMember(resourcePath);
 
-			new ResourceRemovedResourceJob(resource);
-		}
+		new ResourceRemovedResourceJob(resource);
 	}
 
 	/**
@@ -678,6 +691,30 @@ public class Session {
 	 */
 	public boolean inSession() {
 		return inSession;
+	}
+
+	/**
+	 * Returns if the client is currently paused.
+	 * 
+	 * @return <code>true</code> when client is paused, <code>false</code>
+	 *         otherwise.
+	 */
+	public boolean isPaused() {
+		return paused;
+	}
+
+	public void pause() {
+		if (!paused) {
+			paused = true;
+		}
+	}
+
+	public void resume() {
+		if (paused) {
+			paused = false;
+			applyChanges(projectName, pauseList);
+			pauseList.clear();
+		}
 	}
 
 	/**
@@ -731,6 +768,9 @@ public class Session {
 	/**
 	 * Determines whether a change should be received.
 	 * 
+	 * This is when client is in a session, the current project is the same as
+	 * remote project, and the nickname is not the same as this client.
+	 * 
 	 * @param remoteProjectName
 	 *            The project the change originated from.
 	 * @param nickname
@@ -740,11 +780,63 @@ public class Session {
 	 */
 	private boolean shouldReceive(final String remoteProjectName,
 			final String nickname) {
-		// Only act when in a session. Should always be true.
-		// Only react if current project is the same as remote.
-		// This will ignore changes from the client itself.
 		return inSession() && remoteProjectName.equals(projectName)
 				&& !this.nickname.equals(nickname);
+	}
+
+	/**
+	 * Apply a list of changes.
+	 * 
+	 * @param projectName
+	 *            The project the change originated from.
+	 * @param changes
+	 *            Changes that should be applied.
+	 */
+	public void applyChanges(final String projectName,
+			final List<AbstractChange> changes) {
+		for (AbstractChange abstractChange : changes) {
+			applyChange(projectName, abstractChange);
+		}
+	}
+
+	/**
+	 * Apply a change. Change is added to pauselist when in pause.
+	 * 
+	 * Change is only applied if it should be received.
+	 * 
+	 * @param projectName
+	 *            The project the change originated from.
+	 * @param abstractChange
+	 *            Change that should be applied.
+	 */
+	public void applyChange(final String projectName,
+			final AbstractChange abstractChange) {
+		if (paused) {
+			pauseList.add(abstractChange);
+		} else if (shouldReceive(projectName, abstractChange.getNickname())) {
+			if (abstractChange instanceof AddedResourceChange) {
+				AddedResourceChange change = (AddedResourceChange) abstractChange;
+				receiveAddedResource(projectName, change.getResourceName(),
+						change.getType(), change.getNickname());
+			} else if (abstractChange instanceof ContentChange) {
+				ContentChange change = (ContentChange) abstractChange;
+				receiveContent(projectName, change.getFilename(), change
+						.getContent(), change.getNickname());
+			} else if (abstractChange instanceof MoveChange) {
+				MoveChange change = (MoveChange) abstractChange;
+				receiveMove(projectName, change.getFrom(), change.getTo(),
+						change.getNickname());
+			} else if (abstractChange instanceof RemovedResourceChange) {
+				RemovedResourceChange change = (RemovedResourceChange) abstractChange;
+				receiveRemovedResource(projectName, change.getResourcePath(),
+						change.getNickname());
+			} else if (abstractChange instanceof TextualChange) {
+				TextualChange change = (TextualChange) abstractChange;
+				receiveTextualChange(projectName, change.getFilename(), change
+						.getLength(), change.getOffset(), change.getText(),
+						change.getNickname());
+			}
+		}
 	}
 
 }

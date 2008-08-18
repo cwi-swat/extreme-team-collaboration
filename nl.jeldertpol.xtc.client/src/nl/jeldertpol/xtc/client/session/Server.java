@@ -8,11 +8,6 @@ import nl.jeldertpol.xtc.client.exceptions.NicknameAlreadyTakenException;
 import nl.jeldertpol.xtc.client.exceptions.ProjectAlreadyPresentException;
 import nl.jeldertpol.xtc.client.exceptions.UnableToConnectException;
 import nl.jeldertpol.xtc.common.changes.AbstractChange;
-import nl.jeldertpol.xtc.common.changes.AddedResourceChange;
-import nl.jeldertpol.xtc.common.changes.ContentChange;
-import nl.jeldertpol.xtc.common.changes.MoveChange;
-import nl.jeldertpol.xtc.common.changes.RemovedResourceChange;
-import nl.jeldertpol.xtc.common.changes.TextualChange;
 import nl.jeldertpol.xtc.common.conversion.Conversion;
 import nl.jeldertpol.xtc.common.session.SimpleSession;
 
@@ -166,7 +161,7 @@ public class Server extends AbstractJavaTool {
 		List<AbstractChange> changes = (List<AbstractChange>) Conversion
 				.byteToObject(blob.getBlobData());
 
-		applyChanges(projectName, changes);
+		Activator.SESSION.applyChanges(projectName, changes);
 	}
 
 	/**
@@ -185,7 +180,7 @@ public class Server extends AbstractJavaTool {
 		List<AbstractChange> changes = (List<AbstractChange>) Conversion
 				.byteToObject(blob.getBlobData());
 
-		applyChanges(projectName, changes);
+		Activator.SESSION.applyChanges(projectName, changes);
 	}
 
 	/**
@@ -283,7 +278,7 @@ public class Server extends AbstractJavaTool {
 			ATermBlob blobTerm = (ATermBlob) changeTerm;
 			AbstractChange change = (AbstractChange) Conversion
 					.byteToObject(blobTerm.getBlobData());
-			applyChange(projectName, change);
+			Activator.SESSION.applyChange(projectName, change);
 		}
 	}
 	
@@ -291,40 +286,7 @@ public class Server extends AbstractJavaTool {
 			final String nickname) {
 			AbstractChange change = (AbstractChange) Conversion
 					.byteToObject(changeBlob);
-			applyChange(projectName, change);
-	}
-
-	private void applyChanges(final String projectName,
-			final List<AbstractChange> changes) {
-		for (AbstractChange abstractChange : changes) {
-			applyChange(projectName, abstractChange);
-		}
-	}
-
-	private void applyChange(final String projectName,
-			final AbstractChange abstractChange) {
-		if (abstractChange instanceof AddedResourceChange) {
-			AddedResourceChange change = (AddedResourceChange) abstractChange;
-			Activator.SESSION.receiveAddedResource(projectName, change
-					.getResourceName(), change.getType(), change.getNickname());
-		} else if (abstractChange instanceof ContentChange) {
-			ContentChange change = (ContentChange) abstractChange;
-			Activator.SESSION.receiveContent(projectName, change.getFilename(),
-					change.getContent(), change.getNickname());
-		} else if (abstractChange instanceof MoveChange) {
-			MoveChange change = (MoveChange) abstractChange;
-			Activator.SESSION.receiveMove(projectName, change.getFrom(), change
-					.getTo(), change.getNickname());
-		} else if (abstractChange instanceof RemovedResourceChange) {
-			RemovedResourceChange change = (RemovedResourceChange) abstractChange;
-			Activator.SESSION.receiveRemovedResource(projectName, change
-					.getResourcePath(), change.getNickname());
-		} else if (abstractChange instanceof TextualChange) {
-			TextualChange change = (TextualChange) abstractChange;
-			Activator.SESSION.receiveTextualChange(projectName, change
-					.getFilename(), change.getLength(), change.getOffset(),
-					change.getText(), change.getNickname());
-		}
+			Activator.SESSION.applyChange(projectName, change);
 	}
 
 }

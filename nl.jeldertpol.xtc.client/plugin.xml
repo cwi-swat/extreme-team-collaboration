@@ -19,6 +19,11 @@
             name="Start session">
       </command>
       <command
+            description="Pause or resume the processing of changes."
+            id="nl.jeldertpol.xtc.client.commands.pauseResume"
+            name="Pause / Resume">
+      </command>
+      <command
             description="Show XTC preferences."
             id="nl.jeldertpol.xtc.client.commands.preferences"
             name="Preferences">
@@ -37,6 +42,10 @@
       <handler
             class="nl.jeldertpol.xtc.client.actions.StartSessionAction"
             commandId="nl.jeldertpol.xtc.client.commands.startSession">
+      </handler>
+      <handler
+            class="nl.jeldertpol.xtc.client.actions.PauseResumeAction"
+            commandId="nl.jeldertpol.xtc.client.commands.pauseResume">
       </handler>
       <handler
             class="nl.jeldertpol.xtc.client.actions.PreferencesAction"
@@ -67,7 +76,16 @@
                   style="push">
             </command>
             <separator
-                  name="nl.jeldertpol.xtc.client.menu.separator"
+                  name="nl.jeldertpol.xtc.client.menu.separator1"
+                  visible="true">
+            </separator>
+            <command
+                  commandId="nl.jeldertpol.xtc.client.commands.pauseResume"
+                  mnemonic="R"
+                  style="push">
+            </command>
+            <separator
+                  name="nl.jeldertpol.xtc.client.menu.separator2"
                   visible="true">
             </separator>
             <command
