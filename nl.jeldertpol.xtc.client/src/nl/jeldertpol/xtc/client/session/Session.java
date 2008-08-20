@@ -25,6 +25,7 @@ import nl.jeldertpol.xtc.client.exceptions.WrongRevisionException;
 import nl.jeldertpol.xtc.client.preferences.connection.PreferenceConstants;
 import nl.jeldertpol.xtc.client.session.infoExtractor.InfoExtractor;
 import nl.jeldertpol.xtc.client.session.infoExtractor.SubclipseInfoExtractor;
+import nl.jeldertpol.xtc.client.session.whosWhere.WhosWhere;
 import nl.jeldertpol.xtc.common.changes.AbstractChange;
 import nl.jeldertpol.xtc.common.changes.AddedResourceChange;
 import nl.jeldertpol.xtc.common.changes.ContentChange;
@@ -88,6 +89,8 @@ public class Session {
 	 */
 	private String nickname;
 
+	final private WhosWhere whosWhere;
+
 	/**
 	 * Holds the server.
 	 */
@@ -107,8 +110,13 @@ public class Session {
 		pauseList = new ArrayList<AbstractChange>();
 		projectName = "";
 		nickname = "";
-
+		whosWhere = new WhosWhere();
+		
 		server = new Server();
+	}
+	
+	public WhosWhere getWhosWhere() {
+		return whosWhere;
 	}
 
 	/**
@@ -394,7 +402,7 @@ public class Session {
 		}
 	}
 
-	private void sendChange(AbstractChange change) {
+	private void sendChange(final AbstractChange change) {
 		if (paused) {
 			resume();
 		}
@@ -456,6 +464,8 @@ public class Session {
 		IResource resource = project.findMember(filePath);
 
 		Activator.documentReplacer.replace(resource, length, offset, text);
+		
+		whosWhere.change(nickname, filePath);
 	}
 
 	/**

@@ -12,7 +12,7 @@ import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 /**
- * An {@link UIJob} that can safely replaces text in an {@link IDocument}. Needs
+ * An {@link UIJob} that can safely replace text in an {@link IDocument}. Needs
  * to be safe to prevent invalid thread access exception from SWT.
  * 
  * @author Jeldert Pol

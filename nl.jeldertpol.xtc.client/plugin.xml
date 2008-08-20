@@ -116,5 +116,20 @@
             class="nl.jeldertpol.xtc.client.preferences.connection.PreferenceInitializer">
       </initializer>
    </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            id="nl.jeldertpol.xtc.client.view"
+            name="XTC">
+      </category>
+      <view
+            category="nl.jeldertpol.xtc.client.view"
+            class="nl.jeldertpol.xtc.client.views.currentSession.CurrentSessionView"
+            icon="resources/icons/rainbow.png"
+            id="nl.jeldertpol.xtc.client.view.currentSession"
+            name="Current session"
+            restorable="true">
+      </view>
+   </extension>
 
 </plugin>
