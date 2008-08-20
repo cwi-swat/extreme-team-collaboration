@@ -27,8 +27,6 @@ public class OpenedDocumentReplacerJob extends UIJob {
 
 	private final String text;
 
-	private final boolean save;
-
 	/**
 	 * TODO javadoc Constructor.
 	 * 
@@ -38,8 +36,7 @@ public class OpenedDocumentReplacerJob extends UIJob {
 	 * @param text
 	 */
 	public OpenedDocumentReplacerJob(final ITextEditor editor,
-			final int length, final int offset, final String text,
-			final boolean save) {
+			final int length, final int offset, final String text) {
 		// Name of project + file
 		super(editor.getTitleToolTip());
 
@@ -47,7 +44,6 @@ public class OpenedDocumentReplacerJob extends UIJob {
 		this.length = length;
 		this.offset = offset;
 		this.text = text;
-		this.save = save;
 
 		setPriority(INTERACTIVE);
 
@@ -75,9 +71,7 @@ public class OpenedDocumentReplacerJob extends UIJob {
 
 				document.removeDocumentListener(Activator.documentListener);
 				document.replace(offset, length, text);
-				if (save) {
-					editor.doSave(monitor);
-				}
+
 				document.addDocumentListener(Activator.documentListener);
 			}
 

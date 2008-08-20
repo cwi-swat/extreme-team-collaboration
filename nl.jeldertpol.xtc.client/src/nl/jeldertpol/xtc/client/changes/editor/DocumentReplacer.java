@@ -72,7 +72,7 @@ public class DocumentReplacer {
 		if (editor == null) {
 			// Ignoring change, will be requested when opening editor
 		} else {
-			new OpenedDocumentReplacerJob(editor, length, offset, text, false);
+			new OpenedDocumentReplacerJob(editor, length, offset, text);
 		}
 	}
 }
