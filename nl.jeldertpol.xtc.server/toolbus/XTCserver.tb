@@ -49,6 +49,7 @@ process XTCclient(Client : client, Server : server) is
 				. snd-eval(Server, startSession(Project, Revision, Nickname))
 				. rec-value(Server, startSession(Success?))
 				. subscribe(change(<str>, <term>, <str>))	// Project, Change, Nickname
+				. subscribe(chat(<str>, <str>))	// Nickname, Message
 				. snd-response(Client, startSession(Success))
 			endlet
 		)
@@ -64,6 +65,7 @@ process XTCclient(Client : client, Server : server) is
 				. snd-eval(Server, joinSession(Project, Nickname))
 				. rec-value(Server, joinSession(Success?))
 				. subscribe(change(<str>, <term>, <str>))	// Project, Change, Nickname
+				. subscribe(chat(<str>, <str>))	// Nickname, Message
 				. snd-response(Client, joinSession(Success))
 			endlet
 		)
@@ -135,6 +137,29 @@ process XTCclient(Client : client, Server : server) is
 			in
 				rec-note(change(Project?, Change?, Nickname?))
 				. snd-do(Client, receiveChange(Project, Change, Nickname))
+			endlet
+		)
+		+
+		(
+			// Send a chat message
+			let
+				Nickname : str,
+				Message : str
+			in
+				rec-event(Client, sendChat(Nickname?, Message?))
+				. snd-note(chat(Nickname, Message))
+				.snd-ack-event(Client, sendChat(Nickname, Message))
+			endlet
+		)
+		+
+		(
+			// Receive a chat message
+			let
+				Nickname : str,
+				Message : str
+			in
+				rec-note(chat(Nickname?, Message?))
+				. snd-do(Client, receiveChat(Nickname, Message))
 			endlet
 		)
 	)

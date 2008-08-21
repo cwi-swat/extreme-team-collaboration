@@ -124,10 +124,18 @@
       </category>
       <view
             category="nl.jeldertpol.xtc.client.view"
-            class="nl.jeldertpol.xtc.client.views.currentSession.CurrentSessionView"
-            icon="resources/icons/rainbow.png"
-            id="nl.jeldertpol.xtc.client.view.currentSession"
-            name="Current session"
+            class="nl.jeldertpol.xtc.client.views.whosWhere.WhosWhereView"
+            icon="resources/icons/eye.png"
+            id="nl.jeldertpol.xtc.client.view.whosWhere"
+            name="Whos Where"
+            restorable="true">
+      </view>
+      <view
+            category="nl.jeldertpol.xtc.client.view"
+            class="nl.jeldertpol.xtc.client.views.chat.ChatView"
+            icon="resources/icons/user_comment.png"
+            id="nl.jeldertpol.xtc.client.view.chat"
+            name="Chat"
             restorable="true">
       </view>
    </extension>

@@ -23,6 +23,7 @@ import nl.jeldertpol.xtc.client.exceptions.UnableToConnectException;
 import nl.jeldertpol.xtc.client.exceptions.UnversionedProjectException;
 import nl.jeldertpol.xtc.client.exceptions.WrongRevisionException;
 import nl.jeldertpol.xtc.client.preferences.connection.PreferenceConstants;
+import nl.jeldertpol.xtc.client.session.chat.Chat;
 import nl.jeldertpol.xtc.client.session.infoExtractor.InfoExtractor;
 import nl.jeldertpol.xtc.client.session.infoExtractor.SubclipseInfoExtractor;
 import nl.jeldertpol.xtc.client.session.whosWhere.WhosWhere;
@@ -32,6 +33,7 @@ import nl.jeldertpol.xtc.common.changes.ContentChange;
 import nl.jeldertpol.xtc.common.changes.MoveChange;
 import nl.jeldertpol.xtc.common.changes.RemovedResourceChange;
 import nl.jeldertpol.xtc.common.changes.TextualChange;
+import nl.jeldertpol.xtc.common.chat.ChatMessage;
 import nl.jeldertpol.xtc.common.session.SimpleSession;
 
 import org.eclipse.core.resources.IProject;
@@ -91,6 +93,8 @@ public class Session {
 
 	final private WhosWhere whosWhere;
 
+	final private Chat chat;
+
 	/**
 	 * Holds the server.
 	 */
@@ -111,12 +115,23 @@ public class Session {
 		projectName = "";
 		nickname = "";
 		whosWhere = new WhosWhere();
-		
+		chat = new Chat();
+
 		server = new Server();
 	}
-	
+
+	/**
+	 * @return the whosWhere
+	 */
 	public WhosWhere getWhosWhere() {
 		return whosWhere;
+	}
+
+	/**
+	 * @return the chat
+	 */
+	public Chat getChat() {
+		return chat;
 	}
 
 	/**
@@ -464,7 +479,7 @@ public class Session {
 		IResource resource = project.findMember(filePath);
 
 		Activator.documentReplacer.replace(resource, length, offset, text);
-		
+
 		whosWhere.change(nickname, filePath);
 	}
 
@@ -847,6 +862,15 @@ public class Session {
 						change.getNickname());
 			}
 		}
+	}
+
+	public void sendChat(String message) {
+		server.sendChat(nickname, message);
+	}
+
+	public void receiveChat(String nickname, String message) {
+		ChatMessage chatMessage = new ChatMessage(nickname, message);
+		chat.newMessage(chatMessage);
 	}
 
 }

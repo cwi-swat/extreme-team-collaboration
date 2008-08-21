@@ -247,7 +247,7 @@ public class Server extends AbstractJavaTool {
 			final AbstractChange change, final String nickname) {
 		byte[] blob = Conversion.objectToByte(change);
 		ATermBlob changeTerm = factory.makeBlob(blob);
-		
+
 		ATerm sendChange = factory.make("sendChange(<str>, <term>, <str>)",
 				projectName, changeTerm, nickname);
 		ATermAppl reply = sendRequest(sendChange);
@@ -256,7 +256,7 @@ public class Server extends AbstractJavaTool {
 		boolean success = Boolean.parseBoolean(answer.toString());
 
 		if (!success) {
-			//throw new LeaveSessionException(projectName);
+			// throw new LeaveSessionException(projectName);
 		}
 	}
 
@@ -272,7 +272,8 @@ public class Server extends AbstractJavaTool {
 	 */
 	public void receiveChange(final String projectName, final ATerm changeTerm,
 			final String nickname) {
-		System.out.println("Jeldert, toolbus is fixed, please remove other method!");
+		System.out
+				.println("Jeldert, toolbus is fixed, please remove other method!");
 		System.exit(1);
 		if (changeTerm.getType() == ATerm.BLOB) {
 			ATermBlob blobTerm = (ATermBlob) changeTerm;
@@ -281,12 +282,22 @@ public class Server extends AbstractJavaTool {
 			Activator.SESSION.applyChange(projectName, change);
 		}
 	}
-	
-	public void receiveChange(final String projectName, final byte[] changeBlob,
-			final String nickname) {
-			AbstractChange change = (AbstractChange) Conversion
-					.byteToObject(changeBlob);
-			Activator.SESSION.applyChange(projectName, change);
+
+	public void receiveChange(final String projectName,
+			final byte[] changeBlob, final String nickname) {
+		AbstractChange change = (AbstractChange) Conversion
+				.byteToObject(changeBlob);
+		Activator.SESSION.applyChange(projectName, change);
+	}
+
+	public void sendChat(final String nickname, final String message) {
+		ATerm sendChat = factory.make("sendChat(<str>, <str>)", nickname,
+				message);
+		sendEvent(sendChat);
+	}
+
+	public void receiveChat(final String nickname, final String message) {
+		Activator.SESSION.receiveChat(nickname, message);
 	}
 
 }
