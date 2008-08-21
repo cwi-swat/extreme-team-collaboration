@@ -5,6 +5,7 @@ import java.util.Set;
 import nl.jeldertpol.xtc.client.Activator;
 import nl.jeldertpol.xtc.client.session.whosWhere.WhosWhere;
 import nl.jeldertpol.xtc.client.session.whosWhere.WhosWhereListener;
+import nl.jeldertpol.xtc.client.views.chat.ChatView;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -22,6 +23,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IEditorDescriptor;
+import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
@@ -89,8 +91,12 @@ public class WhosWhereView extends ViewPart implements WhosWhereListener {
 
 		final TableCursor cursor = new TableCursor(table, SWT.NULL);
 		cursor.addMouseListener(new MouseAdapter() {
-			/* (non-Javadoc)
-			 * @see org.eclipse.swt.events.MouseAdapter#mouseDoubleClick(org.eclipse.swt.events.MouseEvent)
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see
+			 * org.eclipse.swt.events.MouseAdapter#mouseDoubleClick(org.eclipse
+			 * .swt.events.MouseEvent)
 			 */
 			@Override
 			public void mouseDoubleClick(MouseEvent e) {
@@ -100,31 +106,14 @@ public class WhosWhereView extends ViewPart implements WhosWhereListener {
 				handleEvent(column, text);
 			}
 		});
-		
-//		cursor.addMouseListener(new MouseListener() {
-//
-//			@Override
-//			public void mouseUp(final MouseEvent e) {
-//				// Nothing to do
-//			}
-//
-//			@Override
-//			public void mouseDown(final MouseEvent e) {
-//				// Nothing to do
-//			}
-//
-//			@Override
-//			public void mouseDoubleClick(final MouseEvent e) {
-//				int column = cursor.getColumn();
-//				String text = cursor.getRow().getText(column);
-//
-//				handleEvent(column, text);
-//			}
-//		});
-		
+
 		cursor.addKeyListener(new KeyAdapter() {
-			/* (non-Javadoc)
-			 * @see org.eclipse.swt.events.KeyAdapter#keyReleased(org.eclipse.swt.events.KeyEvent)
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see
+			 * org.eclipse.swt.events.KeyAdapter#keyReleased(org.eclipse.swt
+			 * .events.KeyEvent)
 			 */
 			@Override
 			public void keyReleased(KeyEvent e) {
@@ -137,26 +126,7 @@ public class WhosWhereView extends ViewPart implements WhosWhereListener {
 				}
 			}
 		});
-		
-//		cursor.addKeyListener(new KeyListener() {
-//
-//			@Override
-//			public void keyReleased(final KeyEvent e) {
-//				// Enter
-//				if (e.character == SWT.CR) {
-//					int column = cursor.getColumn();
-//					String text = cursor.getRow().getText(column);
-//
-//					handleEvent(column, text);
-//				}
-//			}
-//
-//			@Override
-//			public void keyPressed(final KeyEvent e) {
-//				// Nothing to do
-//			}
-//		});
-		
+
 		whosWhere.addListener(this);
 	}
 
@@ -185,40 +155,61 @@ public class WhosWhereView extends ViewPart implements WhosWhereListener {
 
 	private void handleEvent(final int column, final String text) {
 		if (column == COLUMN_NICKNAME) {
-			// TODO initiate chat
-			System.out.println("Chat: " + text);
+			// Open / focus view
+			try {
+				IViewPart part = PlatformUI.getWorkbench()
+						.getActiveWorkbenchWindow().getActivePage().showView(
+								Activator.CHAT_VIEW_ID);
+				if (part instanceof ChatView) {
+					// Append nickname to message
+					ChatView chatView = (ChatView) part;
+					chatView.appendMessage(text + ": ");
+				}
+			} catch (PartInitException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 		} else if (column == COLUMN_RESOURCE) {
 			// Open resource
-			System.out.println("Open: " + text);
-
 			IProject project = ResourcesPlugin.getWorkspace().getRoot()
 					.getProject(Activator.SESSION.getCurrentProject());
 
+			// Look if resource is already opened
 			IResource resource = project.findMember(text);
 			System.out.println("" + resource);
 			ITextEditor editor = Activator.documentReplacer
 					.findEditor(resource);
 
 			if (editor != null) {
+				// Focus editor
 				editor.getEditorSite().getPage().activate(editor);
 			} else {
-				IEditorDescriptor desc = PlatformUI.getWorkbench()
-						.getEditorRegistry().getDefaultEditor(
-								resource.getName());
-
-				IWorkbenchPage page = PlatformUI.getWorkbench()
-						.getActiveWorkbenchWindow().getActivePage();
-
-				IFile file = (IFile) resource;
 
 				try {
-					String editorID = EditorsUI.DEFAULT_TEXT_EDITOR_ID;
+					// Find default editor for resource
+					IEditorDescriptor desc = PlatformUI.getWorkbench()
+							.getEditorRegistry().getDefaultEditor(
+									resource.getName());
+
+					// Default text editor
+					String editorID;
+
 					if (desc != null) {
+						// Default editor found, use that one
 						editorID = desc.getId();
+					} else {
+						// No default editor, use default text editor
+						editorID = EditorsUI.DEFAULT_TEXT_EDITOR_ID;
 					}
 
-					page.openEditor(new FileEditorInput(file), editorID);
+					// Required variables
+					IWorkbenchPage page = PlatformUI.getWorkbench()
+							.getActiveWorkbenchWindow().getActivePage();
+					IFile file = (IFile) resource;
 
+					// Open new editor
+					page.openEditor(new FileEditorInput(file), editorID);
 				} catch (PartInitException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();

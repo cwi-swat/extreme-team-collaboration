@@ -133,6 +133,17 @@ public class ChatView extends ViewPart implements ChatListener {
 		inputText.setFocus();
 	}
 
+	/**
+	 * Append some text to the message. Places the caret at the end of the text.
+	 * 
+	 * @param text
+	 *            The text to append.
+	 */
+	public void appendMessage(final String text) {
+		inputText.append(text);
+		inputText.setCaretOffset(inputText.getText().length());
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 

@@ -19,6 +19,8 @@ public class Activator extends AbstractUIPlugin {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "nl.jeldertpol.xtc.client";
+	
+	public static final String CHAT_VIEW_ID = "nl.jeldertpol.xtc.client.view.chat";
 
 	public static final Session SESSION = new Session();
 
