@@ -28,7 +28,7 @@ public class ResourceMoveJob extends HighPriorityJob {
 	 *            The new location of the resource.
 	 */
 	public ResourceMoveJob(final IResource resource, final IPath moveTo) {
-		super(resource.toString());
+		super(ResourceMoveJob.class.getName() + ": " + resource.toString());
 
 		this.resource = resource;
 		this.moveTo = moveTo;

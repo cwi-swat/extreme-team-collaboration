@@ -46,7 +46,7 @@ public class WhosWhereUpdateJob extends UIJob {
 	 */
 	public WhosWhereUpdateJob(final Table table, final String nickname,
 			final String filePath) {
-		super("CurrentSessionUpdateJob " + nickname);
+		super(WhosWhereUpdateJob.class.getName() + ": " + nickname);
 
 		this.table = table;
 		this.nickname = nickname;

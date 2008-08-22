@@ -47,7 +47,8 @@ public class ChatUpdateJob extends UIJob {
 	 *            New chat message.
 	 */
 	public ChatUpdateJob(StyledText chatText, ChatMessage chatMessage) {
-		super("Chat " + chatMessage.getNickname());
+		super(ChatUpdateJob.class.getName() + ": " + "Chat "
+				+ chatMessage.getNickname());
 
 		this.chatText = chatText;
 		this.chatMessage = chatMessage;

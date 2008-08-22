@@ -34,7 +34,8 @@ public class ResourceAddedResourceJob extends HighPriorityJob {
 	 * @see IResource#getType()
 	 */
 	public ResourceAddedResourceJob(final IResource resource, final int type) {
-		super(resource.toString());
+		super(ResourceAddedResourceJob.class.getName() + ": "
+				+ resource.toString());
 
 		this.resource = resource;
 		this.type = type;

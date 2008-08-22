@@ -25,7 +25,8 @@ public class ResourceRemovedResourceJob extends HighPriorityJob {
 	 *            The resource to remove.
 	 */
 	public ResourceRemovedResourceJob(final IResource resource) {
-		super(resource.toString());
+		super(ResourceRemovedResourceJob.class.getName() + ": "
+				+ resource.toString());
 
 		this.resource = resource;
 

@@ -3,6 +3,7 @@ package nl.jeldertpol.xtc.client.changes.resource.jobs;
 import java.io.File;
 
 import nl.jeldertpol.xtc.client.Activator;
+import nl.jeldertpol.xtc.client.changes.editor.RevertToSavedJob;
 import nl.jeldertpol.xtc.common.conversion.Conversion;
 
 import org.eclipse.core.resources.IFile;
@@ -37,7 +38,8 @@ public class ResourceReceiveContentJob extends HighPriorityJob {
 	 */
 	public ResourceReceiveContentJob(final IProject project,
 			final IPath filePath, final File file, final byte[] content) {
-		super(file.toString());
+		super(ResourceReceiveContentJob.class.getName() + ": "
+				+ file.toString());
 
 		this.project = project;
 		this.filePath = filePath;
@@ -74,7 +76,7 @@ public class ResourceReceiveContentJob extends HighPriorityJob {
 				if (editor != null) {
 					// Reload file from filesystem.
 					System.out.println("Reverting to saved file.");
-					editor.doRevertToSaved();
+					new RevertToSavedJob(editor);
 				}
 
 			} catch (CoreException e) {

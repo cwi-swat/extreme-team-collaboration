@@ -34,7 +34,7 @@ public class ResourceSendContentJob extends HighPriorityJob {
 	 */
 	public ResourceSendContentJob(final IProject project, final IPath filePath,
 			final File file) {
-		super(file.toString());
+		super(ResourceSendContentJob.class.getName() + ": " + file.toString());
 
 		this.project = project;
 		this.filePath = filePath;
