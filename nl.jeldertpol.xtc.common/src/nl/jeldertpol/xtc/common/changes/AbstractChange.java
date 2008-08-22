@@ -12,23 +12,45 @@ public abstract class AbstractChange implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
+	private final String projectName;
+
 	private final String nickname;
 
-	public AbstractChange(final String nickname) {
+	/**
+	 * A change to a resource made during a session.
+	 * 
+	 * @param projectName
+	 *            The project which is affected by this change.
+	 * @param nickname
+	 *            The nickname who initiated to this change.
+	 */
+	public AbstractChange(final String projectName, final String nickname) {
+		this.projectName = projectName;
 		this.nickname = nickname;
 	}
 
 	/**
-	 * Get the nickname belonging to this change.
+	 * Get the project which is affected by this change.
 	 * 
-	 * @return The nickname
+	 * @return The projectName.
+	 */
+	public String getProjectName() {
+		return projectName;
+	}
+
+	/**
+	 * Get the nickname who initiated to this change.
+	 * 
+	 * @return The nickname.
 	 */
 	public String getNickname() {
 		return nickname;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	@Override

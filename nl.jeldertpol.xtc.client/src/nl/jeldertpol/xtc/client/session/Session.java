@@ -1,6 +1,5 @@
 package nl.jeldertpol.xtc.client.session;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,7 +41,6 @@ import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Preferences;
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.ui.IPartListener2;
@@ -448,7 +446,7 @@ public class Session {
 			String filename = filePath.toPortableString();
 
 			TextualChange change = new TextualChange(filename, length, offset,
-					text, nickname);
+					text, projectName, nickname);
 
 			sendChange(change);
 		}
@@ -499,39 +497,16 @@ public class Session {
 			String from = moveFrom.toPortableString();
 			String to = moveTo.toPortableString();
 
-			MoveChange change = new MoveChange(from, to, nickname);
+			MoveChange change = new MoveChange(from, to, projectName, nickname);
 
 			sendChange(change);
 		}
 	}
 
 	/**
-	 * Receive a move from the server / other clients.
-	 * 
-	 * @param remoteProjectName
-	 *            The name of the project the move originated from.
-	 * @param from
-	 *            Full path of original resource location, must be portable.
-	 * @param to
-	 *            Full path of new resource location, must be portable.
-	 * @param nickname
-	 *            The nickname of the client the move originated from.
-	 */
-	public void receiveMove(final String remoteProjectName, final String from,
-			final String to, final String nickname) {
-		IPath moveFrom = Path.fromPortableString(from);
-		IPath moveTo = Path.fromPortableString(to);
-
-		IResource resource = ResourcesPlugin.getWorkspace().getRoot()
-				.findMember(moveFrom);
-
-		// resourceChangeExecuter.move(resource, moveTo);
-		new ResourceMoveJob(resource, moveTo);
-	}
-
-	/**
 	 * Send new content to the server. Creates a new
-	 * {@link ResourceSendContentJob} to do this.
+	 * {@link ResourceSendContentJob} to convert the file, which also calls
+	 * {@link #sendContent(String, byte[], IProject)}.
 	 * 
 	 * @param project
 	 *            The project the content belongs to.
@@ -540,11 +515,10 @@ public class Session {
 	 * @param file
 	 *            The actual file which holds the content.
 	 */
-	public void sendContent(final IProject project, final IPath filePath,
-			final File file) {
+	public void sendContent(final IProject project, final IPath filePath) {
 		if (shouldSend(project)) {
 			// Create new job to do the conversion.
-			new ResourceSendContentJob(project, filePath, file);
+			new ResourceSendContentJob(project, filePath);
 		}
 	}
 
@@ -561,42 +535,14 @@ public class Session {
 	 * 
 	 * @see #sendContent(IProject, IPath)
 	 */
-	public void sendContent(final IProject project, final IPath filePath,
+	public void sendContent(final IProject project, final String filename,
 			final byte[] content) {
 		if (shouldSend(project)) {
-			String filename = filePath.toPortableString();
-
 			ContentChange change = new ContentChange(filename, content,
-					nickname);
+					projectName, nickname);
 
 			sendChange(change);
 		}
-	}
-
-	/**
-	 * Receive new content from the server / other clients.
-	 * 
-	 * @param remoteProjectName
-	 *            The name of the project the content belongs to.
-	 * @param filePath
-	 *            The file the content belongs to, path is relative to the
-	 *            project, and portable.
-	 * @param content
-	 *            The actual content.
-	 * @param nickname
-	 *            The nickname of the client the content originated from.
-	 */
-	public void receiveContent(final String remoteProjectName,
-			final String filePath, final byte[] content, final String nickname) {
-		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(
-				projectName);
-		IResource resource = project.findMember(filePath);
-		IPath path = resource.getProjectRelativePath();
-		IPath location = resource.getLocation();
-		File file = location.toFile();
-
-		// Create new job to do the conversion.
-		new ResourceReceiveContentJob(project, path, file, content);
 	}
 
 	/**
@@ -617,41 +563,10 @@ public class Session {
 			String resourceName = resourcePath.toPortableString();
 
 			AddedResourceChange change = new AddedResourceChange(resourceName,
-					type, nickname);
+					type, projectName, nickname);
 
 			sendChange(change);
 		}
-	}
-
-	/**
-	 * Receive an added resource from the server / other clients.
-	 * 
-	 * @param remoteProjectName
-	 *            The name of the project the resource is added to.
-	 * @param resourcePath
-	 *            The added resource, path is relative to the project, and
-	 *            portable.
-	 * @param type
-	 *            The type of resource added.
-	 * @param nickname
-	 *            The nickname of the client the added resource originated from.
-	 * 
-	 * @see IResource#getType()
-	 */
-	public void receiveAddedResource(final String remoteProjectName,
-			final String resourcePath, final int type, final String nickname) {
-
-		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(
-				projectName);
-
-		IResource resource = null;
-		if (type == IResource.FILE) {
-			resource = project.getFile(resourcePath);
-		} else if (type == IResource.FOLDER) {
-			resource = project.getFolder(resourcePath);
-		}
-
-		new ResourceAddedResourceJob(resource, type);
 	}
 
 	/**
@@ -668,31 +583,10 @@ public class Session {
 			String resourceName = resourcePath.toPortableString();
 
 			RemovedResourceChange change = new RemovedResourceChange(
-					resourceName, nickname);
+					resourceName, projectName, nickname);
 
 			sendChange(change);
 		}
-	}
-
-	/**
-	 * Receive an removed resource from the server / other clients.
-	 * 
-	 * @param remoteProjectName
-	 *            The name of the project the resource is added to.
-	 * @param resourcePath
-	 *            The added resource, path is relative to the project, and
-	 *            portable.
-	 * @param nickname
-	 *            The nickname of the client the added resource originated from.
-	 */
-	public void receiveRemovedResource(final String remoteProjectName,
-			final String resourcePath, final String nickname) {
-		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(
-				projectName);
-
-		IResource resource = project.findMember(resourcePath);
-
-		new ResourceRemovedResourceJob(resource);
 	}
 
 	/**
@@ -841,20 +735,16 @@ public class Session {
 		} else if (shouldReceive(projectName, abstractChange.getNickname())) {
 			if (abstractChange instanceof AddedResourceChange) {
 				AddedResourceChange change = (AddedResourceChange) abstractChange;
-				receiveAddedResource(projectName, change.getResourceName(),
-						change.getType(), change.getNickname());
+				new ResourceAddedResourceJob(change);
 			} else if (abstractChange instanceof ContentChange) {
 				ContentChange change = (ContentChange) abstractChange;
-				receiveContent(projectName, change.getFilename(), change
-						.getContent(), change.getNickname());
+				new ResourceReceiveContentJob(change);
 			} else if (abstractChange instanceof MoveChange) {
 				MoveChange change = (MoveChange) abstractChange;
-				receiveMove(projectName, change.getFrom(), change.getTo(),
-						change.getNickname());
+				new ResourceMoveJob(change);
 			} else if (abstractChange instanceof RemovedResourceChange) {
 				RemovedResourceChange change = (RemovedResourceChange) abstractChange;
-				receiveRemovedResource(projectName, change.getResourcePath(),
-						change.getNickname());
+				new ResourceRemovedResourceJob(change);
 			} else if (abstractChange instanceof TextualChange) {
 				TextualChange change = (TextualChange) abstractChange;
 				receiveTextualChange(projectName, change.getFilename(), change

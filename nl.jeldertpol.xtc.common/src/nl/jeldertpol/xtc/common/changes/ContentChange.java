@@ -26,8 +26,8 @@ public class ContentChange extends AbstractChange {
 	 *            The nickname of the client the content originated from.
 	 */
 	public ContentChange(final String filename, final byte[] content,
-			final String nickname) {
-		super(nickname);
+			final String projectName, final String nickname) {
+		super(projectName, nickname);
 
 		this.filename = filename;
 		this.content = content;

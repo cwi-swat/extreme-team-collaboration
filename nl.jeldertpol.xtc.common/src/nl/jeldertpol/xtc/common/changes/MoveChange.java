@@ -24,8 +24,8 @@ public class MoveChange extends AbstractChange {
 	 * @param nickname
 	 *            The nickname of the client the move originated from.
 	 */
-	public MoveChange(final String from, final String to, final String nickname) {
-		super(nickname);
+	public MoveChange(final String from, final String to, final String projectName, final String nickname) {
+		super(projectName, nickname);
 
 		this.from = from;
 		this.to = to;

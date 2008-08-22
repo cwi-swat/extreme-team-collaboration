@@ -20,7 +20,6 @@ public class ResourceSendContentJob extends HighPriorityJob {
 
 	final private IProject project;
 	final private IPath filePath;
-	final private File file;
 
 	/**
 	 * Send the content of a file to the server. Schedules itself to be run.
@@ -32,13 +31,12 @@ public class ResourceSendContentJob extends HighPriorityJob {
 	 * @param file
 	 *            A reference to the actual file.
 	 */
-	public ResourceSendContentJob(final IProject project, final IPath filePath,
-			final File file) {
-		super(ResourceSendContentJob.class.getName() + ": " + file.toString());
+	public ResourceSendContentJob(final IProject project, final IPath filePath) {
+		super(ResourceSendContentJob.class.getName() + ": "
+				+ filePath.toPortableString());
 
 		this.project = project;
 		this.filePath = filePath;
-		this.file = file;
 
 		schedule();
 	}
@@ -51,24 +49,17 @@ public class ResourceSendContentJob extends HighPriorityJob {
 	 */
 	@Override
 	protected IStatus run(final IProgressMonitor monitor) {
-		System.out.println("Sending new content: "
-				+ filePath.toPortableString());
 		IStatus status;
 
-		// try {
+		File file = filePath.toFile();
+		String filename = filePath.toPortableString();
+
 		byte[] content = Conversion.fileToByte(file);
 
-		Activator.SESSION.sendContent(project, filePath, content);
+		Activator.SESSION.sendContent(project, filename, content);
 
 		status = new Status(Status.OK, Activator.PLUGIN_ID,
 				"Resource content set successfully.");
-		// } catch (CoreException e) {
-		// e.printStackTrace();
-		//
-		// status = new Status(Status.ERROR, Activator.PLUGIN_ID,
-		// "Resource content could not be set.");
-		// // TODO revert, and re-apply all changes?
-		// }
 
 		return status;
 	}

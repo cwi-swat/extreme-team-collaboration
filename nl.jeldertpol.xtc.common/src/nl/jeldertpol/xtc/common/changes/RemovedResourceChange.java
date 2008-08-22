@@ -11,7 +11,7 @@ public class RemovedResourceChange extends AbstractChange {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	private final String resourceName;
 
 	/**
@@ -25,16 +25,16 @@ public class RemovedResourceChange extends AbstractChange {
 	 *            from.
 	 */
 	public RemovedResourceChange(final String resourceName,
-			final String nickname) {
-		super(nickname);
+			final String projectName, final String nickname) {
+		super(projectName, nickname);
 
 		this.resourceName = resourceName;
 	}
 
 	/**
-	 * @return the resourcePath
+	 * @return the resourceName
 	 */
-	public String getResourcePath() {
+	public String getResourceName() {
 		return resourceName;
 	}
 

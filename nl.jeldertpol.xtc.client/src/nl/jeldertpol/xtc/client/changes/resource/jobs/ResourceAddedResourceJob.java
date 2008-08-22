@@ -4,10 +4,13 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 import nl.jeldertpol.xtc.client.Activator;
+import nl.jeldertpol.xtc.common.changes.AddedResourceChange;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -20,25 +23,20 @@ import org.eclipse.core.runtime.Status;
  */
 public class ResourceAddedResourceJob extends HighPriorityJob {
 
-	final private IResource resource;
-	final private int type;
+	final private AddedResourceChange addedResourceChange;
 
 	/**
 	 * Add a resource. Schedules itself to be run.
 	 * 
-	 * @param resource
-	 *            The resource to add.
-	 * @param type
-	 *            The type of resource.
-	 * 
-	 * @see IResource#getType()
+	 * @param addedResourceChange
+	 *            Contains all information needed about the change.
 	 */
-	public ResourceAddedResourceJob(final IResource resource, final int type) {
+	public ResourceAddedResourceJob(
+			final AddedResourceChange addedResourceChange) {
 		super(ResourceAddedResourceJob.class.getName() + ": "
-				+ resource.toString());
+				+ addedResourceChange.getResourceName());
 
-		this.resource = resource;
-		this.type = type;
+		this.addedResourceChange = addedResourceChange;
 
 		schedule();
 	}
@@ -53,35 +51,65 @@ public class ResourceAddedResourceJob extends HighPriorityJob {
 	protected IStatus run(final IProgressMonitor monitor) {
 		IStatus status;
 
+		// Read information
+		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(
+				addedResourceChange.getProjectName());
+		String resourceName = addedResourceChange.getResourceName();
+		int type = addedResourceChange.getType();
+
 		try {
 			if (type == IResource.FILE) {
-				IFile file = (IFile) resource;
-				// An empty inputstream. Needed in order to create the file
-				// locally.
-				InputStream source = new ByteArrayInputStream(new byte[0]);
-				boolean force = false;
+				IFile file = project.getFile(resourceName);
 
-				synchronized (Activator.resourceChangeListener) {
-					Activator.SESSION.removeResourceChangeListener();
-					file.create(source, force, monitor);
-					resource.refreshLocal(IResource.NONE, monitor);
-					Activator.SESSION.addResourceChangeListener();
+				if (file.exists()) {
+					// File already exists, ignoring.
+					// TODO Can be bin, or can be error...
+					status = new Status(Status.OK, Activator.PLUGIN_ID,
+							"Resource already exists. Ignoring add.");
+				} else {
+					// An empty InputStream. Needed in order to create the file
+					// locally.
+					InputStream source = new ByteArrayInputStream(new byte[0]);
+					boolean force = false;
+
+					synchronized (Activator.resourceChangeListener) {
+						Activator.SESSION.removeResourceChangeListener();
+						file.create(source, force, monitor);
+						file.refreshLocal(IResource.NONE, monitor);
+						Activator.SESSION.addResourceChangeListener();
+					}
+
+					status = new Status(Status.OK, Activator.PLUGIN_ID,
+							"Resource added successfully.");
 				}
 			} else if (type == IResource.FOLDER) {
-				IFolder folder = (IFolder) resource;
-				boolean force = false;
-				boolean local = true;
+				IFolder folder = project.getFolder(resourceName);
 
-				synchronized (Activator.resourceChangeListener) {
-					Activator.SESSION.removeResourceChangeListener();
-					folder.create(force, local, monitor);
-					resource.refreshLocal(IResource.NONE, monitor);
-					Activator.SESSION.addResourceChangeListener();
+				if (folder.exists()) {
+					// Folder already exists, ignoring.
+					// TODO Can be bin, or can be error...
+					status = new Status(Status.OK, Activator.PLUGIN_ID,
+							"Resource already exists. Ignoring add.");
+				} else {
+
+					boolean force = false;
+					boolean local = true;
+
+					synchronized (Activator.resourceChangeListener) {
+						Activator.SESSION.removeResourceChangeListener();
+						folder.create(force, local, monitor);
+						folder.refreshLocal(IResource.NONE, monitor);
+						Activator.SESSION.addResourceChangeListener();
+					}
+
+					status = new Status(Status.OK, Activator.PLUGIN_ID,
+							"Resource added successfully.");
 				}
+			} else {
+				status = new Status(Status.ERROR, Activator.PLUGIN_ID,
+						"Resource not a file or folder, but of type " + type
+								+ ".");
 			}
-
-			status = new Status(Status.OK, Activator.PLUGIN_ID,
-					"Resource content set successfully.");
 		} catch (CoreException e) {
 			e.printStackTrace();
 

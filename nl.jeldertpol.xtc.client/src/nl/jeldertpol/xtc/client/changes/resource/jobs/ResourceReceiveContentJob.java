@@ -4,11 +4,12 @@ import java.io.File;
 
 import nl.jeldertpol.xtc.client.Activator;
 import nl.jeldertpol.xtc.client.changes.editor.RevertToSavedJob;
+import nl.jeldertpol.xtc.common.changes.ContentChange;
 import nl.jeldertpol.xtc.common.conversion.Conversion;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -23,28 +24,19 @@ import org.eclipse.ui.texteditor.ITextEditor;
  */
 public class ResourceReceiveContentJob extends HighPriorityJob {
 
-	final private IProject project;
-	final private IPath filePath;
-	final private File file;
-	final private byte[] content;
+	final private ContentChange contentChange;
 
 	/**
 	 * Set the content of a file. Schedules itself to be run.
 	 * 
-	 * @param file
-	 *            The file the content should be set of.
-	 * @param content
-	 *            The actual content for the file.
+	 * @param contentChange
+	 *            Contains all information needed about the change.
 	 */
-	public ResourceReceiveContentJob(final IProject project,
-			final IPath filePath, final File file, final byte[] content) {
+	public ResourceReceiveContentJob(final ContentChange contentChange) {
 		super(ResourceReceiveContentJob.class.getName() + ": "
-				+ file.toString());
+				+ contentChange.getFilename());
 
-		this.project = project;
-		this.filePath = filePath;
-		this.file = file;
-		this.content = content;
+		this.contentChange = contentChange;
 
 		schedule();
 	}
@@ -57,44 +49,43 @@ public class ResourceReceiveContentJob extends HighPriorityJob {
 	 */
 	@Override
 	protected IStatus run(final IProgressMonitor monitor) {
-		System.out.println("Receiving new content: "
-				+ filePath.toPortableString());
 		IStatus status;
 
-		// try {
+		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(
+				contentChange.getProjectName());
+		IResource resource = project.findMember(contentChange.getFilename());
+		IPath location = resource.getLocation();
+		File file = location.toFile();
+
+		byte[] content = contentChange.getContent();
+
 		synchronized (Activator.resourceChangeListener) {
 			Activator.SESSION.removeResourceChangeListener();
+
 			Conversion.byteToFile(content, file);
 
-			IFile ifile = project.getFile(filePath);
 			try {
-				ifile.refreshLocal(IResource.NONE, monitor);
+				resource.refreshLocal(IResource.NONE, monitor);
 
 				// Look if there is an open editor with this resource
 				ITextEditor editor = Activator.documentReplacer
-						.findEditor(ifile);
+						.findEditor(resource);
 				if (editor != null) {
 					// Reload file from filesystem.
-					System.out.println("Reverting to saved file.");
 					new RevertToSavedJob(editor);
 				}
 
+				status = new Status(Status.OK, Activator.PLUGIN_ID,
+						"Resource content set successfully.");
 			} catch (CoreException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
+
+				status = new Status(Status.ERROR, Activator.PLUGIN_ID,
+						"Resource content could not be set.");
+				// TODO revert, and re-apply all changes?
 			}
 			Activator.SESSION.addResourceChangeListener();
 		}
-
-		status = new Status(Status.OK, Activator.PLUGIN_ID,
-				"Resource content set successfully.");
-		// } catch (CoreException e) {
-		// e.printStackTrace();
-		//
-		// status = new Status(Status.ERROR, Activator.PLUGIN_ID,
-		// "Resource content could not be set.");
-		// // TODO revert, and re-apply all changes?
-		// }
 
 		return status;
 	}

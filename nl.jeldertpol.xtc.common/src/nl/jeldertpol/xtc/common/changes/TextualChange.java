@@ -32,8 +32,8 @@ public class TextualChange extends AbstractChange {
 	 *            The nickname of the client the change originated from.
 	 */
 	public TextualChange(final String filename, final int length,
-			final int offset, final String text, final String nickname) {
-		super(nickname);
+			final int offset, final String text, final String projectName, final String nickname) {
+		super(projectName, nickname);
 
 		this.filename = filename;
 		this.length = length;

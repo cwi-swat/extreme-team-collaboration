@@ -10,7 +10,7 @@ public class AddedResourceChange extends AbstractChange {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	private final String resourceName;
 	private final int type;
 
@@ -26,8 +26,8 @@ public class AddedResourceChange extends AbstractChange {
 	 *            The nickname of the client the added resource originated from.
 	 */
 	public AddedResourceChange(final String resourceName, final int type,
-			final String nickname) {
-		super(nickname);
+			final String projectName, final String nickname) {
+		super(projectName, nickname);
 
 		this.resourceName = resourceName;
 		this.type = type;

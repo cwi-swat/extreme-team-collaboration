@@ -1,7 +1,5 @@
 package nl.jeldertpol.xtc.client.changes.resource;
 
-import java.io.File;
-
 import nl.jeldertpol.xtc.client.Activator;
 import nl.jeldertpol.xtc.client.exceptions.LeaveSessionException;
 
@@ -64,13 +62,10 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 						.sendAddedResource(project, resourcePath, type);
 
 				// If it is a file, send the content of the file
-				File file = resource.getLocation().toFile();
-
-				if (file.isFile()) {
-					Activator.SESSION.sendContent(project, resourcePath, file);
+				if (resource.getType() == IResource.FILE) {
+					Activator.SESSION.sendContent(project, resourcePath);
 				}
 
-				// Nothing left of interest in this delta.
 				// Content of resource needs to be send.
 				ofInterest = true;
 			}
@@ -129,12 +124,12 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 				System.out.println("CONTENT");
 
 				IProject project = resource.getProject();
-				IPath filePath = resource.getProjectRelativePath();
-				File file = resource.getLocation().toFile();
+				IPath resourcePath = resource.getProjectRelativePath();
 
-				// if (file.isFile()) {
-				Activator.SESSION.sendContent(project, filePath, file);
-				// }
+				// If it is a file, send the content of the file
+				if (resource.getType() == IResource.FILE) {
+					Activator.SESSION.sendContent(project, resourcePath);
+				}
 
 				visitChildren = false;
 			}
