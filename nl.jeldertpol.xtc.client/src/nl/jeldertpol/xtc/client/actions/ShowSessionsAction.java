@@ -34,7 +34,7 @@ public class ShowSessionsAction extends AbstractHandler {
 				if (projects[i].getName().equals(projectName)) {
 					found = true;
 					try {
-						Activator.SESSION.joinSession(projects[i]);
+						Activator.SESSION.startJoinSession(projects[i]);
 					} catch (XtcException e) {
 						e.printStackTrace();
 						MessageDialog.openError(null, "XTC Start/Join", e

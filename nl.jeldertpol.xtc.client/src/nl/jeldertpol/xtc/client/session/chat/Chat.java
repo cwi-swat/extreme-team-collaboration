@@ -43,6 +43,10 @@ public class Chat {
 		}
 	}
 
+	public void clear() {
+		chatMessages = new ArrayList<ChatMessage>();
+	}
+
 	/**
 	 * Add a listener to be notified. Does nothing when listener is already
 	 * present.

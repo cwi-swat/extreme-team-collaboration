@@ -6,6 +6,7 @@ import nl.jeldertpol.xtc.client.Activator;
 import nl.jeldertpol.xtc.common.conversion.Conversion;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -51,7 +52,11 @@ public class ResourceSendContentJob extends HighPriorityJob {
 	protected IStatus run(final IProgressMonitor monitor) {
 		IStatus status;
 
-		File file = filePath.toFile();
+		// Absolute path in the local file system.
+		IResource resource = project.findMember(filePath);
+		IPath location = resource.getLocation();
+		File file = location.toFile();
+
 		String filename = filePath.toPortableString();
 
 		byte[] content = Conversion.fileToByte(file);

@@ -40,7 +40,8 @@ public class SubclipseInfoExtractor extends InfoExtractor {
 	 * Returns a list of modified {@link IResource} in a {@link IResource}
 	 * (inclusive), based on information from Subclipse.
 	 * 
-	 * TODO unmanaged files are ignored, this is OK for bin files etc, but not for new files.
+	 * TODO unmanaged files are ignored, this is OK for bin files etc, but not
+	 * for new files.
 	 * 
 	 * @param resource
 	 *            the resource in which to look for modified {@link IResource}.
@@ -102,7 +103,7 @@ public class SubclipseInfoExtractor extends InfoExtractor {
 			throws UnversionedProjectException, RevisionExtractorException {
 		ISVNLocalResource svnResource = SVNWorkspaceRoot
 				.getSVNResourceFor(project);
-		Long number = null;
+		Long number;
 
 		try {
 			SVNRevision revision = svnResource.getRevision();

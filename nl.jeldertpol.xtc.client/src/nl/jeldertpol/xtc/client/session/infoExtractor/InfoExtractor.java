@@ -58,7 +58,7 @@ public abstract class InfoExtractor {
 	 * 
 	 * @param project
 	 *            The project to get the revision from.
-	 * @return The revision of the project or <code>null</code>.
+	 * @return The revision of the project.
 	 * 
 	 * @throws RevisionExtractorException
 	 *             The underlying version control system throws an error.

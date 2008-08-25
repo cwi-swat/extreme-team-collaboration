@@ -10,7 +10,7 @@ public class ContentChange extends AbstractChange {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	private final String filename;
 	private final byte[] content;
 
@@ -49,8 +49,8 @@ public class ContentChange extends AbstractChange {
 
 	@Override
 	public String toString() {
-		String string = "ContentChange: " + filename + "\n\t client: "
-				+ getNickname();
+		String string = "ContentChange: " + filename + "\n\t size: "
+				+ content.length + "\n\t client: " + getNickname();
 		return string;
 	}
 

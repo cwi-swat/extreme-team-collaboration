@@ -70,6 +70,10 @@ public class WhosWhere {
 	public String getFilePath(final String nickname) {
 		return whosWhere.get(nickname);
 	}
+	
+	public void clear() {
+		whosWhere.clear();
+	}
 
 	/**
 	 * Add a listener to be notified. Does nothing when listener is already

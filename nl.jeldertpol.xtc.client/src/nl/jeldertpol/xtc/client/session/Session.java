@@ -16,7 +16,6 @@ import nl.jeldertpol.xtc.client.exceptions.LeaveSessionException;
 import nl.jeldertpol.xtc.client.exceptions.NicknameAlreadyTakenException;
 import nl.jeldertpol.xtc.client.exceptions.ProjectAlreadyPresentException;
 import nl.jeldertpol.xtc.client.exceptions.ProjectModifiedException;
-import nl.jeldertpol.xtc.client.exceptions.ProjectNotOnServerException;
 import nl.jeldertpol.xtc.client.exceptions.RevisionExtractorException;
 import nl.jeldertpol.xtc.client.exceptions.UnableToConnectException;
 import nl.jeldertpol.xtc.client.exceptions.UnversionedProjectException;
@@ -42,6 +41,10 @@ import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Preferences;
+import org.eclipse.jdt.core.IClasspathEntry;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IWorkbench;
@@ -79,6 +82,11 @@ public class Session {
 	private List<AbstractChange> pauseList;
 
 	/**
+	 * Holds the paths to ignore.
+	 */
+	private List<IPath> ignorePathList;
+
+	/**
 	 * Holds the project of the current session, or an empty String.
 	 */
 	private String projectName;
@@ -110,6 +118,7 @@ public class Session {
 		inSession = false;
 		paused = false;
 		pauseList = new ArrayList<AbstractChange>();
+		ignorePathList = new ArrayList<IPath>();
 		projectName = "";
 		nickname = "";
 		whosWhere = new WhosWhere();
@@ -197,168 +206,124 @@ public class Session {
 	 *             The underlying version control system throws an error.
 	 * @throws UnversionedProjectException
 	 *             The project is not under version control.
-	 * @throws ProjectAlreadyPresentException
-	 *             The project is already present on the server.
 	 * @throws WrongRevisionException
 	 *             The revision of the project does not match the revision of
 	 *             the server.
+	 * @throws ProjectAlreadyPresentException
+	 *             The project is already present on the server.
 	 * @throws NicknameAlreadyTakenException
 	 *             The nickname is already present in the session.
-	 * @throws ProjectNotOnServerException
-	 *             The project is not on the server. Cannot join a session.
-	 * @throws
-	 * @see Session#startSession(IProject)
-	 * @see Session#joinSession(IProject)
 	 */
 	public void startJoinSession(final IProject project)
 			throws UnableToConnectException, AlreadyInSessionException,
 			ProjectModifiedException, RevisionExtractorException,
 			UnversionedProjectException, WrongRevisionException,
-			NicknameAlreadyTakenException, ProjectAlreadyPresentException,
-			ProjectNotOnServerException {
-		List<SimpleSession> sessions = getSessions();
-		String projectName = project.getName();
-
-		boolean present = false;
-		for (SimpleSession simpleSession : sessions) {
-			if (simpleSession.getProjectName().equals(projectName)) {
-				joinSession(project);
-				present = true;
-				break;
-			}
-		}
-
-		if (!present) {
-			startSession(project);
-		}
-	}
-
-	/**
-	 * Start a new session on the server. All needed information for this is
-	 * extracted from the project and the preferences.
-	 * 
-	 * @param project
-	 *            The project for the session.
-	 * @throws UnableToConnectException
-	 *             Connecting to the server failed.
-	 * @throws AlreadyInSessionException
-	 *             Client is already in a session.
-	 * @throws ProjectModifiedException
-	 *             The project has local modifications.
-	 * @throws RevisionExtractorException
-	 *             The underlying version control system throws an error.
-	 * @throws UnversionedProjectException
-	 *             The project is not under version control.
-	 * @throws ProjectAlreadyPresentException
-	 *             The project is already present on the server.
-	 */
-	public void startSession(final IProject project)
-			throws UnableToConnectException, AlreadyInSessionException,
-			ProjectModifiedException, RevisionExtractorException,
-			UnversionedProjectException, ProjectAlreadyPresentException {
+			ProjectAlreadyPresentException, NicknameAlreadyTakenException {
 		if (!connected) {
+			// UnableToConnectException
 			connect();
 		}
+
 		if (inSession) {
 			throw new AlreadyInSessionException();
 		}
-
-		String projectName = project.getName();
 
 		if (!unmodifiedProject(project)) {
 			throw new ProjectModifiedException(projectName);
 		}
 
-		Long revision = infoExtractor.getRevision(project);
+		List<SimpleSession> sessions = getSessions();
+		String projectName = project.getName();
+
+		// Is project already present on server?
+		boolean present = false;
+		Long serverRevision = null;
+		for (SimpleSession simpleSession : sessions) {
+			if (simpleSession.getProjectName().equals(projectName)) {
+				present = true;
+				serverRevision = simpleSession.getRevision();
+				break;
+			}
+		}
 
 		// Get nickname
 		Preferences preferences = Activator.getDefault().getPluginPreferences();
 		nickname = preferences.getString(PreferenceConstants.P_NICKNAME);
 
-		server.startSession(projectName, revision, nickname);
+		Long revision = infoExtractor.getRevision(project);
+
+		if (!present) {
+			// Start new session
+			server.startSession(projectName, revision, nickname);
+		} else {
+			// Join existing session
+			if (revision.equals(serverRevision)) {
+				server.joinSession(projectName, nickname);
+			} else {
+				throw new WrongRevisionException(revision, serverRevision);
+			}
+		}
+
+		// Ignoring output location (build path/bin folder)
+		ignoreBuildPath(project);
 
 		// Nothing went wrong, so client is now in a session.
 		inSession = true;
 		this.projectName = projectName;
 
+		// Request and apply all changes made so far.
+		if (present) {
+			server.requestChanges(projectName);
+		}
+
 		registerListeners();
 	}
 
 	/**
-	 * Join a session on the server. All needed information for this is
-	 * extracted from the project and the preferences.
+	 * Ignore the build path (usually <code>/bin</code>) if this project is a
+	 * {@link IJavaProject}.
 	 * 
 	 * @param project
-	 *            The project for the session.
-	 * @throws UnableToConnectException
-	 *             Connecting to the server failed.
-	 * @throws AlreadyInSessionException
-	 *             Client is already in a session.
-	 * @throws ProjectModifiedException
-	 *             The project has local modifications.
-	 * @throws RevisionExtractorException
-	 *             The underlying version control system throws an error.
-	 * @throws UnversionedProjectException
-	 *             The project is not under version control.
-	 * @throws WrongRevisionException
-	 *             The revision of the project does not match the revision of
-	 *             the server.
-	 * @throws NicknameAlreadyTakenException
-	 *             The nickname is already present in the session.
-	 * @throws ProjectNotOnServerException
-	 *             The project is not on the server. Cannot join a session.
-	 * @throws RevisionExtractorException
+	 *            The project of which to ignore the build path.
 	 */
-	public void joinSession(final IProject project)
-			throws UnableToConnectException, AlreadyInSessionException,
-			ProjectModifiedException, RevisionExtractorException,
-			UnversionedProjectException, WrongRevisionException,
-			NicknameAlreadyTakenException, ProjectNotOnServerException {
-		if (!connected) {
-			connect();
-		}
-		if (inSession) {
-			throw new AlreadyInSessionException();
-		}
+	private void ignoreBuildPath(IProject project) {
+		IJavaProject javaProject = JavaCore.create(project);
 
-		String projectName = project.getName();
+		// It is a Java project.
+		if (javaProject != null) {
+			try {
+				IPath outputLocation = javaProject.readOutputLocation();
+				ignorePathList.add(relativeToProject(outputLocation));
 
-		if (!unmodifiedProject(project)) {
-			throw new ProjectModifiedException(projectName);
-		}
-
-		// Get nickname
-		Preferences preferences = Activator.getDefault().getPluginPreferences();
-		nickname = preferences.getString(PreferenceConstants.P_NICKNAME);
-
-		List<SimpleSession> sessions = getSessions();
-		boolean found = false;
-		for (SimpleSession simpleSession : sessions) {
-			if (simpleSession.getProjectName().equals(projectName)) {
-				found = true;
-				Long localRevision = getRevision(project);
-				Long serverRevision = simpleSession.getRevision();
-
-				if (localRevision.equals(serverRevision)) {
-					server.joinSession(projectName, nickname);
-					inSession = true;
-					this.projectName = projectName;
-				} else {
-					throw new WrongRevisionException(localRevision,
-							serverRevision);
+				// Each source location could have their own output location.
+				IClasspathEntry[] rawClassPaths = javaProject.getRawClasspath();
+				for (IClasspathEntry classpathEntry : rawClassPaths) {
+					outputLocation = classpathEntry.getOutputLocation();
+					if (outputLocation != null) {
+						IPath relative = relativeToProject(outputLocation);
+						if (!ignorePathList.contains(relative)) {
+							ignorePathList.add(relative);
+						}
+					}
 				}
-				break;
+			} catch (JavaModelException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
+	}
 
-		if (!found) {
-			throw new ProjectNotOnServerException(projectName);
-		}
-
-		// Request and apply all changes made so far.
-		server.requestChanges(projectName);
-
-		registerListeners();
+	/**
+	 * Make location relative to project.
+	 * 
+	 * @param path
+	 *            An path relative to the root of the workspace.
+	 * @return An path relative to the project it is part of.
+	 */
+	private IPath relativeToProject(IPath path) {
+		IResource resource = ResourcesPlugin.getWorkspace().getRoot()
+				.findMember(path);
+		return resource.getProjectRelativePath();
 	}
 
 	/**
@@ -409,9 +374,16 @@ public class Session {
 	public void leaveSession() throws LeaveSessionException {
 		if (inSession) {
 			server.leaveSession(projectName, nickname);
+
 			inSession = false;
+			paused = false;
+			pauseList = new ArrayList<AbstractChange>();
+			ignorePathList = new ArrayList<IPath>();
 			projectName = "";
 			nickname = "";
+
+			whosWhere.clear();
+			chat.clear();
 		}
 	}
 
@@ -442,7 +414,7 @@ public class Session {
 	 */
 	public void sendTextualChange(final IProject project, final IPath filePath,
 			final int length, final int offset, final String text) {
-		if (shouldSend(project)) {
+		if (shouldSend(project, filePath)) {
 			String filename = filePath.toPortableString();
 
 			TextualChange change = new TextualChange(filename, length, offset,
@@ -493,7 +465,8 @@ public class Session {
 	 */
 	public void sendMove(final IProject project, final IPath moveFrom,
 			final IPath moveTo) {
-		if (shouldSend(project)) {
+		// TODO relative?
+		if (shouldSend(project, moveFrom.makeRelative())) {
 			String from = moveFrom.toPortableString();
 			String to = moveTo.toPortableString();
 
@@ -516,7 +489,7 @@ public class Session {
 	 *            The actual file which holds the content.
 	 */
 	public void sendContent(final IProject project, final IPath filePath) {
-		if (shouldSend(project)) {
+		if (shouldSend(project, filePath)) {
 			// Create new job to do the conversion.
 			new ResourceSendContentJob(project, filePath);
 		}
@@ -537,12 +510,10 @@ public class Session {
 	 */
 	public void sendContent(final IProject project, final String filename,
 			final byte[] content) {
-		if (shouldSend(project)) {
-			ContentChange change = new ContentChange(filename, content,
-					projectName, nickname);
+		ContentChange change = new ContentChange(filename, content,
+				projectName, nickname);
 
-			sendChange(change);
-		}
+		sendChange(change);
 	}
 
 	/**
@@ -559,7 +530,7 @@ public class Session {
 	 */
 	public void sendAddedResource(final IProject project,
 			final IPath resourcePath, final int type) {
-		if (shouldSend(project)) {
+		if (shouldSend(project, resourcePath)) {
 			String resourceName = resourcePath.toPortableString();
 
 			AddedResourceChange change = new AddedResourceChange(resourceName,
@@ -579,7 +550,7 @@ public class Session {
 	 */
 	public void sendRemovedResource(final IProject project,
 			final IPath resourcePath) {
-		if (shouldSend(project)) {
+		if (shouldSend(project, resourcePath)) {
 			String resourceName = resourcePath.toPortableString();
 
 			RemovedResourceChange change = new RemovedResourceChange(
@@ -646,16 +617,6 @@ public class Session {
 		return projectName;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see InfoExtractor#getRevision(IProject)
-	 */
-	private Long getRevision(final IProject project)
-			throws RevisionExtractorException, UnversionedProjectException {
-		return infoExtractor.getRevision(project);
-	}
-
 	/**
 	 * Checks if the project is unmodified.
 	 * 
@@ -678,10 +639,19 @@ public class Session {
 	 * @return <code>true</code> if change should be send to server,
 	 *         <code>false</code> otherwise.
 	 */
-	private boolean shouldSend(final IProject project) {
-		String remoteProjectName = project.getName();
+	private boolean shouldSend(final IProject project, final IPath resourcePath) {
+		boolean send = inSession() && project.getName().equals(projectName);
 
-		return inSession() && remoteProjectName.equals(projectName);
+		if (send) {
+			for (IPath toIgnore : ignorePathList) {
+				if (toIgnore.isPrefixOf(resourcePath)) {
+					send = false;
+					break;
+				}
+			}
+		}
+
+		return send;
 	}
 
 	/**

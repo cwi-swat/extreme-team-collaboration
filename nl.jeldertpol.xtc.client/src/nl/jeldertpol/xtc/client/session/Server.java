@@ -10,9 +10,6 @@ import nl.jeldertpol.xtc.client.exceptions.UnableToConnectException;
 import nl.jeldertpol.xtc.common.changes.AbstractChange;
 import nl.jeldertpol.xtc.common.conversion.Conversion;
 import nl.jeldertpol.xtc.common.session.SimpleSession;
-
-import org.eclipse.core.runtime.IPath;
-
 import toolbus.adapter.java.AbstractJavaTool;
 import aterm.ATerm;
 import aterm.ATermAppl;
@@ -213,36 +210,11 @@ public class Server extends AbstractJavaTool {
 	 * 
 	 * @param projectName
 	 *            The name of the project the change originated from.
-	 * @param filePath
-	 *            The file, path must be relative to the project, and be
-	 *            portable.
-	 * @param length
-	 *            Length of the replaced document text.
-	 * @param offset
-	 *            The document offset.
-	 * @param text
-	 *            Text inserted into the document.
+	 * @param change
+	 *            The actual change.
 	 * @param nickname
 	 *            The nickname of the client the change originated from.
-	 * 
-	 * @see IPath#toPortableString()
 	 */
-	public void sendChange(final String projectName, final String filePath,
-			final int length, final int offset, final String text,
-			final String nickname) {
-		ATerm sendChange = factory.make(
-				"sendChange(<str>, <str>, <int>, <int>, <str>, <str>)",
-				projectName, filePath, length, offset, text, nickname);
-		ATermAppl reply = sendRequest(sendChange);
-
-		ATerm answer = reply.getArgument(0);
-		boolean success = Boolean.parseBoolean(answer.toString());
-
-		if (!success) {
-			// throw new LeaveSessionException(projectName);
-		}
-	}
-
 	public void sendChange(final String projectName,
 			final AbstractChange change, final String nickname) {
 		byte[] blob = Conversion.objectToByte(change);
