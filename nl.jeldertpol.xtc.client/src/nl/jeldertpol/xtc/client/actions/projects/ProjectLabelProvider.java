@@ -1,6 +1,7 @@
 package nl.jeldertpol.xtc.client.actions.projects;
 
 import nl.jeldertpol.xtc.client.Activator;
+import nl.jeldertpol.xtc.client.actions.AbstractLabelProvider;
 import nl.jeldertpol.xtc.client.exceptions.RevisionExtractorException;
 import nl.jeldertpol.xtc.client.exceptions.UnversionedProjectException;
 import nl.jeldertpol.xtc.client.session.infoExtractor.InfoExtractor;
@@ -9,7 +10,6 @@ import nl.jeldertpol.xtc.common.session.SimpleSession;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.viewers.ILabelProvider;
-import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
@@ -21,7 +21,7 @@ import org.eclipse.swt.widgets.Display;
  * 
  * @author Jeldert Pol
  */
-public class ProjectLabelProvider implements ILabelProvider {
+public class ProjectLabelProvider extends AbstractLabelProvider {
 
 	/*
 	 * (non-Javadoc)
@@ -38,6 +38,7 @@ public class ProjectLabelProvider implements ILabelProvider {
 					Activator.IMAGE_PROJECT).getImageData();
 			image = new Image(device, session);
 		}
+
 		return image;
 	}
 
@@ -67,57 +68,8 @@ public class ProjectLabelProvider implements ILabelProvider {
 				e.printStackTrace();
 			}
 		}
+
 		return text;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.jface.viewers.IBaseLabelProvider#addListener(org.eclipse.
-	 * jface.viewers.ILabelProviderListener)
-	 */
-	@Override
-	public void addListener(final ILabelProviderListener listener) {
-		// TODO Auto-generated method stub
-
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.jface.viewers.IBaseLabelProvider#dispose()
-	 */
-	@Override
-	public void dispose() {
-		// TODO Auto-generated method stub
-
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.jface.viewers.IBaseLabelProvider#isLabelProperty(java.lang
-	 * .Object, java.lang.String)
-	 */
-	@Override
-	public boolean isLabelProperty(final Object element, final String property) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.jface.viewers.IBaseLabelProvider#removeListener(org.eclipse
-	 * .jface.viewers.ILabelProviderListener)
-	 */
-	@Override
-	public void removeListener(final ILabelProviderListener listener) {
-		// TODO Auto-generated method stub
-
 	}
 
 }

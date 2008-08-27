@@ -218,10 +218,9 @@ public class Server extends AbstractJavaTool {
 	public void sendChange(final String projectName,
 			final AbstractChange change, final String nickname) {
 		byte[] blob = Conversion.objectToByte(change);
-		ATermBlob changeTerm = factory.makeBlob(blob);
 
-		ATerm sendChange = factory.make("sendChange(<str>, <term>, <str>)",
-				projectName, changeTerm, nickname);
+		ATerm sendChange = factory.make("sendChange(<str>, <blob>, <str>)",
+				projectName, blob, nickname);
 		ATermAppl reply = sendRequest(sendChange);
 
 		ATerm answer = reply.getArgument(0);
@@ -237,24 +236,11 @@ public class Server extends AbstractJavaTool {
 	 * 
 	 * @param projectName
 	 *            The name of the project the change originated from.
-	 * @param changeTerm
-	 *            An {@link ATermBlob} containing an {@link AbstractChange}.
+	 * @param changeBlob
+	 *            Serialized {@link AbstractChange}.
 	 * @param nickname
 	 *            The nickname of the client the change originated from.
 	 */
-	public void receiveChange(final String projectName, final ATerm changeTerm,
-			final String nickname) {
-		System.out
-				.println("Jeldert, toolbus is fixed, please remove other method!");
-		System.exit(1);
-		if (changeTerm.getType() == ATerm.BLOB) {
-			ATermBlob blobTerm = (ATermBlob) changeTerm;
-			AbstractChange change = (AbstractChange) Conversion
-					.byteToObject(blobTerm.getBlobData());
-			Activator.SESSION.applyChange(projectName, change);
-		}
-	}
-
 	public void receiveChange(final String projectName,
 			final byte[] changeBlob, final String nickname) {
 		AbstractChange change = (AbstractChange) Conversion

@@ -17,10 +17,7 @@ public class ResourceChangeListener implements IResourceChangeListener {
 
 	@Override
 	public void resourceChanged(final IResourceChangeEvent event) {
-		// TODO ignore bin? (build map)
-
-		// TODO remove fakeStart before production
-		if (Activator.SESSION.inSession() || Activator.fakeStart) {
+		if (Activator.SESSION.inSession()) {
 			assert (event.getType() == IResourceChangeEvent.POST_CHANGE);
 
 			// Only listen to project in current session.

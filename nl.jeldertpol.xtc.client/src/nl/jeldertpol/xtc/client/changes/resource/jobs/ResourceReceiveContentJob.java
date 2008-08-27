@@ -71,7 +71,7 @@ public class ResourceReceiveContentJob extends HighPriorityJob {
 				ITextEditor editor = Activator.documentReplacer
 						.findEditor(resource);
 				if (editor != null) {
-					// Reload file from filesystem.
+					// Reload file from file system.
 					new RevertToSavedJob(editor);
 				}
 

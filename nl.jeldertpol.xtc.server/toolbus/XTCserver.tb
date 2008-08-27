@@ -27,7 +27,7 @@ process XTCclient(Client : client, Server : server) is
 	(
 		// Get current sessions
 		let
-			Sessions : term
+			Sessions : blob
 		in
 			rec-request(Client, getSessions())
 			. snd-eval(Server, getSessions())
@@ -74,7 +74,7 @@ process XTCclient(Client : client, Server : server) is
 			// Request changes in session
 			let
 				Project : str,
-				Changes : term
+				Changes : blob
 			in
 				rec-request(Client, requestChanges(Project?))
 				. snd-eval(Server, requestChanges(Project))
@@ -88,7 +88,7 @@ process XTCclient(Client : client, Server : server) is
 			let
 				Project : str,
 				Resource : str,
-				Changes : term
+				Changes : blob
 			in
 				rec-request(Client, requestTextualChanges(Project?, Resource?))
 				. snd-eval(Server, requestTextualChanges(Project, Resource))
@@ -116,7 +116,7 @@ process XTCclient(Client : client, Server : server) is
 			// Send a change
 			let
 				Project : str,
-				Change : term,
+				Change : blob,
 				Nickname : str,
 				Success : bool
 			in
@@ -132,7 +132,7 @@ process XTCclient(Client : client, Server : server) is
 			// Receive a change
 			let
 				Project : str,
-				Change : term,
+				Change : blob,
 				Nickname : str
 			in
 				rec-note(change(Project?, Change?, Nickname?))

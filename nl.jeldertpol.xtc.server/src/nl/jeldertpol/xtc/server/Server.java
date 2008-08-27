@@ -86,9 +86,8 @@ public class Server extends AbstractJavaTool {
 		}
 
 		byte[] blob = Conversion.objectToByte(simpleSessions);
-		ATermBlob termBlob = factory.makeBlob(blob);
 
-		ATerm response = factory.make("getSessions(<term>)", termBlob);
+		ATerm response = factory.make("getSessions(<blob>)", blob);
 		return response;
 	}
 
@@ -168,9 +167,8 @@ public class Server extends AbstractJavaTool {
 		changes = session.getChanges();
 
 		byte[] blob = Conversion.objectToByte(changes);
-		ATermBlob termBlob = factory.makeBlob(blob);
 
-		ATerm response = factory.make("requestChanges(<term>)", termBlob);
+		ATerm response = factory.make("requestChanges(<blob>)", blob);
 		return response;
 	}
 
@@ -215,10 +213,8 @@ public class Server extends AbstractJavaTool {
 		System.out.println("Size: " + orderedChanges.size());
 
 		byte[] blob = Conversion.objectToByte(orderedChanges);
-		ATermBlob termBlob = factory.makeBlob(blob);
 
-		ATerm response = factory
-				.make("requestTextualChanges(<term>)", termBlob);
+		ATerm response = factory.make("requestTextualChanges(<blob>)", blob);
 		return response;
 	}
 
@@ -261,35 +257,14 @@ public class Server extends AbstractJavaTool {
 	 * 
 	 * @param projectName
 	 *            Name of the project, to identify the session.
-	 * @param changeTerm
-	 *            An {@link ATermBlob} containing an {@link AbstractChange}.
+	 * @param changeBlob
+	 *            Serialized {@link AbstractChange}.
 	 * @param nickname
 	 *            The nickname of the client.
 	 * 
 	 * @return <code>true</code> if the session was found, and changeTerm
 	 *         contains an {@link AbstractChange}, <code>false</code> otherwise.
 	 */
-	public ATerm sendChange(final String projectName, final ATerm changeTerm,
-			final String nickname) {
-		System.out.println("Jeldert, toolbus is fixed, please remove other method!");
-		System.exit(1);
-		boolean success = false;
-
-		Session session = getSession(projectName);
-		if (session != null) {
-			if (changeTerm.getType() == ATerm.BLOB) {
-				ATermBlob blobTerm = (ATermBlob) changeTerm;
-				AbstractChange change = (AbstractChange) Conversion
-						.byteToObject(blobTerm.getBlobData());
-				session.addChange(change);
-				success = true;
-			}
-		}
-
-		ATerm sendChange = factory.make("sendChange(<bool>)", success);
-		return sendChange;
-	}
-
 	public ATerm sendChange(final String projectName, final byte[] changeBlob,
 			final String nickname) {
 		boolean success = false;

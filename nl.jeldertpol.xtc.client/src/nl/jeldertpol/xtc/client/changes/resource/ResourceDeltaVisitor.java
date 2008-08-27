@@ -116,7 +116,7 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 		}
 
 		if (ofInterest) {
-			// The filesystem modification timestamp has changed since the
+			// The file system modification timestamp has changed since the
 			// last notification. IResource.touch() will also trigger a
 			// content change notification, even though the content may not
 			// have changed in the file system.

@@ -4,10 +4,9 @@ import nl.jeldertpol.xtc.client.changes.editor.DocumentListener;
 import nl.jeldertpol.xtc.client.changes.editor.DocumentReplacer;
 import nl.jeldertpol.xtc.client.changes.resource.ResourceChangeListener;
 import nl.jeldertpol.xtc.client.session.Session;
-import nl.jeldertpol.xtc.client.session.infoExtractor.InfoExtractor;
-import nl.jeldertpol.xtc.client.session.infoExtractor.SubclipseInfoExtractor;
 
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -19,7 +18,7 @@ public class Activator extends AbstractUIPlugin {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "nl.jeldertpol.xtc.client";
-	
+
 	public static final String CHAT_VIEW_ID = "nl.jeldertpol.xtc.client.view.chat";
 
 	public static final Session SESSION = new Session();
@@ -29,11 +28,7 @@ public class Activator extends AbstractUIPlugin {
 	public static final DocumentReplacer documentReplacer = new DocumentReplacer();
 
 	public static final ResourceChangeListener resourceChangeListener = new ResourceChangeListener();
-
-	public static final InfoExtractor infoExtractor = new SubclipseInfoExtractor();
-
-	public static boolean fakeStart = false;
-
+	
 	/**
 	 * Image for an session.
 	 */
@@ -63,6 +58,8 @@ public class Activator extends AbstractUIPlugin {
 	public void start(final BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
+
+		log("XTC plug-in started.");
 	}
 
 	/*
@@ -78,6 +75,8 @@ public class Activator extends AbstractUIPlugin {
 				resourceChangeListener);
 
 		SESSION.disconnect();
+
+		log("XTC plug-in stopped.");
 
 		plugin = null;
 		super.stop(context);
@@ -102,5 +101,27 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	public static ImageDescriptor getImageDescriptor(final String path) {
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
+	}
+
+	/**
+	 * Log an informational message.
+	 * 
+	 * @param message
+	 *            The message to be logged.
+	 */
+	public static void log(String message) {
+		getDefault().getLog().log(new Status(Status.INFO, PLUGIN_ID, message));
+	}
+
+	/**
+	 * Log an error.
+	 * 
+	 * @param message
+	 *            The message to be logged.
+	 * @param exception
+	 *            Exception with more information about the error.
+	 */
+	public static void log(String message, Exception exception) {
+		getDefault().getLog().log(new Status(Status.ERROR, PLUGIN_ID, message, exception));
 	}
 }

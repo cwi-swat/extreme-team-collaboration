@@ -1,10 +1,10 @@
 package nl.jeldertpol.xtc.client.actions.sessions;
 
 import nl.jeldertpol.xtc.client.Activator;
+import nl.jeldertpol.xtc.client.actions.AbstractLabelProvider;
 import nl.jeldertpol.xtc.common.session.SimpleSession;
 
 import org.eclipse.jface.viewers.ILabelProvider;
-import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.TreeNode;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Image;
@@ -17,7 +17,7 @@ import org.eclipse.swt.widgets.Display;
  * 
  * @author Jeldert Pol
  */
-public class SessionLabelProvider implements ILabelProvider {
+public class SessionLabelProvider extends AbstractLabelProvider {
 
 	/*
 	 * (non-Javadoc)
@@ -67,56 +67,6 @@ public class SessionLabelProvider implements ILabelProvider {
 			}
 		}
 		return text;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.jface.viewers.IBaseLabelProvider#addListener(org.eclipse.
-	 * jface.viewers.ILabelProviderListener)
-	 */
-	@Override
-	public void addListener(final ILabelProviderListener listener) {
-		// TODO Auto-generated method stub
-
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.jface.viewers.IBaseLabelProvider#dispose()
-	 */
-	@Override
-	public void dispose() {
-		// TODO Auto-generated method stub
-
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.jface.viewers.IBaseLabelProvider#isLabelProperty(java.lang
-	 * .Object, java.lang.String)
-	 */
-	@Override
-	public boolean isLabelProperty(final Object element, final String property) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.jface.viewers.IBaseLabelProvider#removeListener(org.eclipse
-	 * .jface.viewers.ILabelProviderListener)
-	 */
-	@Override
-	public void removeListener(final ILabelProviderListener listener) {
-		// TODO Auto-generated method stub
-
 	}
 
 }
