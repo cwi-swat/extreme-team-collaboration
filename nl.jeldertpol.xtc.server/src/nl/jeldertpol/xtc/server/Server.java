@@ -161,12 +161,44 @@ public class Server extends AbstractJavaTool {
 	 * @return
 	 */
 	public ATerm requestChanges(final String projectName) {
-		List<AbstractChange> changes = new ArrayList<AbstractChange>();
-
 		Session session = getSession(projectName);
-		changes = session.getChanges();
+		List<AbstractChange> sessionChanges = session.getChanges();
+		List<AbstractChange> relevantChanges = new ArrayList<AbstractChange>();
+		
+		// From start, add changes
+		for (AbstractChange change : sessionChanges) {
+			// If contentchange is found:
+			if (change instanceof ContentChange) {
+				// Previous textual changes can be ignored.
+				// Previous contentchanges can also be ignored.
+				
+				List<AbstractChange> toBeRemoved = new ArrayList<AbstractChange>();
+				
+				for (AbstractChange relevantChange : relevantChanges) {
+					if (relevantChange instanceof ContentChange) {
+						// For same file?
+						ContentChange thisChange = (ContentChange) change;
+						ContentChange previousChange = (ContentChange) relevantChange;
+						
+						if (previousChange.getFilename().equals(thisChange.getFilename())) {
+							toBeRemoved.add(previousChange);
+						}
+					} else if (relevantChange instanceof TextualChange) {
+						// For same file?
+						ContentChange thisChange = (ContentChange) change;
+						TextualChange previousChange = (TextualChange) relevantChange;
+						
+						if (previousChange.getFilename().equals(thisChange.getFilename())) {
+							toBeRemoved.add(previousChange);
+						}
+					}
+				}				
+				relevantChanges.removeAll(toBeRemoved);
+			}
+			relevantChanges.add(change);
+		}
 
-		byte[] blob = Conversion.objectToByte(changes);
+		byte[] blob = Conversion.objectToByte(relevantChanges);
 
 		ATerm response = factory.make("requestChanges(<blob>)", blob);
 		return response;
