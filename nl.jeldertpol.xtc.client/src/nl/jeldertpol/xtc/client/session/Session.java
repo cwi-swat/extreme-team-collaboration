@@ -375,11 +375,11 @@ public class Session {
 	 */
 	public void leaveSession() throws LeaveSessionException {
 		if (inSession) {
-			server.leaveSession(projectName, nickname);
-			
 			// Remove listeners
 			removeResourceChangeListener();
 			removePartListener();
+			
+			server.leaveSession(projectName, nickname);
 
 			// Reset session data
 			inSession = false;
@@ -675,10 +675,8 @@ public class Session {
 	 * @return <code>true</code> if change should be received,
 	 *         <code>false</code> otherwise.
 	 */
-	private boolean shouldReceive(final String remoteProjectName,
-			final String nickname) {
-		return inSession() && remoteProjectName.equals(projectName)
-				&& !this.nickname.equals(nickname);
+	private boolean shouldReceive(final String remoteProjectName) {
+		return inSession() && remoteProjectName.equals(projectName);
 	}
 
 	/**
@@ -710,7 +708,7 @@ public class Session {
 			final AbstractChange abstractChange) {
 		if (paused) {
 			pauseList.add(abstractChange);
-		} else if (shouldReceive(projectName, abstractChange.getNickname())) {
+		} else if (shouldReceive(projectName)) {
 			if (abstractChange instanceof AddedResourceChange) {
 				AddedResourceChange change = (AddedResourceChange) abstractChange;
 				new ResourceAddedResourceJob(change);
