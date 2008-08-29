@@ -2,6 +2,7 @@ package nl.jeldertpol.xtc.client;
 
 import nl.jeldertpol.xtc.client.changes.editor.DocumentListener;
 import nl.jeldertpol.xtc.client.changes.editor.DocumentReplacer;
+import nl.jeldertpol.xtc.client.changes.editor.PartListener;
 import nl.jeldertpol.xtc.client.changes.resource.ResourceChangeListener;
 import nl.jeldertpol.xtc.client.session.Session;
 
@@ -22,6 +23,8 @@ public class Activator extends AbstractUIPlugin {
 	public static final String CHAT_VIEW_ID = "nl.jeldertpol.xtc.client.view.chat";
 
 	public static final Session SESSION = new Session();
+	
+	public static final PartListener partListener = new PartListener();
 
 	public static final DocumentListener documentListener = new DocumentListener();
 

@@ -49,6 +49,7 @@ public class PartListener implements IPartListener2 {
 		IEditorPart editorPart = workbenchPage.getActiveEditor();
 
 		if (editorPart != null) {
+			// TODO rewrite?
 			// Start Cola
 			try {
 				IEditorInput editorInput = editorPart.getEditorInput();

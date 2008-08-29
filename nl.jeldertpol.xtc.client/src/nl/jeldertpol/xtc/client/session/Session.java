@@ -46,7 +46,6 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.text.DocumentEvent;
-import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -276,7 +275,8 @@ public class Session {
 			server.requestChanges(projectName);
 		}
 
-		registerListeners();
+		addResourceChangeListener();
+		addPartListener();		
 	}
 
 	/**
@@ -351,18 +351,20 @@ public class Session {
 	/**
 	 * Registers {@link ResourceChangeListener} and {@link PartListener}.
 	 */
-	private void registerListeners() {
-		addResourceChangeListener();
-
-		// Registers a {@link PartListener} to the current {@link
-		// IWorkbenchPage}.
-		System.out.println("updateDocumentListeners");
+	private void addPartListener() {
+		getWorkbenchPage().addPartListener(Activator.partListener);
+	}
+	
+	private void removePartListener() {
+		getWorkbenchPage().removePartListener(Activator.partListener);
+	}
+	
+	private IWorkbenchPage getWorkbenchPage() {
 		IWorkbench workbench = PlatformUI.getWorkbench();
 		IWorkbenchWindow workbenchWindow = workbench.getActiveWorkbenchWindow();
 		IWorkbenchPage workbenchPage = workbenchWindow.getActivePage();
-
-		IPartListener2 partListener = new PartListener();
-		workbenchPage.addPartListener(partListener);
+		
+		return workbenchPage;
 	}
 
 	/**
@@ -374,7 +376,12 @@ public class Session {
 	public void leaveSession() throws LeaveSessionException {
 		if (inSession) {
 			server.leaveSession(projectName, nickname);
+			
+			// Remove listeners
+			removeResourceChangeListener();
+			removePartListener();
 
+			// Reset session data
 			inSession = false;
 			paused = false;
 			pauseList = new ArrayList<AbstractChange>();
@@ -382,6 +389,7 @@ public class Session {
 			projectName = "";
 			nickname = "";
 
+			// Clear data of views 
 			whosWhere.clear();
 			chat.clear();
 		}
@@ -717,6 +725,7 @@ public class Session {
 				new ResourceRemovedResourceJob(change);
 			} else if (abstractChange instanceof TextualChange) {
 				TextualChange change = (TextualChange) abstractChange;
+				// TODO create job...
 				receiveTextualChange(projectName, change.getFilename(), change
 						.getLength(), change.getOffset(), change.getText(),
 						change.getNickname());

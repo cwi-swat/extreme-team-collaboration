@@ -26,7 +26,6 @@ public class DocumentListener implements IDocumentListener {
 	 */
 	@Override
 	public void documentAboutToBeChanged(DocumentEvent event) {
-		// TODO Auto-generated method stub
 		System.out.println("documentAboutToBeChanged");
 		System.out.println(event.toString());
 
