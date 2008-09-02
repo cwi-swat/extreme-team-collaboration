@@ -1,5 +1,7 @@
 package nl.jeldertpol.xtc.client.changes.editor;
 
+import java.util.logging.Level;
+
 import nl.jeldertpol.xtc.client.Activator;
 
 import org.eclipse.core.resources.IResource;
@@ -31,7 +33,6 @@ public class PartListener implements IPartListener2 {
 	 * Initializes a new {@link PartListener}.
 	 */
 	public PartListener() {
-		System.out.println("New PartListener()");
 		currentDocument = null;
 	}
 
@@ -134,7 +135,9 @@ public class PartListener implements IPartListener2 {
 			IResource resouce = ResourcesPlugin.getWorkspace().getRoot()
 					.findMember(documentName);
 			Activator.documentListener.setResource(resouce);
-			System.out.println("Name: " + resouce.toString());
+
+			Activator.LOGGER.log(Level.INFO, "PartListener listens to "
+					+ resouce.toString());
 		}
 	}
 

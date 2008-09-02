@@ -19,7 +19,7 @@ public class Chat {
 	private List<ChatListener> listeners;
 
 	/**
-	 * 
+	 * TODO Javadoc
 	 */
 	public Chat() {
 		super();

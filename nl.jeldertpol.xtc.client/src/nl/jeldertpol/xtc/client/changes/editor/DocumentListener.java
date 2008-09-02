@@ -1,5 +1,7 @@
 package nl.jeldertpol.xtc.client.changes.editor;
 
+import java.util.logging.Level;
+
 import nl.jeldertpol.xtc.client.Activator;
 
 import org.eclipse.core.resources.IProject;
@@ -41,6 +43,8 @@ public class DocumentListener implements IDocumentListener {
 		// Text inserted into the document.
 		String text = event.getText();
 
+		Activator.LOGGER.log(Level.FINEST, event.toString());
+		
 		Activator.SESSION.sendTextualChange(project, file, length, offset, text);
 	}
 

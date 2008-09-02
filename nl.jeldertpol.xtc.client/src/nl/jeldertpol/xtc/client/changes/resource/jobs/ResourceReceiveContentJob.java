@@ -1,6 +1,7 @@
 package nl.jeldertpol.xtc.client.changes.resource.jobs;
 
 import java.io.File;
+import java.util.logging.Level;
 
 import nl.jeldertpol.xtc.client.Activator;
 import nl.jeldertpol.xtc.client.changes.editor.RevertToSavedJob;
@@ -57,28 +58,29 @@ public class ResourceReceiveContentJob extends HighPriorityJob {
 		IPath location = resource.getLocation();
 		File file = location.toFile();
 
+		Activator.LOGGER.log(Level.INFO, "Setting content of file "
+				+ file.toString() + ".");
+
 		byte[] content = contentChange.getContent();
 		Conversion.byteToFile(content, file);
 
 		try {
 			resource.refreshLocal(IResource.NONE, monitor);
 
-			// Look if there is an open editor with this resource
-			ITextEditor editor = Activator.documentReplacer
-					.findEditor(resource);
-			if (editor != null) {
-				// Reload file from file system.
-				new RevertToSavedJob(editor);
-			}
-
 			status = new Status(Status.OK, Activator.PLUGIN_ID,
 					"Resource content set successfully.");
 		} catch (CoreException e) {
-			e.printStackTrace();
+			Activator.LOGGER.log(Level.SEVERE, e);
 
 			status = new Status(Status.ERROR, Activator.PLUGIN_ID,
-					"Resource content could not be set.");
-			// TODO revert, and re-apply all changes?
+					"Error refreshing resource.");
+		}
+
+		// Look if there is an open editor with this resource
+		ITextEditor editor = Activator.documentReplacer.findEditor(resource);
+		if (editor != null) {
+			// Reload file from file system.
+			new RevertToSavedJob(editor);
 		}
 
 		return status;

@@ -41,12 +41,7 @@ public class PauseResumeAction extends AbstractHandler {
 			boolean pause = MessageDialog.openQuestion(parent, title, message);
 
 			if (pause) {
-//				try {
 					Activator.SESSION.pause();
-//				} catch (XtcException e) {
-//					e.printStackTrace();
-//					MessageDialog.openError(null, "XTC Leave", e.getMessage());
-//				}
 			}
 		}
 	}

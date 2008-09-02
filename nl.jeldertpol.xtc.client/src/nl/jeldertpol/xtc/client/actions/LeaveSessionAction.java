@@ -1,5 +1,7 @@
 package nl.jeldertpol.xtc.client.actions;
 
+import java.util.logging.Level;
+
 import nl.jeldertpol.xtc.client.Activator;
 import nl.jeldertpol.xtc.client.exceptions.XtcException;
 
@@ -41,7 +43,7 @@ public class LeaveSessionAction extends AbstractHandler {
 				try {
 					Activator.SESSION.leaveSession();
 				} catch (XtcException e) {
-					e.printStackTrace();
+					Activator.LOGGER.log(Level.WARNING, e);
 					MessageDialog.openError(null, "XTC Leave", e.getMessage());
 				}
 			}

@@ -1,5 +1,7 @@
 package nl.jeldertpol.xtc.client.changes.resource;
 
+import java.util.logging.Level;
+
 import nl.jeldertpol.xtc.client.Activator;
 
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -25,16 +27,16 @@ public class ResourceChangeListener implements IResourceChangeListener {
 			IResourceDelta projectDelta = delta.findMember(new Path(
 					Activator.SESSION.getCurrentProject()));
 
-			System.out.println("resourceChanged");
-
 			try {
 				projectDelta.accept(new ResourceDeltaVisitor());
 			} catch (NullPointerException e) {
 				// Resource changed for a project other that the project in the
 				// session. Ignoring.
+				Activator.LOGGER
+						.log(Level.FINE,
+								"Resource does not belong to session project, ignoring.");
 			} catch (CoreException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Activator.LOGGER.log(Level.SEVERE, e);
 			}
 		}
 	}

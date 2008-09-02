@@ -1,5 +1,7 @@
 package nl.jeldertpol.xtc.client.changes.resource.jobs;
 
+import java.util.logging.Level;
+
 import nl.jeldertpol.xtc.client.Activator;
 import nl.jeldertpol.xtc.common.changes.MoveChange;
 
@@ -45,14 +47,23 @@ public class ResourceMoveJob extends HighPriorityJob {
 	 */
 	@Override
 	protected IStatus run(final IProgressMonitor monitor) {
+
 		IStatus status;
 
 		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(
 				moveChange.getProjectName());
+
+		IPath moveFrom = Path.fromPortableString(moveChange.getFrom());
+		IResource resource = project.findMember(moveFrom);
+
 		IPath moveTo = Path.fromPortableString(moveChange.getTo());
-		IResource resource = project.findMember(moveChange.getFrom());
+		// Making full path from root, so move can find destination.
+		moveTo = project.getFullPath().append(moveTo);
 
 		try {
+			Activator.LOGGER.log(Level.INFO, "Moving resource "
+					+ moveFrom + " --> " + moveTo);
+
 			// TODO true or false?
 			boolean force = true;
 
@@ -61,10 +72,11 @@ public class ResourceMoveJob extends HighPriorityJob {
 			status = new Status(Status.OK, Activator.PLUGIN_ID,
 					"Move applied successfully.");
 		} catch (CoreException e) {
-			e.printStackTrace();
+			Activator.LOGGER.log(Level.SEVERE, "Resource could not be moved.",
+					e);
 
 			status = new Status(Status.ERROR, Activator.PLUGIN_ID,
-					"Change could not be applied.");
+					"Resource could not be moved.");
 			// TODO revert, and re-apply all changes?
 		}
 

@@ -1,5 +1,7 @@
 package nl.jeldertpol.xtc.client.changes.resource.jobs;
 
+import java.util.logging.Level;
+
 import nl.jeldertpol.xtc.client.Activator;
 import nl.jeldertpol.xtc.common.changes.RemovedResourceChange;
 
@@ -56,20 +58,26 @@ public class ResourceRemovedResourceJob extends HighPriorityJob {
 		IContainer parent = resource.getParent();
 
 		try {
+			Activator.LOGGER.log(Level.INFO, "Deleting resource "
+					+ resource.toString() + ".");
+
 			resource.delete(force, monitor);
 			try {
 				parent.refreshLocal(IResource.NONE, monitor);
 			} catch (CoreException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Activator.LOGGER.log(Level.SEVERE, e);
+
+				status = new Status(Status.ERROR, Activator.PLUGIN_ID,
+						"Error refreshing resource.");
 			}
 			status = new Status(Status.OK, Activator.PLUGIN_ID,
 					"Resource content set successfully.");
 		} catch (CoreException e) {
-			e.printStackTrace();
+			Activator.LOGGER.log(Level.SEVERE,
+					"Resource could not be deleted.", e);
 
 			status = new Status(Status.ERROR, Activator.PLUGIN_ID,
-					"Resource content could not be set.");
+					"Resource could not be deleted.");
 		}
 
 		return status;

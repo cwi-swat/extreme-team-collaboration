@@ -1,5 +1,7 @@
 package nl.jeldertpol.xtc.client.changes.editor;
 
+import java.util.logging.Level;
+
 import nl.jeldertpol.xtc.client.Activator;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -38,6 +40,9 @@ public class RevertToSavedJob extends UIJob {
 	@Override
 	public IStatus runInUIThread(IProgressMonitor monitor) {
 		IStatus status;
+
+		Activator.LOGGER.log(Level.INFO, "Reverting to saved input "
+				+ editor.getTitleToolTip());
 
 		editor.doRevertToSaved();
 

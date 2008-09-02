@@ -2,10 +2,10 @@ package nl.jeldertpol.xtc.client.session;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 import nl.jeldertpol.xtc.client.Activator;
 import nl.jeldertpol.xtc.client.changes.editor.PartListener;
-import nl.jeldertpol.xtc.client.changes.resource.ResourceChangeListener;
 import nl.jeldertpol.xtc.client.changes.resource.jobs.HighPriorityJob;
 import nl.jeldertpol.xtc.client.changes.resource.jobs.ResourceAddedResourceJob;
 import nl.jeldertpol.xtc.client.changes.resource.jobs.ResourceMoveJob;
@@ -156,6 +156,9 @@ public class Session {
 		String host = preferences.getString(PreferenceConstants.P_HOST);
 		String port = preferences.getString(PreferenceConstants.P_PORT);
 
+		Activator.LOGGER.log(Level.INFO, "Connecting to server: " + host + ":"
+				+ port);
+
 		server.connect(host, port);
 		connected = true;
 	}
@@ -166,6 +169,8 @@ public class Session {
 	 * This one is public, so it can be called when the plug-in is de-activated.
 	 */
 	public void disconnect() {
+		// TODO Create new server object.
+		// TODO Logging
 		try {
 			leaveSession();
 		} catch (LeaveSessionException e) {
@@ -254,10 +259,16 @@ public class Session {
 
 		if (!present) {
 			// Start new session
+			Activator.LOGGER.log(Level.INFO, "Starting new session: "
+					+ projectName + ", " + revision + ", " + nickname + ".");
+
 			server.startSession(projectName, revision, nickname);
 		} else {
 			// Join existing session
 			if (revision.equals(serverRevision)) {
+				Activator.LOGGER.log(Level.INFO, "Joining session: "
+						+ projectName + ", " + nickname + ".");
+
 				server.joinSession(projectName, nickname);
 			} else {
 				throw new WrongRevisionException(revision, serverRevision);
@@ -307,9 +318,11 @@ public class Session {
 						}
 					}
 				}
+				Activator.LOGGER.log(Level.INFO, "Ignoring build path: "
+						+ ignorePathList);
 			} catch (JavaModelException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Activator.LOGGER.log(Level.SEVERE,
+						"Error ignoring build path.", e);
 			}
 		}
 	}
@@ -350,16 +363,28 @@ public class Session {
 	}
 
 	/**
-	 * Registers {@link ResourceChangeListener} and {@link PartListener}.
+	 * Add the {@link PartListener} to the {@link IWorkbenchPage}.
+	 * 
+	 * @see Activator#partListener
 	 */
 	private void addPartListener() {
 		getWorkbenchPage().addPartListener(Activator.partListener);
 	}
 
+	/**
+	 * Removes the {@link PartListener} to the {@link IWorkbenchPage}.
+	 * 
+	 * @see Activator#partListener
+	 */
 	private void removePartListener() {
 		getWorkbenchPage().removePartListener(Activator.partListener);
 	}
 
+	/**
+	 * Get the active {@link IWorkbenchPage}.
+	 * 
+	 * @return The active {@link IWorkbenchPage}.
+	 */
 	private IWorkbenchPage getWorkbenchPage() {
 		IWorkbench workbench = PlatformUI.getWorkbench();
 		IWorkbenchWindow workbenchWindow = workbench.getActiveWorkbenchWindow();
@@ -376,6 +401,8 @@ public class Session {
 	 */
 	public void leaveSession() throws LeaveSessionException {
 		if (inSession) {
+			Activator.LOGGER.log(Level.INFO, "Leaving session.");
+
 			// Remove listeners
 			removeResourceChangeListener();
 			removePartListener();
@@ -400,6 +427,8 @@ public class Session {
 		if (paused) {
 			resume();
 		}
+
+		Activator.LOGGER.log(Level.INFO, "Sending change: " + change);
 
 		server.sendChange(projectName, change, nickname);
 	}
@@ -468,14 +497,13 @@ public class Session {
 	 * @param project
 	 *            The project the move originated from.
 	 * @param moveFrom
-	 *            Full path of original resource location.
+	 *            Relative path of original resource location.
 	 * @param moveTo
-	 *            Full path of new resource location.
+	 *            Relative path of new resource location.
 	 */
 	public void sendMove(final IProject project, final IPath moveFrom,
 			final IPath moveTo) {
-		// TODO relative?
-		if (shouldSend(project, moveFrom.makeRelative())) {
+		if (shouldSend(project, moveFrom)) {
 			String from = moveFrom.toPortableString();
 			String to = moveTo.toPortableString();
 
@@ -577,7 +605,8 @@ public class Session {
 	public void requestTextualChanges(final IPath resourcePath) {
 		String resource = resourcePath.toPortableString();
 
-		System.out.println("Requesting textual changes for: " + resource);
+		Activator.LOGGER.log(Level.INFO, "Requesting textual changes for: "
+				+ resource + ".");
 
 		server.requestTextualChanges(projectName, resource);
 	}
@@ -602,12 +631,16 @@ public class Session {
 		return paused;
 	}
 
+	/**
+	 * Set the client in the paused state. No changes will be applied.
+	 */
 	public void pause() {
-		if (!paused) {
-			paused = true;
-		}
+		paused = true;
 	}
 
+	/**
+	 * Resume from a paused state. Applies all pending changes.
+	 */
 	public void resume() {
 		if (paused) {
 			paused = false;
@@ -749,10 +782,15 @@ public class Session {
 	}
 
 	public void sendChat(String message) {
+		Activator.LOGGER.log(Level.INFO, "Sending chat.");
+
 		server.sendChat(nickname, message);
 	}
 
 	public void receiveChat(String nickname, String message) {
+		Activator.LOGGER.log(Level.INFO, "Receiving chat from " + nickname
+				+ ".");
+
 		ChatMessage chatMessage = new ChatMessage(nickname, message);
 		chat.newMessage(chatMessage);
 	}

@@ -1,5 +1,7 @@
 package nl.jeldertpol.xtc.client.actions;
 
+import java.util.logging.Level;
+
 import nl.jeldertpol.xtc.client.Activator;
 import nl.jeldertpol.xtc.client.actions.sessions.ShowSessions;
 import nl.jeldertpol.xtc.client.exceptions.ProjectNotOnClientException;
@@ -36,7 +38,7 @@ public class ShowSessionsAction extends AbstractHandler {
 					try {
 						Activator.SESSION.startJoinSession(projects[i]);
 					} catch (XtcException e) {
-						e.printStackTrace();
+						Activator.LOGGER.log(Level.WARNING, e);
 						MessageDialog.openError(null, "XTC Start/Join", e
 								.getMessage());
 					}
@@ -48,7 +50,7 @@ public class ShowSessionsAction extends AbstractHandler {
 				try {
 					throw new ProjectNotOnClientException(projectName);
 				} catch (ProjectNotOnClientException e) {
-					e.printStackTrace();
+					Activator.LOGGER.log(Level.WARNING, e);
 					MessageDialog.openError(null, "XTC Start/Join", e
 							.getMessage());
 				}

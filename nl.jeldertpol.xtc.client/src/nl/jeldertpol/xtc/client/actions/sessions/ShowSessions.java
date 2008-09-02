@@ -1,6 +1,7 @@
 package nl.jeldertpol.xtc.client.actions.sessions;
 
 import java.util.List;
+import java.util.logging.Level;
 
 import nl.jeldertpol.xtc.client.Activator;
 import nl.jeldertpol.xtc.client.exceptions.XtcException;
@@ -62,7 +63,7 @@ public class ShowSessions {
 				projectName = getProjectNameFromSelection(selection);
 			}
 		} catch (XtcException e) {
-			e.printStackTrace();
+			Activator.LOGGER.log(Level.WARNING, e);
 			MessageDialog.openError(null, "XTC Start/Join", e.getMessage());
 		}
 

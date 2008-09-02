@@ -1,6 +1,7 @@
 package nl.jeldertpol.xtc.client.views.whosWhere;
 
 import java.util.Set;
+import java.util.logging.Level;
 
 import nl.jeldertpol.xtc.client.Activator;
 import nl.jeldertpol.xtc.client.session.whosWhere.WhosWhere;
@@ -166,8 +167,8 @@ public class WhosWhereView extends ViewPart implements WhosWhereListener {
 					chatView.appendMessage(text + ": ");
 				}
 			} catch (PartInitException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Activator.LOGGER.log(Level.SEVERE,
+						"Chat view could not be shown.", e);
 			}
 
 		} else if (column == COLUMN_RESOURCE) {
@@ -185,34 +186,33 @@ public class WhosWhereView extends ViewPart implements WhosWhereListener {
 				// Focus editor
 				editor.getEditorSite().getPage().activate(editor);
 			} else {
+				// Find default editor for resource
+				IEditorDescriptor desc = PlatformUI.getWorkbench()
+						.getEditorRegistry().getDefaultEditor(
+								resource.getName());
+
+				// Default text editor
+				String editorID;
+
+				if (desc != null) {
+					// Default editor found, use that one
+					editorID = desc.getId();
+				} else {
+					// No default editor, use default text editor
+					editorID = EditorsUI.DEFAULT_TEXT_EDITOR_ID;
+				}
+
+				// Required variables
+				IWorkbenchPage page = PlatformUI.getWorkbench()
+						.getActiveWorkbenchWindow().getActivePage();
+				IFile file = (IFile) resource;
 
 				try {
-					// Find default editor for resource
-					IEditorDescriptor desc = PlatformUI.getWorkbench()
-							.getEditorRegistry().getDefaultEditor(
-									resource.getName());
-
-					// Default text editor
-					String editorID;
-
-					if (desc != null) {
-						// Default editor found, use that one
-						editorID = desc.getId();
-					} else {
-						// No default editor, use default text editor
-						editorID = EditorsUI.DEFAULT_TEXT_EDITOR_ID;
-					}
-
-					// Required variables
-					IWorkbenchPage page = PlatformUI.getWorkbench()
-							.getActiveWorkbenchWindow().getActivePage();
-					IFile file = (IFile) resource;
-
 					// Open new editor
 					page.openEditor(new FileEditorInput(file), editorID);
-				} catch (PartInitException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+				} catch (PartInitException e) {
+					Activator.LOGGER.log(Level.SEVERE,
+							"Editor could not be opened.", e);
 				}
 			}
 		}

@@ -2,6 +2,7 @@ package nl.jeldertpol.xtc.client.actions.projects;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 import nl.jeldertpol.xtc.client.Activator;
 import nl.jeldertpol.xtc.client.exceptions.RevisionExtractorException;
@@ -82,16 +83,16 @@ public class ShowProjects {
 				infoExtractor.getRevision(projects[i]);
 				versionedProjects.add(projects[i]);
 			} catch (RevisionExtractorException e) {
-				Activator
+				Activator.LOGGER
 						.log(
+								Level.SEVERE,
 								"The underlying version control system throws an error.",
 								e);
-
 				// TODO remove dialog?
 				MessageDialog.openError(null, "XTC Start/Join", e.getMessage());
 			} catch (UnversionedProjectException e) {
 				// Project is not under version control. Log and ignore.
-				Activator.log(e.getMessage());
+				Activator.LOGGER.log(Level.INFO, e);
 			}
 		}
 

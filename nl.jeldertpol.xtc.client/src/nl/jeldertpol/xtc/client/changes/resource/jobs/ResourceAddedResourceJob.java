@@ -2,6 +2,7 @@ package nl.jeldertpol.xtc.client.changes.resource.jobs;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.logging.Level;
 
 import nl.jeldertpol.xtc.client.Activator;
 import nl.jeldertpol.xtc.common.changes.AddedResourceChange;
@@ -62,8 +63,10 @@ public class ResourceAddedResourceJob extends HighPriorityJob {
 				IFile file = project.getFile(resourceName);
 
 				if (file.exists()) {
-					// File already exists, ignoring.
-					// TODO Can be bin, or can be error...
+					// TODO File already exists, ignoring?
+					Activator.LOGGER.log(Level.WARNING, "File "
+							+ file.toString() + " already exists.");
+
 					status = new Status(Status.OK, Activator.PLUGIN_ID,
 							"Resource already exists. Ignoring add.");
 				} else {
@@ -75,6 +78,9 @@ public class ResourceAddedResourceJob extends HighPriorityJob {
 					file.create(source, force, monitor);
 					file.refreshLocal(IResource.NONE, monitor);
 
+					Activator.LOGGER.log(Level.INFO, "File " + file.toString()
+							+ " created.");
+
 					status = new Status(Status.OK, Activator.PLUGIN_ID,
 							"Resource added successfully.");
 				}
@@ -82,8 +88,10 @@ public class ResourceAddedResourceJob extends HighPriorityJob {
 				IFolder folder = project.getFolder(resourceName);
 
 				if (folder.exists()) {
-					// Folder already exists, ignoring.
-					// TODO Can be bin, or can be error...
+					// TODO Folder already exists, ignoring?
+					Activator.LOGGER.log(Level.WARNING, "Folder "
+							+ folder.toString() + " already exists.");
+
 					status = new Status(Status.OK, Activator.PLUGIN_ID,
 							"Resource already exists. Ignoring add.");
 				} else {
@@ -98,16 +106,23 @@ public class ResourceAddedResourceJob extends HighPriorityJob {
 						Activator.SESSION.addResourceChangeListener();
 					}
 
+					Activator.LOGGER.log(Level.INFO, "Folder "
+							+ folder.toString() + " created.");
+
 					status = new Status(Status.OK, Activator.PLUGIN_ID,
 							"Resource added successfully.");
 				}
 			} else {
+				Activator.LOGGER.log(Level.SEVERE,
+						"Resource not a file or folder, but of type " + type
+								+ ".");
+
 				status = new Status(Status.ERROR, Activator.PLUGIN_ID,
 						"Resource not a file or folder, but of type " + type
 								+ ".");
 			}
 		} catch (CoreException e) {
-			e.printStackTrace();
+			Activator.LOGGER.log(Level.SEVERE,"Resource content could not be set.", e);
 
 			status = new Status(Status.ERROR, Activator.PLUGIN_ID,
 					"Resource content could not be set.");

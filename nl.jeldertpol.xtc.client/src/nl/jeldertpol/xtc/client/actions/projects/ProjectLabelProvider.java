@@ -1,5 +1,7 @@
 package nl.jeldertpol.xtc.client.actions.projects;
 
+import java.util.logging.Level;
+
 import nl.jeldertpol.xtc.client.Activator;
 import nl.jeldertpol.xtc.client.actions.AbstractLabelProvider;
 import nl.jeldertpol.xtc.client.exceptions.RevisionExtractorException;
@@ -61,11 +63,13 @@ public class ProjectLabelProvider extends AbstractLabelProvider {
 				Long revision = infoExtractor.getRevision(project);
 				text += " (revision " + revision + ")";
 			} catch (UnversionedProjectException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Activator.LOGGER
+						.log(
+								Level.SEVERE,
+								"The underlying version control system throws an error.",
+								e);
 			} catch (RevisionExtractorException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Activator.LOGGER.log(Level.FINEST, e);
 			}
 		}
 

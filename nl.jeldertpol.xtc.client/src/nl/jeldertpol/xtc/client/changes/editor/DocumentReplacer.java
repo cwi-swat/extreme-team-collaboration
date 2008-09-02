@@ -1,5 +1,9 @@
 package nl.jeldertpol.xtc.client.changes.editor;
 
+import java.util.logging.Level;
+
+import nl.jeldertpol.xtc.client.Activator;
+
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.ui.IEditorPart;
@@ -71,6 +75,9 @@ public class DocumentReplacer {
 		// There is no editor open with this resource
 		if (editor == null) {
 			// Ignoring change, will be requested when opening editor
+			Activator.LOGGER.log(Level.FINE,
+					"Ignoring textual change, no editor for resource "
+							+ resource.getName() + " found.");
 		} else {
 			new OpenedDocumentReplacerJob(editor, length, offset, text);
 		}

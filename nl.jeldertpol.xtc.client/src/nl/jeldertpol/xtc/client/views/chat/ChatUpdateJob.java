@@ -4,6 +4,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.logging.Level;
 
 import nl.jeldertpol.xtc.client.Activator;
 import nl.jeldertpol.xtc.client.session.whosWhere.WhosWhere;
@@ -123,6 +124,8 @@ public class ChatUpdateJob extends UIJob {
 				status = new Status(Status.OK, Activator.PLUGIN_ID,
 						"ChatUpdateJob finished successfully.");
 			} else {
+				Activator.LOGGER.log(Level.SEVERE, e);
+				
 				status = new Status(Status.ERROR, Activator.PLUGIN_ID,
 						"ChatUpdateJob error.");
 				throw e;

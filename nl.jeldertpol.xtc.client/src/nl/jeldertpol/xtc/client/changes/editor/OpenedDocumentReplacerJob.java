@@ -1,5 +1,7 @@
 package nl.jeldertpol.xtc.client.changes.editor;
 
+import java.util.logging.Level;
+
 import nl.jeldertpol.xtc.client.Activator;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -60,7 +62,9 @@ public class OpenedDocumentReplacerJob extends UIJob {
 	 */
 	@Override
 	public IStatus runInUIThread(final IProgressMonitor monitor) {
-		System.out.println("Replacing text");
+		Activator.LOGGER.log(Level.INFO, "Replacing text in resource "
+				+ editor.getTitleToolTip());
+
 		IStatus status;
 
 		try {
@@ -79,7 +83,7 @@ public class OpenedDocumentReplacerJob extends UIJob {
 			status = new Status(Status.OK, Activator.PLUGIN_ID,
 					"Change applied successfully.");
 		} catch (BadLocationException e) {
-			e.printStackTrace();
+			Activator.LOGGER.log(Level.SEVERE, e);
 
 			status = new Status(Status.ERROR, Activator.PLUGIN_ID,
 					"Change could not be applied.");

@@ -17,10 +17,14 @@ import org.eclipse.core.runtime.CoreException;
  */
 public abstract class InfoExtractor {
 
+	// TODO Javadoc
+
+	// TODO needed?
 	public final List<IResource> getResources(final IProject project) {
 		return getResources((IResource) project);
 	}
 
+	// TODO needed?
 	private List<IResource> getResources(final IResource resource) {
 		List<IResource> resources = new ArrayList<IResource>();
 

@@ -2,7 +2,9 @@ package nl.jeldertpol.xtc.client.session.infoExtractor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
+import nl.jeldertpol.xtc.client.Activator;
 import nl.jeldertpol.xtc.client.exceptions.RevisionExtractorException;
 import nl.jeldertpol.xtc.client.exceptions.UnversionedProjectException;
 
@@ -68,8 +70,7 @@ public class SubclipseInfoExtractor extends InfoExtractor {
 							modifiedFiles.addAll(modifiedFiles(member));
 						}
 					} catch (CoreException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						Activator.LOGGER.log(Level.SEVERE, e);
 					}
 				} else if (resource instanceof IProject) {
 					IProject project = (IProject) resource;
@@ -78,14 +79,12 @@ public class SubclipseInfoExtractor extends InfoExtractor {
 							modifiedFiles.addAll(modifiedFiles(member));
 						}
 					} catch (CoreException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						Activator.LOGGER.log(Level.SEVERE, e);
 					}
 				}
 			}
 		} catch (SVNException e) {
-			// // TODO Auto-generated catch block
-			e.printStackTrace();
+			Activator.LOGGER.log(Level.SEVERE, e);
 		}
 
 		return modifiedFiles;
@@ -109,10 +108,8 @@ public class SubclipseInfoExtractor extends InfoExtractor {
 			SVNRevision revision = svnResource.getRevision();
 			number = Long.valueOf(revision.toString());
 		} catch (SVNException e) {
-			// e.printStackTrace();
 			throw new RevisionExtractorException(e);
 		} catch (NullPointerException e) {
-			// e.printStackTrace();
 			// Not a Subversion project
 			throw new UnversionedProjectException(project.getName());
 		}

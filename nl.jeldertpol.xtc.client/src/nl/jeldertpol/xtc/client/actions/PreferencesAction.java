@@ -9,10 +9,6 @@ import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 
 /**
- * 
- */
-
-/**
  * @author Jeldert Pol
  * 
  */

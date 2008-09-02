@@ -1,5 +1,7 @@
 package nl.jeldertpol.xtc.client.actions;
 
+import java.util.logging.Level;
+
 import nl.jeldertpol.xtc.client.Activator;
 import nl.jeldertpol.xtc.client.actions.projects.ShowProjects;
 import nl.jeldertpol.xtc.client.exceptions.XtcException;
@@ -25,7 +27,7 @@ public class StartSessionAction extends AbstractHandler {
 			try {
 				Activator.SESSION.startJoinSession(project);
 			} catch (XtcException e) {
-				e.printStackTrace();
+				Activator.LOGGER.log(Level.WARNING, e);
 				MessageDialog.openError(null, "XTC Start/Join", e.getMessage());
 			}
 		}

@@ -1,5 +1,7 @@
 package nl.jeldertpol.xtc.client.changes.resource;
 
+import java.util.logging.Level;
+
 import nl.jeldertpol.xtc.client.Activator;
 import nl.jeldertpol.xtc.client.exceptions.LeaveSessionException;
 
@@ -32,7 +34,8 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 		IResource resource = delta.getResource();
 		int flags = delta.getFlags();
 
-		System.out.println(resource.getFullPath().toString());
+		String resourcePortableString = resource.getFullPath()
+				.toPortableString();
 
 		switch (delta.getKind()) {
 		case IResourceDelta.NO_CHANGE:
@@ -41,19 +44,12 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 			break;
 		case IResourceDelta.ADDED:
 			// Resource is added, but could be the result of a move.
-			System.out.println("Add resource???");
-
 			if ((flags & IResourceDelta.MOVED_FROM) != 0) {
-				// See, it is the result of a move.
-				System.out.println("No, added resource is a move...");
-
-				// Of interest, because it is a move.
+				// Add is the result of a move, ignoring add, but continue to
+				// handle move.
 				ofInterest = true;
 			} else {
 				// It is really a new resource.
-				System.out
-						.println("Yes, added resource is not moved, so new file...");
-
 				IProject project = resource.getProject();
 				IPath resourcePath = resource.getProjectRelativePath();
 				int type = resource.getType();
@@ -67,25 +63,19 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 				}
 
 				// Content of resource needs to be send.
+				// TODO already handled by previous statement?
 				ofInterest = true;
 			}
 
 			break;
 		case IResourceDelta.REMOVED:
 			// Resource is removed, but could be the result of a move.
-			System.out.println("Remove resource???");
-
 			if ((flags & IResourceDelta.MOVED_TO) != 0) {
-				// See, it is the result of a remove.
-				System.out.println("No, removed resource is a move...");
-
-				// Of interest, because it is a move.
+				// Removal is the result of a move, ignoring removal, but
+				// continue to handle move.
 				ofInterest = true;
 			} else {
 				// It really is the removal of a resource.
-				System.out
-						.println("Yes, removed resource is not moved, so remove file...");
-
 				IProject project = resource.getProject();
 				IPath resourcePath = resource.getProjectRelativePath();
 
@@ -98,21 +88,26 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 			break;
 		case IResourceDelta.CHANGED:
 			// Content of resource, or one of its children changed.
-			System.out.println("CHANGED");
 			ofInterest = true;
 			break;
 		case IResourceDelta.ADDED_PHANTOM:
+			Activator.LOGGER.log(Level.FINE, "Added Phantom: "
+					+ resourcePortableString + ".");
 			// TODO of interest?
 			ofInterest = true;
 			break;
 		case IResourceDelta.REMOVED_PHANTOM:
+			Activator.LOGGER.log(Level.FINE, "Removed Phantom: "
+					+ resourcePortableString + ".");
 			// TODO of interest?
 			ofInterest = true;
 			break;
-		// default:
-		// // TODO default needed? All cases are covered above...
-		// ofInterest = true;
-		// break;
+		default:
+			Activator.LOGGER.log(Level.WARNING, "Unhandled kind of delta: "
+					+ delta.getKind() + ". For resource "
+					+ resourcePortableString + ".");
+			// ofInterest = false;
+			break;
 		}
 
 		if (ofInterest) {
@@ -121,8 +116,6 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 			// content change notification, even though the content may not
 			// have changed in the file system.
 			if ((flags & IResourceDelta.CONTENT) != 0) {
-				System.out.println("CONTENT");
-
 				IProject project = resource.getProject();
 				IPath resourcePath = resource.getProjectRelativePath();
 
@@ -135,7 +128,7 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 			}
 			// The project description has changed.
 			if ((flags & IResourceDelta.DESCRIPTION) != 0) {
-				System.out.println("DESCRIPTION");
+				// Nothing to do
 			}
 			// The character encoding for a file, or for the files inside a
 			// container, have changed. For listeners that care about the
@@ -143,29 +136,26 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 			// this should typically be treated the same as a content
 			// change.
 			if ((flags & IResourceDelta.ENCODING) != 0) {
-				System.out.println("ENCODING");
+				// Nothing to do
 			}
 			// The project has either been opened or closed. If the project
 			// is now open, then it was previously closed, and vice-versa.
 			if ((flags & IResourceDelta.OPEN) != 0) {
-				System.out.println("OPEN");
+				Activator.LOGGER.log(Level.INFO,
+						"Project opened or closed. Leaving session.");
 
 				try {
 					Activator.SESSION.leaveSession();
 				} catch (LeaveSessionException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					Activator.LOGGER.log(Level.SEVERE, e);
 				}
 			}
 			// The resource was moved to another location. The location it
 			// was moved to is indicated by IResourceDelta.getMovedToPath.
 			if ((flags & IResourceDelta.MOVED_TO) != 0) {
-				IPath moveFrom = delta.getResource().getFullPath();
-				IPath moveTo = delta.getMovedToPath();
+				IPath moveFrom = delta.getResource().getProjectRelativePath();
+				IPath moveTo = delta.getMovedToPath().removeFirstSegments(1); // Removes the project name, thus making path relative.
 				IProject project = resource.getProject();
-
-				System.out.println("MOVED_TO: " + moveFrom.toString() + " --> "
-						+ moveTo.toString());
 
 				Activator.SESSION.sendMove(project, moveFrom, moveTo);
 
@@ -176,18 +166,16 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 			// out the path it came from by calling
 			// IResourceDelta.getMovedFromPath.
 			if ((flags & IResourceDelta.MOVED_FROM) != 0) {
-				System.out.println("MOVED_FROM");
 				// Ignoring, since MOVED_TO covers this
 			}
 			// The resource has changed type. If the resource was previously
 			// a file then it is now a folder, and vice-versa.
 			if ((flags & IResourceDelta.TYPE) != 0) {
-				System.out.println("TYPE");
 				// Will this ever happen?
 				// Ignoring for now.
-				System.out.println("TYPE changed!!! > "
-						+ resource.getFullPath().toPortableString()
-						+ ": is now of type " + resource.getType());
+				Activator.LOGGER.log(Level.WARNING, "Type changed to "
+						+ resource.getType() + ", but not handled. Resource "
+						+ resourcePortableString);
 			}
 			// The resource's synchronization information has changed. Sync
 			// info is used to determine if a resource is in sync with some
@@ -197,27 +185,13 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 			// Is true when importing files in Eclipse, and when changes are
 			// detected after refreshing the workspace tree.
 			if ((flags & IResourceDelta.SYNC) != 0) {
-				System.out.println("SYNC");
-
-				// int kind = delta.getKind();
-				// if (kind == IResourceDelta.CHANGED) {
-				// IProject project = resource.getProject();
-				// IPath filePath = resource.getProjectRelativePath();
-				// File file = resource.getLocation().toFile();
-				//
-				// Activator.SESSION.sendContent(project, filePath, file);
-				//
-				// visitChildren = false;
-				// }
-				// A sync should detect a content change. Therefore ignoring
-				// this one.
+				// Changes are caught by appropriate if's.
 			}
 			// The resource's markers have changed. Markers are annotations
 			// to resources such as breakpoints, bookmarks, to-do items,
 			// etc. The method IResourceDelta.getMarkerDeltas() is used to
 			// find out exactly which markers have changed.
 			if ((flags & IResourceDelta.MARKERS) != 0) {
-				System.out.println("MARKERS");
 				// Markers are not part of the file itself, therefore not
 				// synchronizing.
 			}
@@ -225,8 +199,9 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 			// same location (i.e., the resource has been deleted and then
 			// re-added).
 			if ((flags & IResourceDelta.REPLACED) != 0) {
-				System.out.println("REPLACED");
-				// When does this happen?
+				Activator.LOGGER.log(Level.WARNING,
+						"Resource replaced, but not handled. Resource "
+								+ resourcePortableString + ".");
 			}
 
 		}
