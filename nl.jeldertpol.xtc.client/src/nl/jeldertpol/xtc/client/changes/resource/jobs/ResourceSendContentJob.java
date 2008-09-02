@@ -63,7 +63,7 @@ public class ResourceSendContentJob extends HighPriorityJob {
 
 		Activator.SESSION.sendContent(project, filename, content);
 
-		status = new Status(Status.OK, Activator.PLUGIN_ID,
+		status = new Status(IStatus.OK, Activator.PLUGIN_ID,
 				"Resource content set successfully.");
 
 		return status;

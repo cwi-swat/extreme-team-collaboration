@@ -36,6 +36,7 @@ public class ConnectionPreferencePage extends FieldEditorPreferencePage
 	 * GUI blocks needed to manipulate various types of preferences. Each field
 	 * editor knows how to save and restore itself.
 	 */
+	@Override
 	public void createFieldEditors() {
 		// Host
 		addField(new HostFieldEditor(PreferenceConstants.P_HOST,

@@ -49,6 +49,7 @@ public class HostFieldEditor extends StringFieldEditor {
 	 * 
 	 * @see org.eclipse.jface.preference.StringFieldEditor#checkState()
 	 */
+	@Override
 	protected boolean checkState() {
 		boolean validHost = false;
 		if (super.checkState()) {

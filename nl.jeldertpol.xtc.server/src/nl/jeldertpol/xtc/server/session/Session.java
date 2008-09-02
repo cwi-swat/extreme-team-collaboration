@@ -13,7 +13,7 @@ import nl.jeldertpol.xtc.common.session.SimpleSession;
  */
 public class Session extends SimpleSession {
 
-	private List<AbstractChange> changes;
+	private final List<AbstractChange> changes;
 
 	/**
 	 * 
@@ -32,7 +32,8 @@ public class Session extends SimpleSession {
 	 */
 	public Session(final String projectName, final Long revision,
 			final String nickname) {
-		super(projectName, revision, nickname);
+		super(projectName, revision);
+		addClient(nickname);
 
 		changes = new ArrayList<AbstractChange>();
 	}

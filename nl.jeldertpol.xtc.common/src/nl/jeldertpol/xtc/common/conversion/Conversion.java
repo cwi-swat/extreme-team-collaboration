@@ -16,7 +16,14 @@ import java.util.Vector;
  * 
  * @author Jeldert Pol
  */
-public class Conversion {
+public final class Conversion {
+
+	/**
+	 * Private constructor, so this class cannot be initiated.
+	 */
+	private Conversion() {
+		// Nothing to do
+	}
 
 	/**
 	 * Converts an object to an array of bytes.
@@ -26,16 +33,19 @@ public class Conversion {
 	 * @return The converted object, or <code>null</code> in case of an error.
 	 */
 	public static byte[] objectToByte(final Object object) {
+		byte[] byteArray = null;
+
 		try {
 			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 			ObjectOutputStream objectOutputStream = new ObjectOutputStream(
 					byteArrayOutputStream);
 			objectOutputStream.writeObject(object);
-			return byteArrayOutputStream.toByteArray();
+			byteArray = byteArrayOutputStream.toByteArray();
 		} catch (IOException e) {
 			e.printStackTrace();
-			return null;
 		}
+
+		return byteArray;
 	}
 
 	/**
@@ -47,19 +57,21 @@ public class Conversion {
 	 *         error.
 	 */
 	public static Object byteToObject(final byte[] bytes) {
+		Object object = null;
+
 		try {
 			ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(
 					bytes);
 			ObjectInputStream objectInputStream = new ObjectInputStream(
 					byteArrayInputStream);
-			return objectInputStream.readObject();
+			object = objectInputStream.readObject();
 		} catch (IOException e) {
 			e.printStackTrace();
-			return null;
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
-			return null;
 		}
+
+		return object;
 	}
 
 	/**
@@ -110,6 +122,7 @@ public class Conversion {
 		try {
 			FileOutputStream fos = new FileOutputStream(file);
 
+			// TODO ArrayList?
 			Vector<Integer> v = (Vector<Integer>) byteToObject(bytes);
 			for (int i = 0; i < v.size(); i++) {
 				fos.write(v.get(i));

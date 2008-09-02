@@ -78,10 +78,10 @@ public class ShowProjects {
 
 		InfoExtractor infoExtractor = new SubclipseInfoExtractor();
 
-		for (int i = 0; i < projects.length; i++) {
+		for (IProject project : projects) {
 			try {
-				infoExtractor.getRevision(projects[i]);
-				versionedProjects.add(projects[i]);
+				infoExtractor.getRevision(project);
+				versionedProjects.add(project);
 			} catch (RevisionExtractorException e) {
 				Activator.LOGGER
 						.log(

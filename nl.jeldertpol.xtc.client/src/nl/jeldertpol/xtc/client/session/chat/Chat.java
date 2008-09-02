@@ -11,12 +11,15 @@ import nl.jeldertpol.xtc.common.chat.ChatMessage;
  */
 public class Chat {
 
+	/**
+	 * Holds chat messages.
+	 */
 	private List<ChatMessage> chatMessages;
 
 	/**
 	 * Holds listeners.
 	 */
-	private List<ChatListener> listeners;
+	private final List<ChatListener> listeners;
 
 	/**
 	 * TODO Javadoc
@@ -35,7 +38,7 @@ public class Chat {
 		return chatMessages;
 	}
 
-	public void newMessage(ChatMessage chatMessage) {
+	public void newMessage(final ChatMessage chatMessage) {
 		chatMessages.add(chatMessage);
 
 		for (ChatListener listener : listeners) {

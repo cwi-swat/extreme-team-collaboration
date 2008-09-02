@@ -67,16 +67,16 @@ public class ResourceRemovedResourceJob extends HighPriorityJob {
 			} catch (CoreException e) {
 				Activator.LOGGER.log(Level.SEVERE, e);
 
-				status = new Status(Status.ERROR, Activator.PLUGIN_ID,
+				status = new Status(IStatus.ERROR, Activator.PLUGIN_ID,
 						"Error refreshing resource.");
 			}
-			status = new Status(Status.OK, Activator.PLUGIN_ID,
+			status = new Status(IStatus.OK, Activator.PLUGIN_ID,
 					"Resource content set successfully.");
 		} catch (CoreException e) {
 			Activator.LOGGER.log(Level.SEVERE,
 					"Resource could not be deleted.", e);
 
-			status = new Status(Status.ERROR, Activator.PLUGIN_ID,
+			status = new Status(IStatus.ERROR, Activator.PLUGIN_ID,
 					"Resource could not be deleted.");
 		}
 

@@ -67,7 +67,7 @@ public class ResourceAddedResourceJob extends HighPriorityJob {
 					Activator.LOGGER.log(Level.WARNING, "File "
 							+ file.toString() + " already exists.");
 
-					status = new Status(Status.OK, Activator.PLUGIN_ID,
+					status = new Status(IStatus.OK, Activator.PLUGIN_ID,
 							"Resource already exists. Ignoring add.");
 				} else {
 					// An empty InputStream. Needed in order to create the file
@@ -81,7 +81,7 @@ public class ResourceAddedResourceJob extends HighPriorityJob {
 					Activator.LOGGER.log(Level.INFO, "File " + file.toString()
 							+ " created.");
 
-					status = new Status(Status.OK, Activator.PLUGIN_ID,
+					status = new Status(IStatus.OK, Activator.PLUGIN_ID,
 							"Resource added successfully.");
 				}
 			} else if (type == IResource.FOLDER) {
@@ -92,7 +92,7 @@ public class ResourceAddedResourceJob extends HighPriorityJob {
 					Activator.LOGGER.log(Level.WARNING, "Folder "
 							+ folder.toString() + " already exists.");
 
-					status = new Status(Status.OK, Activator.PLUGIN_ID,
+					status = new Status(IStatus.OK, Activator.PLUGIN_ID,
 							"Resource already exists. Ignoring add.");
 				} else {
 
@@ -109,7 +109,7 @@ public class ResourceAddedResourceJob extends HighPriorityJob {
 					Activator.LOGGER.log(Level.INFO, "Folder "
 							+ folder.toString() + " created.");
 
-					status = new Status(Status.OK, Activator.PLUGIN_ID,
+					status = new Status(IStatus.OK, Activator.PLUGIN_ID,
 							"Resource added successfully.");
 				}
 			} else {
@@ -117,7 +117,7 @@ public class ResourceAddedResourceJob extends HighPriorityJob {
 						"Resource not a file or folder, but of type " + type
 								+ ".");
 
-				status = new Status(Status.ERROR, Activator.PLUGIN_ID,
+				status = new Status(IStatus.ERROR, Activator.PLUGIN_ID,
 						"Resource not a file or folder, but of type " + type
 								+ ".");
 			}
@@ -125,7 +125,7 @@ public class ResourceAddedResourceJob extends HighPriorityJob {
 			Activator.LOGGER.log(Level.SEVERE,
 					"Resource content could not be set.", e);
 
-			status = new Status(Status.ERROR, Activator.PLUGIN_ID,
+			status = new Status(IStatus.ERROR, Activator.PLUGIN_ID,
 					"Resource content could not be set.");
 			// TODO revert, and re-apply all changes?
 		}

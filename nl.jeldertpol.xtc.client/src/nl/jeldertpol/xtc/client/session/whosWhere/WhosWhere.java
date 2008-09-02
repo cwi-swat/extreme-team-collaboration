@@ -21,7 +21,7 @@ public class WhosWhere {
 	/**
 	 * Holds listeners.
 	 */
-	private List<WhosWhereListener> listeners;
+	private final List<WhosWhereListener> listeners;
 
 	/**
 	 * Constructor.
@@ -72,7 +72,7 @@ public class WhosWhere {
 	}
 
 	public void clear() {
-		whosWhere.clear();
+		whosWhere = new HashMap<String, String>();
 	}
 
 	/**

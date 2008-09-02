@@ -34,6 +34,7 @@ public class SubclipseInfoExtractor extends InfoExtractor {
 	 *            the project in which to look for modified {@link IResource}.
 	 * @return a list containing each modified {@link IResource}.
 	 */
+	@Override
 	public List<IResource> modifiedFiles(final IProject project) {
 		return modifiedFiles((IResource) project);
 	}

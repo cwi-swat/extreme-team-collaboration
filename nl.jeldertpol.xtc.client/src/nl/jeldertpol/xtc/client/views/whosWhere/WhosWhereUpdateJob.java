@@ -82,7 +82,7 @@ public class WhosWhereUpdateJob extends UIJob {
 			item.setText(WhosWhereView.COLUMN_RESOURCE, filePath);
 		}
 
-		status = new Status(Status.OK, Activator.PLUGIN_ID,
+		status = new Status(IStatus.OK, Activator.PLUGIN_ID,
 				"CurrentSessionUpdateJob finished successfully.");
 
 		return status;

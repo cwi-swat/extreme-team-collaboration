@@ -298,7 +298,7 @@ public class Session {
 	 * @param project
 	 *            The project of which to ignore the build path.
 	 */
-	private void ignoreBuildPath(IProject project) {
+	private void ignoreBuildPath(final IProject project) {
 		IJavaProject javaProject = JavaCore.create(project);
 
 		// It is a Java project.
@@ -334,7 +334,7 @@ public class Session {
 	 *            An path relative to the root of the workspace.
 	 * @return An path relative to the project it is part of.
 	 */
-	private IPath relativeToProject(IPath path) {
+	private IPath relativeToProject(final IPath path) {
 		IResource resource = ResourcesPlugin.getWorkspace().getRoot()
 				.findMember(path);
 		return resource.getProjectRelativePath();
@@ -781,13 +781,13 @@ public class Session {
 		}
 	}
 
-	public void sendChat(String message) {
+	public void sendChat(final String message) {
 		Activator.LOGGER.log(Level.INFO, "Sending chat.");
 
 		server.sendChat(nickname, message);
 	}
 
-	public void receiveChat(String nickname, String message) {
+	public void receiveChat(final String nickname, final String message) {
 		Activator.LOGGER.log(Level.INFO, "Receiving chat from " + nickname
 				+ ".");
 

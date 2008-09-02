@@ -27,7 +27,7 @@ public class DocumentListener implements IDocumentListener {
 	 * .eclipse.jface.text.DocumentEvent)
 	 */
 	@Override
-	public void documentAboutToBeChanged(DocumentEvent event) {
+	public void documentAboutToBeChanged(final DocumentEvent event) {
 		IProject project = resource.getProject();
 		IPath file = resource.getProjectRelativePath();
 

@@ -32,11 +32,11 @@ public class ShowSessionsAction extends AbstractHandler {
 			IProject[] projects = ResourcesPlugin.getWorkspace().getRoot()
 					.getProjects();
 			boolean found = false;
-			for (int i = 0; i < projects.length; i++) {
-				if (projects[i].getName().equals(projectName)) {
+			for (IProject project : projects) {
+				if (project.getName().equals(projectName)) {
 					found = true;
 					try {
-						Activator.SESSION.startJoinSession(projects[i]);
+						Activator.SESSION.startJoinSession(project);
 					} catch (XtcException e) {
 						Activator.LOGGER.log(Level.WARNING, e);
 						MessageDialog.openError(null, "XTC Start/Join", e

@@ -49,7 +49,7 @@ public class Logger {
 	 * @param message
 	 *            The message to be logged.
 	 */
-	public void log(Level level, String message) {
+	public void log(final Level level, final String message) {
 		log.log(level, message);
 	}
 
@@ -64,7 +64,7 @@ public class Logger {
 	 *            {@link Exception#getMessage()} and {@link #log(Level, String)}
 	 *            .
 	 */
-	public void log(Level level, Exception exception) {
+	public void log(final Level level, final Exception exception) {
 		if (level.intValue() > Level.INFO.intValue()) {
 			log(level, exception.getMessage(), exception);
 		} else {
@@ -85,7 +85,8 @@ public class Logger {
 	 *            {@link Exception#getMessage()} and {@link #log(Level, String)}
 	 *            .
 	 */
-	public void log(Level level, String message, Exception exception) {
+	public void log(final Level level, final String message,
+			final Exception exception) {
 		if (level.intValue() > Level.INFO.intValue()) {
 			log(level, message, exception);
 		} else {

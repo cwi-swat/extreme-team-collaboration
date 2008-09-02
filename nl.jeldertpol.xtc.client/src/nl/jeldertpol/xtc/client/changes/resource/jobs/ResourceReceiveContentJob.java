@@ -67,12 +67,12 @@ public class ResourceReceiveContentJob extends HighPriorityJob {
 		try {
 			resource.refreshLocal(IResource.NONE, monitor);
 
-			status = new Status(Status.OK, Activator.PLUGIN_ID,
+			status = new Status(IStatus.OK, Activator.PLUGIN_ID,
 					"Resource content set successfully.");
 		} catch (CoreException e) {
 			Activator.LOGGER.log(Level.SEVERE, e);
 
-			status = new Status(Status.ERROR, Activator.PLUGIN_ID,
+			status = new Status(IStatus.ERROR, Activator.PLUGIN_ID,
 					"Error refreshing resource.");
 		}
 

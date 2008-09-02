@@ -72,9 +72,10 @@ public class WhosWhereView extends ViewPart implements WhosWhereListener {
 		table.setLayoutData(data);
 
 		String[] titles = { "Nickname", "Resource" };
-		for (int i = 0; i < titles.length; i++) {
+
+		for (String title : titles) {
 			TableColumn column = new TableColumn(table, SWT.NONE);
-			column.setText(titles[i]);
+			column.setText(title);
 		}
 
 		// Fill table with current information
@@ -86,8 +87,8 @@ public class WhosWhereView extends ViewPart implements WhosWhereListener {
 			item.setText(COLUMN_RESOURCE, whosWhere.getFilePath(nickname));
 		}
 
-		for (int i = 0; i < titles.length; i++) {
-			table.getColumn(i).pack();
+		for (TableColumn column : table.getColumns()) {
+			column.pack();
 		}
 
 		final TableCursor cursor = new TableCursor(table, SWT.NULL);
@@ -100,7 +101,7 @@ public class WhosWhereView extends ViewPart implements WhosWhereListener {
 			 * .swt.events.MouseEvent)
 			 */
 			@Override
-			public void mouseDoubleClick(MouseEvent e) {
+			public void mouseDoubleClick(final MouseEvent e) {
 				int column = cursor.getColumn();
 				String text = cursor.getRow().getText(column);
 
@@ -117,7 +118,7 @@ public class WhosWhereView extends ViewPart implements WhosWhereListener {
 			 * .events.KeyEvent)
 			 */
 			@Override
-			public void keyReleased(KeyEvent e) {
+			public void keyReleased(final KeyEvent e) {
 				// Enter
 				if (e.character == SWT.CR) {
 					int column = cursor.getColumn();

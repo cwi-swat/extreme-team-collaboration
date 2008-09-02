@@ -155,15 +155,15 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 			if ((flags & IResourceDelta.MOVED_TO) != 0) {
 				IPath moveFrom = delta.getResource().getProjectRelativePath();
 				IPath moveTo = delta.getMovedToPath().removeFirstSegments(1); // Removes
-																				// the
-																				// project
-																				// name
-																				// ,
-																				// thus
-																				// making
-																				// path
-																				// relative
-																				// .
+				// the
+				// project
+				// name
+				// ,
+				// thus
+				// making
+				// path
+				// relative
+				// .
 				IProject project = resource.getProject();
 
 				Activator.SESSION.sendMove(project, moveFrom, moveTo);

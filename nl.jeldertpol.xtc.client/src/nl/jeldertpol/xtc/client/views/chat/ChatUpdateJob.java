@@ -47,7 +47,8 @@ public class ChatUpdateJob extends UIJob {
 	 * @param chatMessage
 	 *            New chat message.
 	 */
-	public ChatUpdateJob(StyledText chatText, ChatMessage chatMessage) {
+	public ChatUpdateJob(final StyledText chatText,
+			final ChatMessage chatMessage) {
 		super(ChatUpdateJob.class.getName() + ": " + "Chat "
 				+ chatMessage.getNickname());
 
@@ -115,18 +116,18 @@ public class ChatUpdateJob extends UIJob {
 			// Scroll to end of text
 			chatText.invokeAction(ST.TEXT_END);
 
-			status = new Status(Status.OK, Activator.PLUGIN_ID,
+			status = new Status(IStatus.OK, Activator.PLUGIN_ID,
 					"ChatUpdateJob finished successfully.");
 		} catch (SWTException e) {
 			// Sometimes this is thrown, even though nothing seems to be wrong?
 			if (e.code == SWT.ERROR_WIDGET_DISPOSED) {
 				// ignore
-				status = new Status(Status.OK, Activator.PLUGIN_ID,
+				status = new Status(IStatus.OK, Activator.PLUGIN_ID,
 						"ChatUpdateJob finished successfully.");
 			} else {
 				Activator.LOGGER.log(Level.SEVERE, e);
 
-				status = new Status(Status.ERROR, Activator.PLUGIN_ID,
+				status = new Status(IStatus.ERROR, Activator.PLUGIN_ID,
 						"ChatUpdateJob error.");
 				throw e;
 			}

@@ -18,7 +18,7 @@ public abstract class AbstractLabelProvider implements ILabelProvider {
 	 * @see org.eclipse.jface.viewers.ILabelProvider#getImage(java.lang.Object)
 	 */
 	@Override
-	public abstract Image getImage(Object element);
+	public abstract Image getImage(final Object element);
 
 	/*
 	 * (non-Javadoc)
@@ -26,7 +26,7 @@ public abstract class AbstractLabelProvider implements ILabelProvider {
 	 * @see org.eclipse.jface.viewers.ILabelProvider#getText(java.lang.Object)
 	 */
 	@Override
-	public abstract String getText(Object element);
+	public abstract String getText(final Object element);
 
 	/*
 	 * (non-Javadoc)
@@ -36,7 +36,7 @@ public abstract class AbstractLabelProvider implements ILabelProvider {
 	 * jface.viewers.ILabelProviderListener)
 	 */
 	@Override
-	public final void addListener(ILabelProviderListener listener) {
+	public final void addListener(final ILabelProviderListener listener) {
 		// Nothing to do
 	}
 
@@ -58,7 +58,8 @@ public abstract class AbstractLabelProvider implements ILabelProvider {
 	 * .Object, java.lang.String)
 	 */
 	@Override
-	public final boolean isLabelProperty(Object element, String property) {
+	public final boolean isLabelProperty(final Object element,
+			final String property) {
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -71,7 +72,7 @@ public abstract class AbstractLabelProvider implements ILabelProvider {
 	 * .jface.viewers.ILabelProviderListener)
 	 */
 	@Override
-	public final void removeListener(ILabelProviderListener listener) {
+	public final void removeListener(final ILabelProviderListener listener) {
 		// Nothing to do
 	}
 

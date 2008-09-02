@@ -28,7 +28,7 @@ import aterm.ATermLong;
  */
 public class Server extends AbstractJavaTool {
 
-	private ATermFactory factory = getFactory();
+	private final ATermFactory factory = getFactory();
 
 	private final String toolname = "client";
 

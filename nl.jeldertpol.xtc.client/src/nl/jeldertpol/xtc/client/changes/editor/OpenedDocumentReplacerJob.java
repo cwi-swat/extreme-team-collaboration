@@ -80,12 +80,12 @@ public class OpenedDocumentReplacerJob extends UIJob {
 				document.addDocumentListener(Activator.documentListener);
 			}
 
-			status = new Status(Status.OK, Activator.PLUGIN_ID,
+			status = new Status(IStatus.OK, Activator.PLUGIN_ID,
 					"Change applied successfully.");
 		} catch (BadLocationException e) {
 			Activator.LOGGER.log(Level.SEVERE, e);
 
-			status = new Status(Status.ERROR, Activator.PLUGIN_ID,
+			status = new Status(IStatus.ERROR, Activator.PLUGIN_ID,
 					"Change could not be applied.");
 			// TODO revert, and re-apply all changes?
 		}

@@ -69,13 +69,13 @@ public class ResourceMoveJob extends HighPriorityJob {
 
 			resource.move(moveTo, force, monitor);
 
-			status = new Status(Status.OK, Activator.PLUGIN_ID,
+			status = new Status(IStatus.OK, Activator.PLUGIN_ID,
 					"Move applied successfully.");
 		} catch (CoreException e) {
 			Activator.LOGGER.log(Level.SEVERE, "Resource could not be moved.",
 					e);
 
-			status = new Status(Status.ERROR, Activator.PLUGIN_ID,
+			status = new Status(IStatus.ERROR, Activator.PLUGIN_ID,
 					"Resource could not be moved.");
 			// TODO revert, and re-apply all changes?
 		}

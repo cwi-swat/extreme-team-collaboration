@@ -21,7 +21,7 @@ public final class PreferenceConstants {
 	public static final String P_NICKNAME = "nicknamePreference";
 
 	/**
-	 * Private constructor, so this class cannot be created.
+	 * Private constructor, so this class cannot be initiated.
 	 */
 	private PreferenceConstants() {
 		// Nothing to do

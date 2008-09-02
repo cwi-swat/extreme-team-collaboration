@@ -15,5 +15,5 @@ public interface ChatListener {
 	 * @param chatMessage
 	 *            The new message.
 	 */
-	public void updateChat(final ChatMessage chatMessage);
+	public void updateChat(ChatMessage chatMessage);
 }

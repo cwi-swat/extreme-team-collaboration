@@ -38,7 +38,7 @@ public class RevertToSavedJob extends UIJob {
 	}
 
 	@Override
-	public IStatus runInUIThread(IProgressMonitor monitor) {
+	public IStatus runInUIThread(final IProgressMonitor monitor) {
 		IStatus status;
 
 		Activator.LOGGER.log(Level.INFO, "Reverting to saved input "
@@ -46,7 +46,7 @@ public class RevertToSavedJob extends UIJob {
 
 		editor.doRevertToSaved();
 
-		status = new Status(Status.OK, Activator.PLUGIN_ID,
+		status = new Status(IStatus.OK, Activator.PLUGIN_ID,
 				"Reverted document successfully.");
 
 		return status;

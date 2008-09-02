@@ -30,9 +30,9 @@ public class Server extends AbstractJavaTool {
 	/**
 	 * Holds the current projects.
 	 */
-	private List<Session> sessions = new ArrayList<Session>();
+	private final List<Session> sessions = new ArrayList<Session>();
 
-	private final Logger logger = new Logger();
+	private static final Logger LOGGER = new Logger();
 
 	/**
 	 * Starting point for XTC Server. Can be called directly from the Toolbus
@@ -71,7 +71,7 @@ public class Server extends AbstractJavaTool {
 	 *         {@link ATermBlob}
 	 */
 	public ATerm getSessions() {
-		logger.log(Level.INFO, "Requested sessions.");
+		LOGGER.log(Level.INFO, "Requested sessions.");
 
 		ArrayList<SimpleSession> simpleSessions = new ArrayList<SimpleSession>(
 				sessions.size());
@@ -111,7 +111,7 @@ public class Server extends AbstractJavaTool {
 	 */
 	public ATerm startSession(final String projectName,
 			final ATerm revisionTerm, final String nickname) {
-		logger.log(Level.INFO, "Starting new session (" + projectName + ", "
+		LOGGER.log(Level.INFO, "Starting new session (" + projectName + ", "
 				+ nickname + ").");
 
 		boolean success = false;
@@ -144,7 +144,7 @@ public class Server extends AbstractJavaTool {
 	 *         success of this action.
 	 */
 	public ATerm joinSession(final String projectName, final String nickname) {
-		logger.log(Level.INFO, "Joining session (" + projectName + ", "
+		LOGGER.log(Level.INFO, "Joining session (" + projectName + ", "
 				+ nickname + ").");
 
 		boolean success = false;
@@ -173,7 +173,7 @@ public class Server extends AbstractJavaTool {
 	 * @return
 	 */
 	public ATerm requestChanges(final String projectName) {
-		logger.log(Level.INFO, "Requesting changes (" + projectName + ").");
+		LOGGER.log(Level.INFO, "Requesting changes (" + projectName + ").");
 
 		Session session = getSession(projectName);
 		List<AbstractChange> sessionChanges = session.getChanges();
@@ -230,7 +230,7 @@ public class Server extends AbstractJavaTool {
 	 */
 	public ATerm requestTextualChanges(final String projectName,
 			final String resource) {
-		logger.log(Level.INFO, "Requesting textual changes (" + projectName
+		LOGGER.log(Level.INFO, "Requesting textual changes (" + projectName
 				+ ", " + resource + ").");
 
 		List<AbstractChange> changes = new ArrayList<AbstractChange>();
@@ -278,7 +278,7 @@ public class Server extends AbstractJavaTool {
 	 *         success of this action.
 	 */
 	public ATerm leaveSession(final String projectName, final String nickname) {
-		logger.log(Level.INFO, "Leaving session (" + projectName + ", "
+		LOGGER.log(Level.INFO, "Leaving session (" + projectName + ", "
 				+ nickname + ").");
 
 		boolean success = false;
@@ -319,7 +319,7 @@ public class Server extends AbstractJavaTool {
 	 */
 	public ATerm sendChange(final String projectName, final byte[] changeBlob,
 			final String nickname) {
-		logger.log(Level.INFO, "Client send a change (" + projectName + ", "
+		LOGGER.log(Level.INFO, "Client send a change (" + projectName + ", "
 				+ nickname + ").");
 		boolean success = false;
 
@@ -329,7 +329,7 @@ public class Server extends AbstractJavaTool {
 					.byteToObject(changeBlob);
 			session.addChange(change);
 			success = true;
-			logger.log(Level.FINE, change.toString());
+			LOGGER.log(Level.FINE, change.toString());
 		}
 
 		ATerm sendChange = factory.make("sendChange(<bool>)", success);
