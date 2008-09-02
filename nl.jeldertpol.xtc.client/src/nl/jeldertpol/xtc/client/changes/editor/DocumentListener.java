@@ -28,9 +28,6 @@ public class DocumentListener implements IDocumentListener {
 	 */
 	@Override
 	public void documentAboutToBeChanged(DocumentEvent event) {
-		System.out.println("documentAboutToBeChanged");
-		System.out.println(event.toString());
-
 		IProject project = resource.getProject();
 		IPath file = resource.getProjectRelativePath();
 

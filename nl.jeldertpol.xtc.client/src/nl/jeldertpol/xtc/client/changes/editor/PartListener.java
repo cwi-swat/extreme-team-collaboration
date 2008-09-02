@@ -120,8 +120,6 @@ public class PartListener implements IPartListener2 {
 	 */
 	@Override
 	public void partActivated(final IWorkbenchPartReference partRef) {
-		System.out.println("partActivated " + partRef.getTitle());
-
 		// Document afluisteren, linken met IResource
 		// Getting document
 		IDocument document = getDocument(partRef);

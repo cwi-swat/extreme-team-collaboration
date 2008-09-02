@@ -178,7 +178,6 @@ public class WhosWhereView extends ViewPart implements WhosWhereListener {
 
 			// Look if resource is already opened
 			IResource resource = project.findMember(text);
-			System.out.println("" + resource);
 			ITextEditor editor = Activator.documentReplacer
 					.findEditor(resource);
 
