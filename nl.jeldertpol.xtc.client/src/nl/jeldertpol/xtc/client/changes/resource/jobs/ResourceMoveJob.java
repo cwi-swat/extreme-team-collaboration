@@ -12,6 +12,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.swt.widgets.Display;
 
 /**
  * Move a resource to a new location.
@@ -45,33 +46,42 @@ public class ResourceMoveJob extends HighPriorityJob {
 	 */
 	@Override
 	protected IStatus run(final IProgressMonitor monitor) {
-		IStatus status;
+		final IProject project = ResourcesPlugin.getWorkspace().getRoot()
+				.getProject(moveChange.getProjectName());
+		final IPath moveTo = Path.fromPortableString(moveChange.getTo());
+		final IResource resource = project.findMember(moveChange.getFrom());
 
-		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(
-				moveChange.getProjectName());
-		IPath moveTo = Path.fromPortableString(moveChange.getTo());
-		IResource resource = project.findMember(moveChange.getFrom());
+		// TODO true or false?
+		final boolean force = true;
 
-		try {
-			// TODO true or false?
-			boolean force = true;
+		class Runnable2 implements Runnable {
+			public IStatus status;
 
-			synchronized (Activator.resourceChangeListener) {
+			public void run() {
 				Activator.SESSION.removeResourceChangeListener();
-				resource.move(moveTo, force, monitor);
-				Activator.SESSION.addResourceChangeListener();
-			}
-			status = new Status(Status.OK, Activator.PLUGIN_ID,
-					"Move applied successfully.");
-		} catch (CoreException e) {
-			e.printStackTrace();
 
-			status = new Status(Status.ERROR, Activator.PLUGIN_ID,
-					"Change could not be applied.");
-			// TODO revert, and re-apply all changes?
+				try {
+					resource.move(moveTo, force, monitor);
+
+					status = new Status(Status.OK, Activator.PLUGIN_ID,
+							"Move applied successfully.");
+				} catch (CoreException e) {
+					e.printStackTrace();
+
+					status = new Status(Status.ERROR, Activator.PLUGIN_ID,
+							"Change could not be applied.");
+					// TODO revert, and re-apply all changes?
+				} finally {
+					Activator.SESSION.addResourceChangeListener();
+				}
+			}
 		}
 
-		return status;
+		Display display = Display.getDefault();
+		Runnable2 r = new Runnable2();
+		display.syncExec(r);
+
+		return r.status;
 	}
 
 }
