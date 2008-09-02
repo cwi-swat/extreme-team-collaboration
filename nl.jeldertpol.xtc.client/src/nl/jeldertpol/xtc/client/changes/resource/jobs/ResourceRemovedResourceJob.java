@@ -56,20 +56,13 @@ public class ResourceRemovedResourceJob extends HighPriorityJob {
 		IContainer parent = resource.getParent();
 
 		try {
-			synchronized (Activator.resourceChangeListener) {
-				Activator.SESSION.removeResourceChangeListener();
-
-				resource.delete(force, monitor);
-				try {
-					parent.refreshLocal(IResource.NONE, monitor);
-				} catch (CoreException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-				Activator.SESSION.addResourceChangeListener();
+			resource.delete(force, monitor);
+			try {
+				parent.refreshLocal(IResource.NONE, monitor);
+			} catch (CoreException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-
 			status = new Status(Status.OK, Activator.PLUGIN_ID,
 					"Resource content set successfully.");
 		} catch (CoreException e) {

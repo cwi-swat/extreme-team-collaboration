@@ -58,33 +58,27 @@ public class ResourceReceiveContentJob extends HighPriorityJob {
 		File file = location.toFile();
 
 		byte[] content = contentChange.getContent();
+		Conversion.byteToFile(content, file);
 
-		synchronized (Activator.resourceChangeListener) {
-			Activator.SESSION.removeResourceChangeListener();
+		try {
+			resource.refreshLocal(IResource.NONE, monitor);
 
-			Conversion.byteToFile(content, file);
-
-			try {
-				resource.refreshLocal(IResource.NONE, monitor);
-
-				// Look if there is an open editor with this resource
-				ITextEditor editor = Activator.documentReplacer
-						.findEditor(resource);
-				if (editor != null) {
-					// Reload file from file system.
-					new RevertToSavedJob(editor);
-				}
-
-				status = new Status(Status.OK, Activator.PLUGIN_ID,
-						"Resource content set successfully.");
-			} catch (CoreException e) {
-				e.printStackTrace();
-
-				status = new Status(Status.ERROR, Activator.PLUGIN_ID,
-						"Resource content could not be set.");
-				// TODO revert, and re-apply all changes?
+			// Look if there is an open editor with this resource
+			ITextEditor editor = Activator.documentReplacer
+					.findEditor(resource);
+			if (editor != null) {
+				// Reload file from file system.
+				new RevertToSavedJob(editor);
 			}
-			Activator.SESSION.addResourceChangeListener();
+
+			status = new Status(Status.OK, Activator.PLUGIN_ID,
+					"Resource content set successfully.");
+		} catch (CoreException e) {
+			e.printStackTrace();
+
+			status = new Status(Status.ERROR, Activator.PLUGIN_ID,
+					"Resource content could not be set.");
+			// TODO revert, and re-apply all changes?
 		}
 
 		return status;

@@ -72,12 +72,8 @@ public class ResourceAddedResourceJob extends HighPriorityJob {
 					InputStream source = new ByteArrayInputStream(new byte[0]);
 					boolean force = false;
 
-					synchronized (Activator.resourceChangeListener) {
-						Activator.SESSION.removeResourceChangeListener();
-						file.create(source, force, monitor);
-						file.refreshLocal(IResource.NONE, monitor);
-						Activator.SESSION.addResourceChangeListener();
-					}
+					file.create(source, force, monitor);
+					file.refreshLocal(IResource.NONE, monitor);
 
 					status = new Status(Status.OK, Activator.PLUGIN_ID,
 							"Resource added successfully.");

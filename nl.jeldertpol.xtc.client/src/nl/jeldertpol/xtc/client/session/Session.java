@@ -6,6 +6,7 @@ import java.util.List;
 import nl.jeldertpol.xtc.client.Activator;
 import nl.jeldertpol.xtc.client.changes.editor.PartListener;
 import nl.jeldertpol.xtc.client.changes.resource.ResourceChangeListener;
+import nl.jeldertpol.xtc.client.changes.resource.jobs.HighPriorityJob;
 import nl.jeldertpol.xtc.client.changes.resource.jobs.ResourceAddedResourceJob;
 import nl.jeldertpol.xtc.client.changes.resource.jobs.ResourceMoveJob;
 import nl.jeldertpol.xtc.client.changes.resource.jobs.ResourceReceiveContentJob;
@@ -276,7 +277,7 @@ public class Session {
 		}
 
 		addResourceChangeListener();
-		addPartListener();		
+		addPartListener();
 	}
 
 	/**
@@ -354,16 +355,16 @@ public class Session {
 	private void addPartListener() {
 		getWorkbenchPage().addPartListener(Activator.partListener);
 	}
-	
+
 	private void removePartListener() {
 		getWorkbenchPage().removePartListener(Activator.partListener);
 	}
-	
+
 	private IWorkbenchPage getWorkbenchPage() {
 		IWorkbench workbench = PlatformUI.getWorkbench();
 		IWorkbenchWindow workbenchWindow = workbench.getActiveWorkbenchWindow();
 		IWorkbenchPage workbenchPage = workbenchWindow.getActivePage();
-		
+
 		return workbenchPage;
 	}
 
@@ -378,7 +379,7 @@ public class Session {
 			// Remove listeners
 			removeResourceChangeListener();
 			removePartListener();
-			
+
 			server.leaveSession(projectName, nickname);
 
 			// Reset session data
@@ -389,7 +390,7 @@ public class Session {
 			projectName = "";
 			nickname = "";
 
-			// Clear data of views 
+			// Clear data of views
 			whosWhere.clear();
 			chat.clear();
 		}
@@ -709,24 +710,40 @@ public class Session {
 		if (paused) {
 			pauseList.add(abstractChange);
 		} else if (shouldReceive(projectName)) {
+			HighPriorityJob job = null;
+
+			// Remove listeners
+			removeResourceChangeListener();
+
 			if (abstractChange instanceof AddedResourceChange) {
 				AddedResourceChange change = (AddedResourceChange) abstractChange;
-				new ResourceAddedResourceJob(change);
+				job = new ResourceAddedResourceJob(change);
 			} else if (abstractChange instanceof ContentChange) {
 				ContentChange change = (ContentChange) abstractChange;
-				new ResourceReceiveContentJob(change);
+				job = new ResourceReceiveContentJob(change);
 			} else if (abstractChange instanceof MoveChange) {
 				MoveChange change = (MoveChange) abstractChange;
-				new ResourceMoveJob(change);
+				job = new ResourceMoveJob(change);
 			} else if (abstractChange instanceof RemovedResourceChange) {
 				RemovedResourceChange change = (RemovedResourceChange) abstractChange;
-				new ResourceRemovedResourceJob(change);
+				job = new ResourceRemovedResourceJob(change);
 			} else if (abstractChange instanceof TextualChange) {
 				TextualChange change = (TextualChange) abstractChange;
 				// TODO create job...
 				receiveTextualChange(projectName, change.getFilename(), change
 						.getLength(), change.getOffset(), change.getText(),
 						change.getNickname());
+			}
+			try {
+				job.join();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NullPointerException e) {
+				// TODO
+			} finally {
+				// Add listeners
+				addResourceChangeListener();
 			}
 		}
 	}
