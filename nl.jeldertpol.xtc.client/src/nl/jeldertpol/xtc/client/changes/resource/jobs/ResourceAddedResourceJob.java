@@ -122,7 +122,8 @@ public class ResourceAddedResourceJob extends HighPriorityJob {
 								+ ".");
 			}
 		} catch (CoreException e) {
-			Activator.LOGGER.log(Level.SEVERE,"Resource content could not be set.", e);
+			Activator.LOGGER.log(Level.SEVERE,
+					"Resource content could not be set.", e);
 
 			status = new Status(Status.ERROR, Activator.PLUGIN_ID,
 					"Resource content could not be set.");

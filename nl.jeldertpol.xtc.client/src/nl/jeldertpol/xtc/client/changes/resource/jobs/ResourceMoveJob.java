@@ -61,8 +61,8 @@ public class ResourceMoveJob extends HighPriorityJob {
 		moveTo = project.getFullPath().append(moveTo);
 
 		try {
-			Activator.LOGGER.log(Level.INFO, "Moving resource "
-					+ moveFrom + " --> " + moveTo);
+			Activator.LOGGER.log(Level.INFO, "Moving resource " + moveFrom
+					+ " --> " + moveTo);
 
 			// TODO true or false?
 			boolean force = true;

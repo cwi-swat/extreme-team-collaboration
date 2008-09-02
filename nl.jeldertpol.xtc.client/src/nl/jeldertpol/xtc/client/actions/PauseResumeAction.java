@@ -41,7 +41,7 @@ public class PauseResumeAction extends AbstractHandler {
 			boolean pause = MessageDialog.openQuestion(parent, title, message);
 
 			if (pause) {
-					Activator.SESSION.pause();
+				Activator.SESSION.pause();
 			}
 		}
 	}

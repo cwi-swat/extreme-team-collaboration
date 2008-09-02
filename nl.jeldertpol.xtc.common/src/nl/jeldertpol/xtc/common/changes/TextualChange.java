@@ -10,7 +10,7 @@ public class TextualChange extends AbstractChange {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	private final String filename;
 	private final int length;
 	private final int offset;
@@ -32,7 +32,8 @@ public class TextualChange extends AbstractChange {
 	 *            The nickname of the client the change originated from.
 	 */
 	public TextualChange(final String filename, final int length,
-			final int offset, final String text, final String projectName, final String nickname) {
+			final int offset, final String text, final String projectName,
+			final String nickname) {
 		super(projectName, nickname);
 
 		this.filename = filename;

@@ -41,8 +41,9 @@ public class DocumentListener implements IDocumentListener {
 		String text = event.getText();
 
 		Activator.LOGGER.log(Level.FINEST, event.toString());
-		
-		Activator.SESSION.sendTextualChange(project, file, length, offset, text);
+
+		Activator.SESSION
+				.sendTextualChange(project, file, length, offset, text);
 	}
 
 	/*

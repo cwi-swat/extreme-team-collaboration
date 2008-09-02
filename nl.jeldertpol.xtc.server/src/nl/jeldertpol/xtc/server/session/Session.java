@@ -45,7 +45,6 @@ public class Session extends SimpleSession {
 	 */
 	public void addChange(final AbstractChange change) {
 		changes.add(change);
-		System.out.println(change.toString());
 	}
 
 	/**

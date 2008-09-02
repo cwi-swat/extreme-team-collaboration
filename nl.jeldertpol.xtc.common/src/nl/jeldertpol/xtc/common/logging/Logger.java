@@ -54,7 +54,8 @@ public class Logger {
 	}
 
 	/**
-	 * Log an error.
+	 * Log an error. Will log stacktrace if level > {@link Level#INFO}, else
+	 * only logs message.
 	 * 
 	 * @param level
 	 *            Severity level of error.
@@ -64,11 +65,16 @@ public class Logger {
 	 *            .
 	 */
 	public void log(Level level, Exception exception) {
-		log(level, exception.getMessage());
+		if (level.intValue() > Level.INFO.intValue()) {
+			log(level, exception.getMessage(), exception);
+		} else {
+			log(level, exception.getMessage());
+		}
 	}
 
 	/**
-	 * Log an error.
+	 * Log an error. Will log stacktrace if level > {@link Level#INFO}, else
+	 * only logs message.
 	 * 
 	 * @param level
 	 *            Severity level of error.
@@ -80,7 +86,11 @@ public class Logger {
 	 *            .
 	 */
 	public void log(Level level, String message, Exception exception) {
-		log(level, message + "\n" + exception.getMessage());
+		if (level.intValue() > Level.INFO.intValue()) {
+			log(level, message, exception);
+		} else {
+			log(level, message + "\n" + exception.getMessage());
+		}
 	}
 
 }

@@ -2,11 +2,13 @@ package nl.jeldertpol.xtc.server;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 import nl.jeldertpol.xtc.common.changes.AbstractChange;
 import nl.jeldertpol.xtc.common.changes.ContentChange;
 import nl.jeldertpol.xtc.common.changes.TextualChange;
 import nl.jeldertpol.xtc.common.conversion.Conversion;
+import nl.jeldertpol.xtc.common.logging.Logger;
 import nl.jeldertpol.xtc.common.session.SimpleSession;
 import nl.jeldertpol.xtc.server.session.Session;
 import toolbus.adapter.java.AbstractJavaTool;
@@ -29,6 +31,8 @@ public class Server extends AbstractJavaTool {
 	 * Holds the current projects.
 	 */
 	private List<Session> sessions = new ArrayList<Session>();
+
+	private final Logger logger = new Logger();
 
 	/**
 	 * Starting point for XTC Server. Can be called directly from the Toolbus
@@ -67,6 +71,8 @@ public class Server extends AbstractJavaTool {
 	 *         {@link ATermBlob}
 	 */
 	public ATerm getSessions() {
+		logger.log(Level.INFO, "Requested sessions.");
+
 		ArrayList<SimpleSession> simpleSessions = new ArrayList<SimpleSession>(
 				sessions.size());
 
@@ -105,6 +111,9 @@ public class Server extends AbstractJavaTool {
 	 */
 	public ATerm startSession(final String projectName,
 			final ATerm revisionTerm, final String nickname) {
+		logger.log(Level.INFO, "Starting new session (" + projectName + ", "
+				+ nickname + ").");
+
 		boolean success = false;
 
 		// Convert ATerms to right ATerm
@@ -135,6 +144,9 @@ public class Server extends AbstractJavaTool {
 	 *         success of this action.
 	 */
 	public ATerm joinSession(final String projectName, final String nickname) {
+		logger.log(Level.INFO, "Joining session (" + projectName + ", "
+				+ nickname + ").");
+
 		boolean success = false;
 
 		// Check if project exists
@@ -161,38 +173,42 @@ public class Server extends AbstractJavaTool {
 	 * @return
 	 */
 	public ATerm requestChanges(final String projectName) {
+		logger.log(Level.INFO, "Requesting changes (" + projectName + ").");
+
 		Session session = getSession(projectName);
 		List<AbstractChange> sessionChanges = session.getChanges();
 		List<AbstractChange> relevantChanges = new ArrayList<AbstractChange>();
-		
+
 		// From start, add changes
 		for (AbstractChange change : sessionChanges) {
 			// If contentchange is found:
 			if (change instanceof ContentChange) {
 				// Previous textual changes can be ignored.
 				// Previous contentchanges can also be ignored.
-				
+
 				List<AbstractChange> toBeRemoved = new ArrayList<AbstractChange>();
-				
+
 				for (AbstractChange relevantChange : relevantChanges) {
 					if (relevantChange instanceof ContentChange) {
 						// For same file?
 						ContentChange thisChange = (ContentChange) change;
 						ContentChange previousChange = (ContentChange) relevantChange;
-						
-						if (previousChange.getFilename().equals(thisChange.getFilename())) {
+
+						if (previousChange.getFilename().equals(
+								thisChange.getFilename())) {
 							toBeRemoved.add(previousChange);
 						}
 					} else if (relevantChange instanceof TextualChange) {
 						// For same file?
 						ContentChange thisChange = (ContentChange) change;
 						TextualChange previousChange = (TextualChange) relevantChange;
-						
-						if (previousChange.getFilename().equals(thisChange.getFilename())) {
+
+						if (previousChange.getFilename().equals(
+								thisChange.getFilename())) {
 							toBeRemoved.add(previousChange);
 						}
 					}
-				}				
+				}
 				relevantChanges.removeAll(toBeRemoved);
 			}
 			relevantChanges.add(change);
@@ -214,7 +230,9 @@ public class Server extends AbstractJavaTool {
 	 */
 	public ATerm requestTextualChanges(final String projectName,
 			final String resource) {
-		System.out.println("requestTextualChanges: " + resource);
+		logger.log(Level.INFO, "Requesting textual changes (" + projectName
+				+ ", " + resource + ").");
+
 		List<AbstractChange> changes = new ArrayList<AbstractChange>();
 
 		Session session = getSession(projectName);
@@ -242,7 +260,6 @@ public class Server extends AbstractJavaTool {
 		for (int i = changes.size() - 1; i >= 0; i--) {
 			orderedChanges.add(changes.get(i));
 		}
-		System.out.println("Size: " + orderedChanges.size());
 
 		byte[] blob = Conversion.objectToByte(orderedChanges);
 
@@ -261,6 +278,9 @@ public class Server extends AbstractJavaTool {
 	 *         success of this action.
 	 */
 	public ATerm leaveSession(final String projectName, final String nickname) {
+		logger.log(Level.INFO, "Leaving session (" + projectName + ", "
+				+ nickname + ").");
+
 		boolean success = false;
 
 		// Check if project exists
@@ -299,6 +319,8 @@ public class Server extends AbstractJavaTool {
 	 */
 	public ATerm sendChange(final String projectName, final byte[] changeBlob,
 			final String nickname) {
+		logger.log(Level.INFO, "Client send a change (" + projectName + ", "
+				+ nickname + ").");
 		boolean success = false;
 
 		Session session = getSession(projectName);
@@ -307,6 +329,7 @@ public class Server extends AbstractJavaTool {
 					.byteToObject(changeBlob);
 			session.addChange(change);
 			success = true;
+			logger.log(Level.FINE, change.toString());
 		}
 
 		ATerm sendChange = factory.make("sendChange(<bool>)", success);
