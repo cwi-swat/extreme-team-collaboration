@@ -8,7 +8,6 @@ import nl.jeldertpol.xtc.common.changes.RemovedResourceChange;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -49,7 +48,7 @@ public class ResourceRemovedResourceJob extends HighPriorityJob {
 	protected IStatus run(final IProgressMonitor monitor) {
 		IStatus status;
 
-		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(
+		IProject project = Activator.COMMON_ACTIONS.getProject(
 				removedResourceChange.getProjectName());
 		IResource resource = project.findMember(removedResourceChange
 				.getResourceName());

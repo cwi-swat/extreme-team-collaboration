@@ -88,7 +88,7 @@ public class Logger {
 	public void log(final Level level, final String message,
 			final Exception exception) {
 		if (level.intValue() > Level.INFO.intValue()) {
-			log(level, message, exception);
+			log.log(level, message, exception);
 		} else {
 			log(level, message + "\n" + exception.getMessage());
 		}

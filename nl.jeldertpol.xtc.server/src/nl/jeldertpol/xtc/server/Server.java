@@ -1,6 +1,7 @@
 package nl.jeldertpol.xtc.server;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -244,7 +245,7 @@ public class Server extends AbstractJavaTool {
 			if (change instanceof TextualChange) {
 				TextualChange textualChange = (TextualChange) change;
 				if (textualChange.getFilename().equals(resource)) {
-					changes.add(change);
+					changes.add(textualChange);
 				}
 			} else if (change instanceof ContentChange) {
 				ContentChange contentChange = (ContentChange) change;
@@ -255,13 +256,9 @@ public class Server extends AbstractJavaTool {
 		}
 
 		// Since changes are backwards, order them again properly.
-		List<AbstractChange> orderedChanges = new ArrayList<AbstractChange>(
-				changes.size());
-		for (int i = changes.size() - 1; i >= 0; i--) {
-			orderedChanges.add(changes.get(i));
-		}
+		Collections.reverse(changes);
 
-		byte[] blob = Conversion.objectToByte(orderedChanges);
+		byte[] blob = Conversion.objectToByte(changes);
 
 		ATerm response = factory.make("requestTextualChanges(<blob>)", blob);
 		return response;

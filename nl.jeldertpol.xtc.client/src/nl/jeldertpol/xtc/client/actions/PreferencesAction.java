@@ -14,6 +14,13 @@ import org.eclipse.ui.dialogs.PreferencesUtil;
  */
 public class PreferencesAction extends AbstractHandler {
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.core.commands.AbstractHandler#execute(org.eclipse.core.commands
+	 * .ExecutionEvent)
+	 */
 	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		PreferenceDialog preferenceDialog = PreferencesUtil

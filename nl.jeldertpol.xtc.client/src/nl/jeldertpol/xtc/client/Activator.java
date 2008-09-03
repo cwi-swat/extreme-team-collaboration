@@ -3,10 +3,10 @@ package nl.jeldertpol.xtc.client;
 import java.util.logging.Level;
 
 import nl.jeldertpol.xtc.client.changes.editor.DocumentListener;
-import nl.jeldertpol.xtc.client.changes.editor.DocumentReplacer;
 import nl.jeldertpol.xtc.client.changes.editor.PartListener;
 import nl.jeldertpol.xtc.client.changes.resource.ResourceChangeListener;
 import nl.jeldertpol.xtc.client.session.Session;
+import nl.jeldertpol.xtc.client.workspace.CommonActions;
 import nl.jeldertpol.xtc.common.logging.Logger;
 
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -28,11 +28,11 @@ public class Activator extends AbstractUIPlugin {
 
 	public static final Logger LOGGER = new Logger();
 
+	public static final CommonActions COMMON_ACTIONS = new CommonActions();
+
 	public static final PartListener partListener = new PartListener();
 
 	public static final DocumentListener documentListener = new DocumentListener();
-
-	public static final DocumentReplacer documentReplacer = new DocumentReplacer();
 
 	public static final ResourceChangeListener resourceChangeListener = new ResourceChangeListener();
 

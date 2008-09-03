@@ -10,13 +10,11 @@ import nl.jeldertpol.xtc.common.conversion.Conversion;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.ui.texteditor.ITextEditor;
 
 /**
  * Set content of a file.
@@ -52,8 +50,8 @@ public class ResourceReceiveContentJob extends HighPriorityJob {
 	protected IStatus run(final IProgressMonitor monitor) {
 		IStatus status;
 
-		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(
-				contentChange.getProjectName());
+		IProject project = Activator.COMMON_ACTIONS.getProject(contentChange
+				.getProjectName());
 		IResource resource = project.findMember(contentChange.getFilename());
 		IPath location = resource.getLocation();
 		File file = location.toFile();
@@ -77,11 +75,7 @@ public class ResourceReceiveContentJob extends HighPriorityJob {
 		}
 
 		// Look if there is an open editor with this resource
-		ITextEditor editor = Activator.documentReplacer.findEditor(resource);
-		if (editor != null) {
-			// Reload file from file system.
-			new RevertToSavedJob(editor);
-		}
+		new RevertToSavedJob(resource);
 
 		return status;
 	}

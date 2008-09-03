@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.logging.Level;
 
 import nl.jeldertpol.xtc.client.Activator;
+import nl.jeldertpol.xtc.client.changes.editor.DocumentReplacerJob;
 import nl.jeldertpol.xtc.client.changes.editor.PartListener;
-import nl.jeldertpol.xtc.client.changes.resource.jobs.HighPriorityJob;
 import nl.jeldertpol.xtc.client.changes.resource.jobs.ResourceAddedResourceJob;
 import nl.jeldertpol.xtc.client.changes.resource.jobs.ResourceMoveJob;
 import nl.jeldertpol.xtc.client.changes.resource.jobs.ResourceReceiveContentJob;
@@ -42,11 +42,13 @@ import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Preferences;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.text.DocumentEvent;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -284,7 +286,8 @@ public class Session {
 
 		// Request and apply all changes made so far.
 		if (present) {
-			server.requestChanges(projectName);
+			List<AbstractChange> changes = server.requestChanges(projectName);
+			applyChanges(projectName, changes);
 		}
 
 		addResourceChangeListener();
@@ -463,35 +466,6 @@ public class Session {
 	}
 
 	/**
-	 * Receive a change from the server / other clients.
-	 * 
-	 * @param remoteProjectName
-	 *            The name of the project the change originated from.
-	 * @param filePath
-	 *            The file the change originated from, path is relative to the
-	 *            project, and portable.
-	 * @param length
-	 *            Length of the replaced document text.
-	 * @param offset
-	 *            The document offset.
-	 * @param text
-	 *            Text inserted into the document.
-	 * @param nickname
-	 *            The nickname of the client the change originated from.
-	 */
-	public void receiveTextualChange(final String remoteProjectName,
-			final String filePath, final int length, final int offset,
-			final String text, final String nickname) {
-		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(
-				projectName);
-		IResource resource = project.findMember(filePath);
-
-		Activator.documentReplacer.replace(resource, length, offset, text);
-
-		whosWhere.change(nickname, filePath);
-	}
-
-	/**
 	 * A resource is moved. Send it to the server.
 	 * 
 	 * @param project
@@ -608,7 +582,9 @@ public class Session {
 		Activator.LOGGER.log(Level.INFO, "Requesting textual changes for: "
 				+ resource + ".");
 
-		server.requestTextualChanges(projectName, resource);
+		List<AbstractChange> changes = server.requestTextualChanges(
+				projectName, resource);
+		applyChanges(projectName, changes);
 	}
 
 	/**
@@ -721,7 +697,7 @@ public class Session {
 	 * @param changes
 	 *            Changes that should be applied.
 	 */
-	public void applyChanges(final String projectName,
+	private void applyChanges(final String projectName,
 			final List<AbstractChange> changes) {
 		for (AbstractChange abstractChange : changes) {
 			applyChange(projectName, abstractChange);
@@ -743,7 +719,7 @@ public class Session {
 		if (paused) {
 			pauseList.add(abstractChange);
 		} else if (shouldReceive(projectName)) {
-			HighPriorityJob job = null;
+			Job job = null;
 
 			// Remove listeners
 			removeResourceChangeListener();
@@ -762,10 +738,17 @@ public class Session {
 				job = new ResourceRemovedResourceJob(change);
 			} else if (abstractChange instanceof TextualChange) {
 				TextualChange change = (TextualChange) abstractChange;
-				// TODO create job...
-				receiveTextualChange(projectName, change.getFilename(), change
-						.getLength(), change.getOffset(), change.getText(),
-						change.getNickname());
+
+				if (Display.getCurrent() == null) {
+					// Not running in a UIThread, so create a UIJob.
+					job = new DocumentReplacerJob(change);
+				} else {
+					// Already running in a UIThread, so apply change directly.
+					DocumentReplacerJob.replace(change);
+				}
+
+				// Also update whosWhere
+				whosWhere.change(nickname, change.getFilename());
 			}
 			try {
 				job.join();

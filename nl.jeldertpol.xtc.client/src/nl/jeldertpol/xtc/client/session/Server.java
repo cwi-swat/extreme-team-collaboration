@@ -145,11 +145,11 @@ public class Server extends AbstractJavaTool {
 	}
 
 	/**
-	 * Request and apply all changes made so far from the server.
+	 * TODO javadoc Request and apply all changes made so far from the server.
 	 * 
 	 * @param projectName
 	 */
-	public void requestChanges(final String projectName) {
+	public List<AbstractChange> requestChanges(final String projectName) {
 		ATerm requestChanges = factory.make("requestChanges(<str>)",
 				projectName);
 		ATermAppl reply = sendRequest(requestChanges);
@@ -158,16 +158,16 @@ public class Server extends AbstractJavaTool {
 		List<AbstractChange> changes = (List<AbstractChange>) Conversion
 				.byteToObject(blob.getBlobData());
 
-		Activator.SESSION.applyChanges(projectName, changes);
+		return changes;
 	}
 
 	/**
-	 * Request and apply textual changes made to this resource.
+	 * TODO javadoc Request and apply textual changes made to this resource.
 	 * 
 	 * @param projectName
 	 * @param resource
 	 */
-	public void requestTextualChanges(final String projectName,
+	public List<AbstractChange> requestTextualChanges(final String projectName,
 			final String resource) {
 		ATerm requestTextualChanges = factory.make(
 				"requestTextualChanges(<str>, <str>)", projectName, resource);
@@ -177,7 +177,7 @@ public class Server extends AbstractJavaTool {
 		List<AbstractChange> changes = (List<AbstractChange>) Conversion
 				.byteToObject(blob.getBlobData());
 
-		Activator.SESSION.applyChanges(projectName, changes);
+		return changes;
 	}
 
 	/**

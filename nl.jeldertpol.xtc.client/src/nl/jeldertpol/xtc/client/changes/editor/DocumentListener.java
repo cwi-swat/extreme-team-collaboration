@@ -59,6 +59,15 @@ public class DocumentListener implements IDocumentListener {
 	}
 
 	/**
+	 * Get the resource associated with the document.
+	 * 
+	 * @return The resource.
+	 */
+	public IResource getResource() {
+		return resource;
+	}
+
+	/**
 	 * Set the resource associated with the document.
 	 * 
 	 * @param resource

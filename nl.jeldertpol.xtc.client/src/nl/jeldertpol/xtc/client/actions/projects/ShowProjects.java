@@ -11,7 +11,6 @@ import nl.jeldertpol.xtc.client.session.infoExtractor.InfoExtractor;
 import nl.jeldertpol.xtc.client.session.infoExtractor.SubclipseInfoExtractor;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
@@ -38,8 +37,7 @@ public class ShowProjects {
 	public IProject showProjects(final String message) {
 		IProject project = null;
 
-		IProject[] projects = ResourcesPlugin.getWorkspace().getRoot()
-				.getProjects();
+		IProject[] projects = Activator.COMMON_ACTIONS.getProjects();
 
 		Shell parent = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
 				.getShell();

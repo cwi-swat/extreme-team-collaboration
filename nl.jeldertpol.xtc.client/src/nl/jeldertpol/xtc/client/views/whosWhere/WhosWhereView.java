@@ -11,7 +11,6 @@ import nl.jeldertpol.xtc.client.views.chat.ChatView;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableCursor;
 import org.eclipse.swt.events.KeyAdapter;
@@ -20,6 +19,7 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
@@ -152,7 +152,14 @@ public class WhosWhereView extends ViewPart implements WhosWhereListener {
 	@Override
 	public void updateWhosWhere(final String nickname, final String filePath) {
 		// Job will update UI.
-		new WhosWhereUpdateJob(table, nickname, filePath);
+
+		if (Display.getCurrent() == null) {
+			// Not running in a UIThread, so create a UIJob.
+			new WhosWhereUpdateJob(table, nickname, filePath);
+		} else {
+			// Already running in a UIThread, so apply change directly.
+			WhosWhereUpdateJob.update(table, nickname, filePath);
+		}
 	}
 
 	private void handleEvent(final int column, final String text) {
@@ -173,14 +180,13 @@ public class WhosWhereView extends ViewPart implements WhosWhereListener {
 			}
 
 		} else if (column == COLUMN_RESOURCE) {
-			// Open resource
-			IProject project = ResourcesPlugin.getWorkspace().getRoot()
+			// Try to open the resource.
+			IProject project = Activator.COMMON_ACTIONS
 					.getProject(Activator.SESSION.getCurrentProject());
 
 			// Look if resource is already opened
 			IResource resource = project.findMember(text);
-			ITextEditor editor = Activator.documentReplacer
-					.findEditor(resource);
+			ITextEditor editor = Activator.COMMON_ACTIONS.findEditor(resource);
 
 			if (editor != null) {
 				// Focus editor

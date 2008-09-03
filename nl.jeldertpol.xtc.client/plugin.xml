@@ -28,6 +28,11 @@
             id="nl.jeldertpol.xtc.client.commands.preferences"
             name="Preferences">
       </command>
+      <command
+            description="Resync opened editor."
+            id="nl.jeldertpol.xtc.client.commands.resync"
+            name="Resync">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
@@ -50,6 +55,10 @@
       <handler
             class="nl.jeldertpol.xtc.client.actions.PreferencesAction"
             commandId="nl.jeldertpol.xtc.client.commands.preferences">
+      </handler>
+      <handler
+            class="nl.jeldertpol.xtc.client.actions.ResyncAction"
+            commandId="nl.jeldertpol.xtc.client.commands.resync">
       </handler>
    </extension>
    <extension
@@ -94,6 +103,19 @@
                   style="push">
             </command>
          </menu>
+      </menuContribution>
+      <menuContribution
+            locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
+         <toolbar
+               id="nl.jeldertpol.xtc.client.toolbar">
+            <command
+                  commandId="nl.jeldertpol.xtc.client.commands.resync"
+                  icon="resources/icons/arrow_rotate_clockwise.png"
+                  id="nl.jeldertpol.xtc.client.commands.resync"
+                  mnemonic="R"
+                  style="push">
+            </command>
+         </toolbar>
       </menuContribution>
    </extension>
    <extension

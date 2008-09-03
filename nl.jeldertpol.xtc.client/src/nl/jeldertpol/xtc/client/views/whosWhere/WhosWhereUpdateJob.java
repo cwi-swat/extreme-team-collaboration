@@ -66,6 +66,11 @@ public class WhosWhereUpdateJob extends UIJob {
 	 */
 	@Override
 	public IStatus runInUIThread(final IProgressMonitor monitor) {
+		return WhosWhereUpdateJob.update(table, nickname, filePath);
+	}
+
+	public static IStatus update(final Table table, final String nickname,
+			final String filePath) {
 		IStatus status;
 		boolean found = false;
 

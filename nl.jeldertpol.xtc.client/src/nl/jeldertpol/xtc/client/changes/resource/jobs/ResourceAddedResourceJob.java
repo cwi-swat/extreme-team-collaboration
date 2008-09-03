@@ -11,7 +11,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -53,8 +52,8 @@ public class ResourceAddedResourceJob extends HighPriorityJob {
 		IStatus status;
 
 		// Read information
-		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(
-				addedResourceChange.getProjectName());
+		IProject project = Activator.COMMON_ACTIONS
+				.getProject(addedResourceChange.getProjectName());
 		String resourceName = addedResourceChange.getResourceName();
 		int type = addedResourceChange.getType();
 

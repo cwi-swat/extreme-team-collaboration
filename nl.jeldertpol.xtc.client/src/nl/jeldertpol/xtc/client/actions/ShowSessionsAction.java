@@ -11,7 +11,6 @@ import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.dialogs.MessageDialog;
 
 /**
@@ -21,6 +20,13 @@ import org.eclipse.jface.dialogs.MessageDialog;
  */
 public class ShowSessionsAction extends AbstractHandler {
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.core.commands.AbstractHandler#execute(org.eclipse.core.commands
+	 * .ExecutionEvent)
+	 */
 	@Override
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		// Only show the sessions
@@ -29,8 +35,8 @@ public class ShowSessionsAction extends AbstractHandler {
 				.showSessions("Sessions currently on the server. Press OK to join.");
 
 		if (projectName != null) {
-			IProject[] projects = ResourcesPlugin.getWorkspace().getRoot()
-					.getProjects();
+			IProject[] projects = Activator.COMMON_ACTIONS.getProjects();
+
 			boolean found = false;
 			for (IProject project : projects) {
 				if (project.getName().equals(projectName)) {
