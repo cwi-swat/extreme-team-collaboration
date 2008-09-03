@@ -18,8 +18,6 @@ import org.eclipse.ui.texteditor.ITextEditor;
  */
 public class RevertToSavedJob extends UIJob {
 
-	private final ITextEditor editor;
-
 	private final IResource resource;
 
 	/**
@@ -33,7 +31,6 @@ public class RevertToSavedJob extends UIJob {
 		super(RevertToSavedJob.class.getName() + ": " + resource.getName());
 
 		this.resource = resource;
-		this.editor = Activator.COMMON_ACTIONS.findEditor(resource);
 
 		setPriority(INTERACTIVE);
 
@@ -52,7 +49,7 @@ public class RevertToSavedJob extends UIJob {
 		IStatus status;
 
 		Activator.LOGGER.log(Level.INFO, "Reverting to saved input "
-				+ editor.getTitleToolTip());
+				+ resource.getName());
 
 		Activator.COMMON_ACTIONS.revertToSaved(resource);
 

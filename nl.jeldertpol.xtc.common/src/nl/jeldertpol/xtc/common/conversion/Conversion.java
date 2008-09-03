@@ -9,7 +9,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  * Conversions.
@@ -75,7 +75,8 @@ public final class Conversion {
 	}
 
 	/**
-	 * Reads a file, and converts it into an array of bytes.
+	 * Reads a file to an {@link ArrayList} of {@link Integer}, and converts
+	 * that it into an array of bytes.
 	 * 
 	 * @param file
 	 *            The file to convert.
@@ -89,14 +90,17 @@ public final class Conversion {
 		try {
 			FileInputStream fis = new FileInputStream(file);
 
-			Vector<Integer> v = new Vector<Integer>();
+			// ArrayList saves about 25% over a Vector for text, and 7% for
+			// binary files.
+			ArrayList<Integer> al = new ArrayList<Integer>();
+
 			int read;
 			while ((read = fis.read()) != -1) {
-				v.add(read);
+				al.add(read);
 			}
 			fis.close();
 
-			bytes = objectToByte(v);
+			bytes = objectToByte(al);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -122,10 +126,9 @@ public final class Conversion {
 		try {
 			FileOutputStream fos = new FileOutputStream(file);
 
-			// TODO ArrayList?
-			Vector<Integer> v = (Vector<Integer>) byteToObject(bytes);
-			for (int i = 0; i < v.size(); i++) {
-				fos.write(v.get(i));
+			ArrayList<Integer> al = (ArrayList<Integer>) byteToObject(bytes);
+			for (Integer integer : al) {
+				fos.write(integer);
 			}
 			fos.flush();
 		} catch (FileNotFoundException e) {
