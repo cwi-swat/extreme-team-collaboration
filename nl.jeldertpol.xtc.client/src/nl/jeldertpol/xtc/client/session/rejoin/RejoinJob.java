@@ -1,9 +1,7 @@
-/**
- * 
- */
 package nl.jeldertpol.xtc.client.session.rejoin;
 
 import nl.jeldertpol.xtc.client.Activator;
+import nl.jeldertpol.xtc.client.session.Session;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -11,13 +9,15 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.progress.UIJob;
 
 /**
- * @author Jeldert Pol
+ * An {@link UIJob} that can safely rejoin a session. Is a {@link UIJob}, so it
+ * will block the user-interface while rejoining.
  * 
+ * @author Jeldert Pol
  */
 public class RejoinJob extends UIJob {
 
 	/**
-	 * @param name
+	 * Constructor, calls {@link Session#rejoin()} when it runs.
 	 */
 	public RejoinJob() {
 		super("Rejoin");

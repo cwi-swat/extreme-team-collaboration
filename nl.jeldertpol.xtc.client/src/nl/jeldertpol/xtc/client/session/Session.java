@@ -27,6 +27,7 @@ import nl.jeldertpol.xtc.client.preferences.connection.PreferenceConstants;
 import nl.jeldertpol.xtc.client.session.chat.Chat;
 import nl.jeldertpol.xtc.client.session.infoExtractor.InfoExtractor;
 import nl.jeldertpol.xtc.client.session.infoExtractor.SubclipseInfoExtractor;
+import nl.jeldertpol.xtc.client.session.rejoin.RejoinJob;
 import nl.jeldertpol.xtc.client.session.whosWhere.WhosWhere;
 import nl.jeldertpol.xtc.common.changes.AbstractChange;
 import nl.jeldertpol.xtc.common.changes.AddedResourceChange;
@@ -310,6 +311,9 @@ public class Session {
 	/**
 	 * Disconnect from the server, revert all changes, and connect again. Will
 	 * make a copy of current project.
+	 * 
+	 * Should be called from a UIThread. If not running in a UIThread, use
+	 * {@link RejoinJob}.
 	 */
 	public void rejoin() {
 		Activator.LOGGER.log(Level.SEVERE, "Rejoining!");

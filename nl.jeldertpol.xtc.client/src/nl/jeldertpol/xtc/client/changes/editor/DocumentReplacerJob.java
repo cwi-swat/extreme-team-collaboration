@@ -112,7 +112,10 @@ public class DocumentReplacerJob extends UIJob {
 
 				status = new Status(IStatus.ERROR, Activator.PLUGIN_ID,
 						"TextualChange could not be applied.");
-				// TODO revert, and re-apply all changes?
+				
+				// Rejoin. Already in a UIThread, so can call directly
+				Activator.COMMON_ACTIONS.revertToSaved(resource);
+				Activator.SESSION.requestTextualChanges(resource.getProjectRelativePath());
 			}
 		}
 
