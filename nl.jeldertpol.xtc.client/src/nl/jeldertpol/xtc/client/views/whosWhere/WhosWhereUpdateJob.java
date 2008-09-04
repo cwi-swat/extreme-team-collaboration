@@ -35,7 +35,8 @@ public class WhosWhereUpdateJob extends UIJob {
 	private final String filePath;
 
 	/**
-	 * Create a new job. Schedules itself.
+	 * Create a new job. Schedules itself. Will call
+	 * {@link #update(Table, String, String)} when it runs.
 	 * 
 	 * @param table
 	 *            Table containing data displayed.
@@ -69,6 +70,18 @@ public class WhosWhereUpdateJob extends UIJob {
 		return WhosWhereUpdateJob.update(table, nickname, filePath);
 	}
 
+	/**
+	 * Call this when already running in a UIThread. Otherwise, use
+	 * {@link WhosWhereUpdateJob}.
+	 * 
+	 * @param table
+	 *            Table containing data displayed.
+	 * @param nickname
+	 *            Nickname affected by change.
+	 * @param filePath
+	 *            FilePath affected by change.
+	 * @return Status of replace.
+	 */
 	public static IStatus update(final Table table, final String nickname,
 			final String filePath) {
 		IStatus status;
