@@ -25,7 +25,6 @@ import org.eclipse.ui.texteditor.ITextEditor;
 public class CommonActions {
 
 	public IProject getProject(String projectName) {
-		// TODO replace statements by call to this method.
 		return ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 	}
 

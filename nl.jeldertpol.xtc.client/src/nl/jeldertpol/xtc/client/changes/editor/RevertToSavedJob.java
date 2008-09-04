@@ -9,7 +9,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.progress.UIJob;
-import org.eclipse.ui.texteditor.ITextEditor;
 
 /**
  * Reverts the editors input to its last save state.

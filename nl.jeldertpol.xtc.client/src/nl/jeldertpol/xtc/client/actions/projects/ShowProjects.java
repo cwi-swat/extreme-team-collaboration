@@ -86,7 +86,6 @@ public class ShowProjects {
 								Level.SEVERE,
 								"The underlying version control system throws an error.",
 								e);
-				// TODO remove dialog?
 				MessageDialog.openError(null, "XTC Start/Join", e.getMessage());
 			} catch (UnversionedProjectException e) {
 				// Project is not under version control. Log and ignore.

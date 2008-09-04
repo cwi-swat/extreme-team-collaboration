@@ -50,45 +50,40 @@ public class PartListener implements IPartListener2 {
 		IEditorPart editorPart = workbenchPage.getActiveEditor();
 
 		if (editorPart != null) {
-			// TODO rewrite?
-			// Start Cola
-			try {
-				IEditorInput editorInput = editorPart.getEditorInput();
-				IDocumentProvider dp = DocumentProviderRegistry.getDefault()
-						.getDocumentProvider(editorInput);
-				IDocument document = dp
-						.getDocument(editorPart.getEditorInput());
+			IEditorInput editorInput = editorPart.getEditorInput();
 
-				if (document != null) {
-					return document;
-				} else {
-					if (dp instanceof TextFileDocumentProvider) {
-						((TextFileDocumentProvider) dp).connect(editorPart
-								.getEditorInput());
-						document = ((TextFileDocumentProvider) dp)
-								.getDocument(editorPart.getEditorInput());
+			IDocumentProvider documentProvider = DocumentProviderRegistry
+					.getDefault().getDocumentProvider(editorInput);
+			IDocument document = documentProvider.getDocument(editorInput);
+
+			if (document != null) {
+				return document;
+			} else {
+				// This sometimes happens. Not sure why, but this works.
+				if (documentProvider instanceof TextFileDocumentProvider) {
+					try {
+						TextFileDocumentProvider textFileDocumentProvider = (TextFileDocumentProvider) documentProvider;
+						textFileDocumentProvider.connect(editorInput);
+
+						document = textFileDocumentProvider
+								.getDocument(editorInput);
 
 						if (document != null) {
 							return document;
 						} else {
-							// Activator.getDefault().getLog().log(new
-							// Status(IStatus.ERROR, Activator.PLUGIN_ID, 0,
-							// "Unable to get reference to editor's document.  Shared session not created."
-							// , null));
+							Activator.LOGGER.log(Level.SEVERE,
+									"No document for editor "
+											+ editorInput.getToolTipText());
 						}
+					} catch (CoreException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
-
-					// Activator.getDefault().getLog().log(new
-					// Status(IStatus.ERROR,
-					// Activator.PLUGIN_ID, 0,
-					// "Unable to get reference to editor's document.  Shared session not created."
-					// , null));
 				}
-			} catch (CoreException e) {
-				// Activator.getDefault().getLog().log(new Status(IStatus.ERROR,
-				// Activator.PLUGIN_ID, 0, e.getLocalizedMessage(), e)); }
+
+				Activator.LOGGER.log(Level.SEVERE, "No document for editor "
+						+ editorInput.getToolTipText());
 			}
-			// End Cola
 		}
 		return null;
 	}
@@ -203,12 +198,18 @@ public class PartListener implements IPartListener2 {
 	@Override
 	public void partOpened(final IWorkbenchPartReference partRef) {
 		// Request changes from server
-		String documentName = partRef.getTitleToolTip();
-		IResource resource = ResourcesPlugin.getWorkspace().getRoot()
-				.findMember(documentName);
-		IPath resourcePath = resource.getProjectRelativePath();
+		IDocument document = getDocument(partRef);
+		if (document != null) {
+			String documentName = partRef.getTitleToolTip();
+			IResource resource = ResourcesPlugin.getWorkspace().getRoot()
+					.findMember(documentName);
+			// Only request changes when a resource is opened.
+			if (resource.exists()) {
+				IPath resourcePath = resource.getProjectRelativePath();
 
-		Activator.SESSION.requestTextualChanges(resourcePath);
+				Activator.SESSION.requestTextualChanges(resourcePath);
+			}
+		}
 	}
 
 	/*

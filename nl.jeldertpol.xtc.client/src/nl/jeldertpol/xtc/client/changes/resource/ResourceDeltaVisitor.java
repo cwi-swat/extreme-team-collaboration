@@ -62,9 +62,7 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 					Activator.SESSION.sendContent(project, resourcePath);
 				}
 
-				// Content of resource needs to be send.
-				// TODO already handled by previous statement?
-				ofInterest = true;
+				ofInterest = false;
 			}
 
 			break;
