@@ -19,12 +19,25 @@ public abstract class InfoExtractor {
 
 	// TODO Javadoc
 
-	// TODO needed?
+	/**
+	 * Get the revision of a project.
+	 * 
+	 * @param project
+	 *            The project to get the revision from.
+	 * @return The revision of the project.
+	 * 
+	 * @throws RevisionExtractorException
+	 *             The underlying version control system throws an error.
+	 * @throws UnversionedProjectException
+	 *             Thrown when the project is not under version control.
+	 */
+	public abstract Long getRevision(final IProject project)
+			throws RevisionExtractorException, UnversionedProjectException;
+
 	public final List<IResource> getResources(final IProject project) {
 		return getResources((IResource) project);
 	}
 
-	// TODO needed?
 	private List<IResource> getResources(final IResource resource) {
 		List<IResource> resources = new ArrayList<IResource>();
 
@@ -57,18 +70,5 @@ public abstract class InfoExtractor {
 
 	public abstract List<IResource> modifiedFiles(final IProject project);
 
-	/**
-	 * Get the revision of a project.
-	 * 
-	 * @param project
-	 *            The project to get the revision from.
-	 * @return The revision of the project.
-	 * 
-	 * @throws RevisionExtractorException
-	 *             The underlying version control system throws an error.
-	 * @throws UnversionedProjectException
-	 *             Thrown when the project is not under version control.
-	 */
-	public abstract Long getRevision(final IProject project)
-			throws RevisionExtractorException, UnversionedProjectException;
+	public abstract List<IResource> unmanagedFiles(final IProject project);
 }

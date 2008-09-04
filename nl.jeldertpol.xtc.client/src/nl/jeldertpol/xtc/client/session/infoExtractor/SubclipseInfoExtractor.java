@@ -8,10 +8,9 @@ import nl.jeldertpol.xtc.client.Activator;
 import nl.jeldertpol.xtc.client.exceptions.RevisionExtractorException;
 import nl.jeldertpol.xtc.client.exceptions.UnversionedProjectException;
 
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.tigris.subversion.subclipse.core.ISVNLocalResource;
 import org.tigris.subversion.subclipse.core.SVNException;
 import org.tigris.subversion.subclipse.core.resources.LocalResourceStatus;
@@ -25,71 +24,6 @@ import org.tigris.subversion.svnclientadapter.SVNStatusKind;
  * @author Jeldert Pol
  */
 public class SubclipseInfoExtractor extends InfoExtractor {
-
-	/**
-	 * Returns a list of modified {@link IResource} in a {@link IProject}, based
-	 * on information from Subclipse.
-	 * 
-	 * @param project
-	 *            the project in which to look for modified {@link IResource}.
-	 * @return a list containing each modified {@link IResource}.
-	 */
-	@Override
-	public List<IResource> modifiedFiles(final IProject project) {
-		return modifiedFiles((IResource) project);
-	}
-
-	/**
-	 * Returns a list of modified {@link IResource} in a {@link IResource}
-	 * (inclusive), based on information from Subclipse.
-	 * 
-	 * TODO unmanaged files are ignored, this is OK for bin files etc, but not
-	 * for new files.
-	 * 
-	 * @param resource
-	 *            the resource in which to look for modified {@link IResource}.
-	 * @return a list containing each modified {@link IResource}.
-	 */
-	private List<IResource> modifiedFiles(final IResource resource) {
-		List<IResource> modifiedFiles = new ArrayList<IResource>();
-
-		ISVNLocalResource svnResource = SVNWorkspaceRoot
-				.getSVNResourceFor(resource);
-		try {
-			if (svnResource.isManaged()) {
-				LocalResourceStatus localResourceStatus = svnResource
-						.getStatus();
-				SVNStatusKind statusKind = localResourceStatus.getStatusKind();
-				if (!statusKind.equals(SVNStatusKind.NORMAL)) {
-					modifiedFiles.add(resource);
-				}
-
-				if (resource instanceof IFolder) {
-					IFolder folder = (IFolder) resource;
-					try {
-						for (IResource member : folder.members()) {
-							modifiedFiles.addAll(modifiedFiles(member));
-						}
-					} catch (CoreException e) {
-						Activator.LOGGER.log(Level.SEVERE, e);
-					}
-				} else if (resource instanceof IProject) {
-					IProject project = (IProject) resource;
-					try {
-						for (IResource member : project.members()) {
-							modifiedFiles.addAll(modifiedFiles(member));
-						}
-					} catch (CoreException e) {
-						Activator.LOGGER.log(Level.SEVERE, e);
-					}
-				}
-			}
-		} catch (SVNException e) {
-			Activator.LOGGER.log(Level.SEVERE, e);
-		}
-
-		return modifiedFiles;
-	}
 
 	/*
 	 * (non-Javadoc)
@@ -116,6 +50,75 @@ public class SubclipseInfoExtractor extends InfoExtractor {
 		}
 
 		return number;
+	}
+
+	/**
+	 * Returns a list of modified {@link IResource} in a {@link IProject}
+	 * (inclusive), based on information from Subclipse.
+	 * 
+	 * @param project
+	 *            The project in which to look for modified {@link IResource}.
+	 * @return A list containing each modified {@link IResource}.
+	 */
+	@Override
+	public List<IResource> modifiedFiles(final IProject project) {
+		List<IResource> resources = getResources(project);
+		List<IResource> modifiedFiles = new ArrayList<IResource>();
+
+		for (IResource resource : resources) {
+			ISVNLocalResource svnResource = SVNWorkspaceRoot
+					.getSVNResourceFor(resource);
+			try {
+				if (svnResource.isManaged()) {
+					LocalResourceStatus localResourceStatus = svnResource
+							.getStatus();
+					SVNStatusKind statusKind = localResourceStatus
+							.getStatusKind();
+					if (!statusKind.equals(SVNStatusKind.NORMAL)) {
+						modifiedFiles.add(resource);
+					}
+				}
+			} catch (SVNException e) {
+				Activator.LOGGER.log(Level.SEVERE, e);
+			}
+		}
+
+		return modifiedFiles;
+	}
+
+	/**
+	 * Returns a list of unmanaged {@link IResource} in a {@link IProject}
+	 * (inclusive), based on information from Subclipse.
+	 * 
+	 * @param project
+	 *            The project in which to look for unmanaged {@link IResource}.
+	 * @return A list containing each unmanaged {@link IResource}.
+	 */
+	@Override
+	public List<IResource> unmanagedFiles(IProject project) {
+		List<IResource> resources = getResources(project);
+		List<IResource> unmanagedFiles = new ArrayList<IResource>();
+
+		for (IResource resource : resources) {
+			ISVNLocalResource svnResource = SVNWorkspaceRoot
+					.getSVNResourceFor(resource);
+			try {
+				if (!svnResource.isManaged()) {
+					// Resource is not managed
+					IPath resourcePath = resource.getProjectRelativePath();
+					boolean isIgnored = Activator.SESSION
+							.isIgnored(resourcePath);
+					if (!isIgnored) {
+						unmanagedFiles.add(resource);
+					}
+				}
+
+			} catch (SVNException e) {
+				Activator.LOGGER.log(Level.SEVERE, e);
+			}
+		}
+
+		return unmanagedFiles;
 	}
 
 }

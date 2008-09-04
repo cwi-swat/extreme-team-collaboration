@@ -17,6 +17,7 @@ import nl.jeldertpol.xtc.client.exceptions.LeaveSessionException;
 import nl.jeldertpol.xtc.client.exceptions.NicknameAlreadyTakenException;
 import nl.jeldertpol.xtc.client.exceptions.ProjectAlreadyPresentException;
 import nl.jeldertpol.xtc.client.exceptions.ProjectModifiedException;
+import nl.jeldertpol.xtc.client.exceptions.ProjectUnmanagedFilesException;
 import nl.jeldertpol.xtc.client.exceptions.RevisionExtractorException;
 import nl.jeldertpol.xtc.client.exceptions.UnableToConnectException;
 import nl.jeldertpol.xtc.client.exceptions.UnversionedProjectException;
@@ -203,16 +204,18 @@ public class Session {
 	 * 
 	 * @param project
 	 *            The project for the session.
-	 * @throws UnableToConnectException
-	 *             Connecting to the server failed.
 	 * @throws AlreadyInSessionException
 	 *             Client is already in a session.
 	 * @throws ProjectModifiedException
 	 *             The project has local modifications.
+	 * @throws ProjectUnmanagedFilesException
+	 *             The project has unmanaged files.
 	 * @throws RevisionExtractorException
 	 *             The underlying version control system throws an error.
 	 * @throws UnversionedProjectException
 	 *             The project is not under version control.
+	 * @throws UnableToConnectException
+	 *             Connecting to the server failed.
 	 * @throws WrongRevisionException
 	 *             The revision of the project does not match the revision of
 	 *             the server.
@@ -222,21 +225,32 @@ public class Session {
 	 *             The nickname is already present in the session.
 	 */
 	public void startJoinSession(final IProject project)
-			throws UnableToConnectException, AlreadyInSessionException,
-			ProjectModifiedException, RevisionExtractorException,
-			UnversionedProjectException, WrongRevisionException,
-			ProjectAlreadyPresentException, NicknameAlreadyTakenException {
-		if (!connected) {
-			// UnableToConnectException
-			connect();
-		}
-
+			throws AlreadyInSessionException, ProjectModifiedException,
+			ProjectUnmanagedFilesException, RevisionExtractorException,
+			UnversionedProjectException, UnableToConnectException,
+			WrongRevisionException, ProjectAlreadyPresentException,
+			NicknameAlreadyTakenException {
 		if (inSession) {
 			throw new AlreadyInSessionException();
 		}
 
-		if (!unmodifiedProject(project)) {
-			throw new ProjectModifiedException(projectName);
+		// Ignoring output location (build path/bin folder)
+		ignoreBuildPath(project);
+
+		List<IResource> modifiedFiles = infoExtractor.modifiedFiles(project);
+		if (!modifiedFiles.isEmpty()) {
+			throw new ProjectModifiedException(project.getName(), modifiedFiles);
+		}
+
+		List<IResource> unmanagedFiles = infoExtractor.unmanagedFiles(project);
+		if (!unmanagedFiles.isEmpty()) {
+			throw new ProjectUnmanagedFilesException(project.getName(),
+					unmanagedFiles);
+		}
+
+		if (!connected) {
+			// UnableToConnectException
+			connect();
 		}
 
 		List<SimpleSession> sessions = getSessions();
@@ -276,9 +290,6 @@ public class Session {
 				throw new WrongRevisionException(revision, serverRevision);
 			}
 		}
-
-		// Ignoring output location (build path/bin folder)
-		ignoreBuildPath(project);
 
 		// Nothing went wrong, so client is now in a session.
 		inSession = true;
@@ -636,20 +647,6 @@ public class Session {
 	}
 
 	/**
-	 * Checks if the project is unmodified.
-	 * 
-	 * @param project
-	 *            The project to check.
-	 * @return <code>true</code> if project is unmodified, <code>false</code>
-	 *         otherwise.
-	 */
-	private boolean unmodifiedProject(final IProject project) {
-		List<IResource> modifiedFiles = infoExtractor.modifiedFiles(project);
-
-		return modifiedFiles.isEmpty();
-	}
-
-	/**
 	 * Determines whether a change should be send.
 	 * 
 	 * @param project
@@ -660,16 +657,33 @@ public class Session {
 	private boolean shouldSend(final IProject project, final IPath resourcePath) {
 		boolean send = inSession() && project.getName().equals(projectName);
 
+		// If should send, check if resource should be ignored.
 		if (send) {
-			for (IPath toIgnore : ignorePathList) {
-				if (toIgnore.isPrefixOf(resourcePath)) {
-					send = false;
-					break;
-				}
-			}
+			send = !isIgnored(resourcePath);
 		}
 
 		return send;
+	}
+
+	/**
+	 * Determines whether the given resource is ignored in this session.
+	 * 
+	 * @param resourcePath
+	 *            Project relative path of resource.
+	 * @return <code>true</code> if resource is ignored, <code>false</code>
+	 *         otherwise.
+	 */
+	public boolean isIgnored(final IPath resourcePath) {
+		boolean ignored = false;
+
+		for (IPath toIgnore : ignorePathList) {
+			if (toIgnore.isPrefixOf(resourcePath)) {
+				ignored = true;
+				break;
+			}
+		}
+
+		return ignored;
 	}
 
 	/**

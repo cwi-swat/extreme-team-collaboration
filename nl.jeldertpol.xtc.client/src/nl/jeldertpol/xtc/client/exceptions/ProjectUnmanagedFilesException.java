@@ -7,15 +7,15 @@ import org.eclipse.core.resources.IResource;
 /**
  * @author Jeldert Pol
  */
-public class ProjectModifiedException extends XtcException {
+public class ProjectUnmanagedFilesException extends XtcException {
 
 	private static final long serialVersionUID = 1L;
 
 	private static final String MESSAGE1 = "The project (";
-	private static final String MESSAGE2 = ") has local modifications (";
-	private static final String MESSAGE3 = "). Only unmodified projects can be used.";
+	private static final String MESSAGE2 = ") has unmanaged files (";
+	private static final String MESSAGE3 = "). Ignore them (in the preferences), or remove them.";
 
-	public ProjectModifiedException(final String project,
+	public ProjectUnmanagedFilesException(final String project,
 			final List<IResource> modifiedFiles) {
 		super(MESSAGE1 + project + MESSAGE2 + modifiedFiles.toString()
 				+ MESSAGE3);
