@@ -17,7 +17,8 @@ import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 /**
- * Apply changes to documents.
+ * An {@link UIJob} that can safely replace text in a document. Needs to be safe
+ * to prevent invalid thread access exception from SWT.
  * 
  * @author Jeldert Pol
  */
@@ -25,6 +26,13 @@ public class DocumentReplacerJob extends UIJob {
 
 	private TextualChange change;
 
+	/**
+	 * Replace some text inside an editor. Schedules itself to be run. Will can
+	 * {@link #replace(TextualChange)} when it runs.
+	 * 
+	 * @param change
+	 *            The change to apply.
+	 */
 	public DocumentReplacerJob(TextualChange change) {
 		super(DocumentReplacerJob.class.getName());
 
@@ -47,6 +55,14 @@ public class DocumentReplacerJob extends UIJob {
 		return DocumentReplacerJob.replace(change);
 	}
 
+	/**
+	 * Call this when already running in a UIThread. Otherwise, use
+	 * {@link DocumentReplacerJob}.
+	 * 
+	 * @param change
+	 *            The change to apply.
+	 * @return Status of replace.
+	 */
 	public static IStatus replace(TextualChange change) {
 		IStatus status;
 
