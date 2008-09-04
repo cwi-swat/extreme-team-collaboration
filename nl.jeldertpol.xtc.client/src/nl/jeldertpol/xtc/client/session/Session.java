@@ -169,6 +169,7 @@ public class Session {
 			server.connect(host, port);
 			connected = true;
 		} catch (UnableToConnectException e) {
+			connected = false;
 			server = new Server();
 			
 			throw e;
@@ -181,7 +182,6 @@ public class Session {
 	 * This one is public, so it can be called when the plug-in is de-activated.
 	 */
 	public void disconnect() {
-		// TODO Create new server object.
 		// TODO Logging
 		try {
 			leaveSession();
@@ -189,6 +189,7 @@ public class Session {
 			e.printStackTrace();
 		}
 		server.disconnect();
+		server = new Server();
 		connected = false;
 	}
 

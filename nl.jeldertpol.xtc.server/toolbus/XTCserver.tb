@@ -28,18 +28,18 @@ process XTCclient(Client : client, Server : server) is
 		NicknameCheck : str	// Used so changes are not send to client itself.
 	in
 		(
-			// Get current sessions
-			let
-				Sessions : blob
-			in
-				rec-request(Client, getSessions())
-				. snd-eval(Server, getSessions())
-				. rec-value(Server, getSessions(Sessions?))
-				. snd-response(Client, getSessions(Sessions))
-			endlet
-		)
-		*
-		(
+			(
+				// Get current sessions
+				let
+					Sessions : blob
+				in
+					rec-request(Client, getSessions())
+					. snd-eval(Server, getSessions())
+					. rec-value(Server, getSessions(Sessions?))
+					. snd-response(Client, getSessions(Sessions))
+				endlet
+			)
+			+
 			(
 				// Start a new session
 				let
