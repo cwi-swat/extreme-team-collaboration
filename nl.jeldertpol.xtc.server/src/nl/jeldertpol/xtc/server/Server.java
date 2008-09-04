@@ -55,14 +55,12 @@ public class Server extends AbstractJavaTool {
 
 	@Override
 	public void receiveAckEvent(final ATerm term) {
-		// TODO Auto-generated method stub
-
+		LOGGER.log(Level.INFO, "receiveAckEvent: " + term.toString());
 	}
 
 	@Override
 	public void receiveTerminate(final ATerm term) {
-		// TODO Auto-generated method stub
-
+		LOGGER.log(Level.INFO, "receiveTerminate: " + term.toString());
 	}
 
 	/**

@@ -1,6 +1,7 @@
 package nl.jeldertpol.xtc.client.session;
 
 import java.util.List;
+import java.util.logging.Level;
 
 import nl.jeldertpol.xtc.client.Activator;
 import nl.jeldertpol.xtc.client.exceptions.LeaveSessionException;
@@ -34,14 +35,13 @@ public class Server extends AbstractJavaTool {
 
 	@Override
 	public void receiveAckEvent(final ATerm term) {
-		// TODO Auto-generated method stub
-
+		Activator.LOGGER.log(Level.INFO, "receiveAckEvent: " + term.toString());
 	}
 
 	@Override
 	public void receiveTerminate(final ATerm term) {
-		// TODO Auto-generated method stub
-
+		Activator.LOGGER
+				.log(Level.INFO, "receiveTerminate: " + term.toString());
 	}
 
 	/**

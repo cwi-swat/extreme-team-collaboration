@@ -110,7 +110,7 @@ public class Session {
 	/**
 	 * Holds the server.
 	 */
-	final private Server server;
+	private Server server;
 
 	/**
 	 * Create a new session. Will not connect to the Toolbus. This will be done
@@ -165,8 +165,14 @@ public class Session {
 		Activator.LOGGER.log(Level.INFO, "Connecting to server: " + host + ":"
 				+ port);
 
-		server.connect(host, port);
-		connected = true;
+		try {
+			server.connect(host, port);
+			connected = true;
+		} catch (UnableToConnectException e) {
+			server = new Server();
+			
+			throw e;
+		}
 	}
 
 	/**
