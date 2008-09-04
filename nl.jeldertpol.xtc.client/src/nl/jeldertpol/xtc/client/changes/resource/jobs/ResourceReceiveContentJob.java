@@ -1,10 +1,13 @@
 package nl.jeldertpol.xtc.client.changes.resource.jobs;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.logging.Level;
 
 import nl.jeldertpol.xtc.client.Activator;
 import nl.jeldertpol.xtc.client.changes.editor.RevertToSavedJob;
+import nl.jeldertpol.xtc.client.session.rejoin.RejoinJob;
 import nl.jeldertpol.xtc.common.changes.ContentChange;
 import nl.jeldertpol.xtc.common.conversion.Conversion;
 
@@ -60,7 +63,19 @@ public class ResourceReceiveContentJob extends HighPriorityJob {
 				+ file.toString() + ".");
 
 		byte[] content = contentChange.getContent();
-		Conversion.byteToFile(content, file);
+		try {
+			Conversion.byteToFile(content, file);
+		} catch (FileNotFoundException e) {
+			Activator.LOGGER.log(Level.WARNING, e);
+
+			// Rejoin
+			new RejoinJob();
+		} catch (IOException e) {
+			Activator.LOGGER.log(Level.WARNING, e);
+
+			// Rejoin
+			new RejoinJob();
+		}
 
 		try {
 			resource.refreshLocal(IResource.NONE, monitor);
@@ -74,7 +89,7 @@ public class ResourceReceiveContentJob extends HighPriorityJob {
 					"Error refreshing resource.");
 		}
 
-		// Look if there is an open editor with this resource
+		// Revert any editor to display new content.
 		new RevertToSavedJob(resource);
 
 		return status;

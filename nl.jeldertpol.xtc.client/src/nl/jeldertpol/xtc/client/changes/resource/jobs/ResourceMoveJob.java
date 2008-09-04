@@ -3,6 +3,7 @@ package nl.jeldertpol.xtc.client.changes.resource.jobs;
 import java.util.logging.Level;
 
 import nl.jeldertpol.xtc.client.Activator;
+import nl.jeldertpol.xtc.client.session.rejoin.RejoinJob;
 import nl.jeldertpol.xtc.common.changes.MoveChange;
 
 import org.eclipse.core.resources.IProject;
@@ -76,7 +77,9 @@ public class ResourceMoveJob extends HighPriorityJob {
 
 			status = new Status(IStatus.ERROR, Activator.PLUGIN_ID,
 					"Resource could not be moved.");
-			// TODO revert, and re-apply all changes?
+
+			// Rejoin
+			new RejoinJob();
 		}
 
 		return status;

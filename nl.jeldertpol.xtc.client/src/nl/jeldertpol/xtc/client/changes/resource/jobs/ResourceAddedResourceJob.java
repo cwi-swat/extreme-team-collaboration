@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.logging.Level;
 
 import nl.jeldertpol.xtc.client.Activator;
+import nl.jeldertpol.xtc.client.session.rejoin.RejoinJob;
 import nl.jeldertpol.xtc.common.changes.AddedResourceChange;
 
 import org.eclipse.core.resources.IFile;
@@ -126,7 +127,9 @@ public class ResourceAddedResourceJob extends HighPriorityJob {
 
 			status = new Status(IStatus.ERROR, Activator.PLUGIN_ID,
 					"Resource content could not be set.");
-			// TODO revert, and re-apply all changes?
+			
+			// Rejoin
+			new RejoinJob();
 		}
 
 		return status;

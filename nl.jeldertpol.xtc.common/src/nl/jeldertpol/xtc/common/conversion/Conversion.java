@@ -78,36 +78,34 @@ public final class Conversion {
 	 * Reads a file to an {@link ArrayList} of {@link Integer}, and converts
 	 * that it into an array of bytes.
 	 * 
+	 * TODO move to client side, or stay in common?
+	 * 
 	 * @param file
 	 *            The file to convert.
 	 * @return The converted file, or <code>null</code> in case of an error.
 	 * 
-	 *         TODO move to client side, or stay in common?
+	 * @throws FileNotFoundException
+	 *             The file can not be found.
+	 * @throws IOException
+	 *             Error while reading file.
 	 */
-	public static byte[] fileToByte(final File file) {
+	public static byte[] fileToByte(final File file)
+			throws FileNotFoundException, IOException {
 		byte[] bytes = null;
 
-		try {
-			FileInputStream fis = new FileInputStream(file);
+		FileInputStream fis = new FileInputStream(file);
 
-			// ArrayList saves about 25% over a Vector for text, and 7% for
-			// binary files.
-			ArrayList<Integer> al = new ArrayList<Integer>();
+		// ArrayList saves about 25% over a Vector for text, and 7% for
+		// binary files.
+		ArrayList<Integer> al = new ArrayList<Integer>();
 
-			int read;
-			while ((read = fis.read()) != -1) {
-				al.add(read);
-			}
-			fis.close();
-
-			bytes = objectToByte(al);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		int read;
+		while ((read = fis.read()) != -1) {
+			al.add(read);
 		}
+		fis.close();
+
+		bytes = objectToByte(al);
 
 		return bytes;
 	}
@@ -115,29 +113,27 @@ public final class Conversion {
 	/**
 	 * Reads an array of bytes, and writes it to a file.
 	 * 
+	 * TODO move to client side, or stay in common?
+	 * 
 	 * @param bytes
 	 *            The content to be written.
 	 * @param file
 	 *            The file to be written to.
 	 * 
-	 *            TODO move to client side, or stay in common?
+	 * @throws FileNotFoundException
+	 *             The file can not be found.
+	 * @throws IOException
+	 *             Error while writing file.
 	 */
-	public static void byteToFile(final byte[] bytes, final File file) {
-		try {
-			FileOutputStream fos = new FileOutputStream(file);
+	public static void byteToFile(final byte[] bytes, final File file)
+			throws FileNotFoundException, IOException {
+		FileOutputStream fos = new FileOutputStream(file);
 
-			ArrayList<Integer> al = (ArrayList<Integer>) byteToObject(bytes);
-			for (Integer integer : al) {
-				fos.write(integer);
-			}
-			fos.flush();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		ArrayList<Integer> al = (ArrayList<Integer>) byteToObject(bytes);
+		for (Integer integer : al) {
+			fos.write(integer);
 		}
+		fos.flush();
 	}
 
 }

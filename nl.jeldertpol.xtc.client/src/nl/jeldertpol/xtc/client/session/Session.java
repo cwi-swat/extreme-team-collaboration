@@ -22,6 +22,7 @@ import nl.jeldertpol.xtc.client.exceptions.RevisionExtractorException;
 import nl.jeldertpol.xtc.client.exceptions.UnableToConnectException;
 import nl.jeldertpol.xtc.client.exceptions.UnversionedProjectException;
 import nl.jeldertpol.xtc.client.exceptions.WrongRevisionException;
+import nl.jeldertpol.xtc.client.exceptions.XtcException;
 import nl.jeldertpol.xtc.client.preferences.connection.PreferenceConstants;
 import nl.jeldertpol.xtc.client.session.chat.Chat;
 import nl.jeldertpol.xtc.client.session.infoExtractor.InfoExtractor;
@@ -41,6 +42,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Preferences;
 import org.eclipse.core.runtime.jobs.Job;
@@ -303,6 +305,40 @@ public class Session {
 
 		addResourceChangeListener();
 		addPartListener();
+	}
+
+	/**
+	 * Disconnect from the server, revert all changes, and connect again. Will
+	 * make a copy of current project.
+	 */
+	public void rejoin() {
+		Activator.LOGGER.log(Level.SEVERE, "Rejoining!");
+
+		IProject project = Activator.COMMON_ACTIONS.getProject(projectName);
+
+		try {
+			leaveSession();
+
+			IPath projectPath = project.getFullPath();
+			String destinationString = projectPath.lastSegment().concat(
+					" (copy)");
+			IPath destination = projectPath.removeLastSegments(1).append(
+					destinationString);
+			boolean force = true;
+
+			// backup
+			project.copy(destination, force, null);
+
+			// revert
+			infoExtractor.revert(project);
+
+			startJoinSession(project);
+		} catch (XtcException e) {
+			Activator.LOGGER.log(Level.SEVERE, "Could not rejoin.", e);
+		} catch (CoreException e) {
+			Activator.LOGGER.log(Level.SEVERE, "Could not rejoin.", e);
+		}
+
 	}
 
 	/**
@@ -767,10 +803,10 @@ public class Session {
 			try {
 				job.join();
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Activator.LOGGER.log(Level.SEVERE, "Error rejoining job", e);
+				// TODO What to do?
 			} catch (NullPointerException e) {
-				// TODO
+				// TextualChange may not create a job.
 			} finally {
 				// Add listeners
 				addResourceChangeListener();

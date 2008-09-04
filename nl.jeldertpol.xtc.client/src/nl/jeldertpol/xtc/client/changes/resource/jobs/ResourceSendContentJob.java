@@ -1,6 +1,9 @@
 package nl.jeldertpol.xtc.client.changes.resource.jobs;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.logging.Level;
 
 import nl.jeldertpol.xtc.client.Activator;
 import nl.jeldertpol.xtc.common.conversion.Conversion;
@@ -59,12 +62,24 @@ public class ResourceSendContentJob extends HighPriorityJob {
 
 		String filename = filePath.toPortableString();
 
-		byte[] content = Conversion.fileToByte(file);
+		try {
+			byte[] content = Conversion.fileToByte(file);
 
-		Activator.SESSION.sendContent(project, filename, content);
+			Activator.SESSION.sendContent(project, filename, content);
 
-		status = new Status(IStatus.OK, Activator.PLUGIN_ID,
-				"Resource content set successfully.");
+			status = new Status(IStatus.OK, Activator.PLUGIN_ID,
+					"Resource content set successfully.");
+		} catch (FileNotFoundException e) {
+			Activator.LOGGER.log(Level.WARNING, e);
+
+			status = new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+					"Resource not found.");
+		} catch (IOException e) {
+			Activator.LOGGER.log(Level.SEVERE, e);
+
+			status = new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+					"Resource could not be read.");
+		}
 
 		return status;
 	}

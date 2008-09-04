@@ -121,4 +121,17 @@ public class SubclipseInfoExtractor extends InfoExtractor {
 		return unmanagedFiles;
 	}
 
+	@Override
+	public void revert(IProject project) {
+		ISVNLocalResource svnResource = SVNWorkspaceRoot
+				.getSVNResourceFor(project);
+
+		try {
+			svnResource.revert();
+		} catch (SVNException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 }
