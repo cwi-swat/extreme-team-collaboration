@@ -35,7 +35,7 @@ public class RejoinJob extends UIJob {
 	 * IProgressMonitor)
 	 */
 	@Override
-	public IStatus runInUIThread(IProgressMonitor monitor) {
+	public IStatus runInUIThread(final IProgressMonitor monitor) {
 		IStatus status;
 
 		Activator.SESSION.rejoin();

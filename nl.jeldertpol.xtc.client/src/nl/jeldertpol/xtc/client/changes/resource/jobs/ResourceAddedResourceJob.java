@@ -127,7 +127,7 @@ public class ResourceAddedResourceJob extends HighPriorityJob {
 
 			status = new Status(IStatus.ERROR, Activator.PLUGIN_ID,
 					"Resource content could not be set.");
-			
+
 			// Rejoin
 			new RejoinJob();
 		}

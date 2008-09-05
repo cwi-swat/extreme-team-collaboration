@@ -2,23 +2,22 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: XTC Client UI Plug-in
 Bundle-SymbolicName: nl.jeldertpol.xtc.client;singleton:=true
-Bundle-Version: 0.0.1
+Bundle-Version: 0.0.2
 Bundle-Activator: nl.jeldertpol.xtc.client.Activator
 Bundle-Vendor: Jeldert Pol
-Require-Bundle: nl.jeldertpol.xtc.common;bundle-version="0.0.1",
- org.eclipse.ui,
- org.eclipse.core.runtime,
+Require-Bundle: nl.jeldertpol.xtc.common;bundle-version="[0.0.2,0.0.2]",
+ org.eclipse.ui;bundle-version="3.4.0",
+ org.eclipse.core.runtime;bundle-version="3.4.0",
  org.eclipse.core.resources;bundle-version="3.4.0",
  org.eclipse.team.core;bundle-version="3.4.0",
- org.tigris.subversion.subclipse.core;bundle-version="1.4.1",
+ org.tigris.subversion.subclipse.core;bundle-version="[1.4.1,1.4.3]",
  org.eclipse.jface.text;bundle-version="3.4.0",
  org.eclipse.ui.editors;bundle-version="3.4.0",
+ org.eclipse.jdt.core;bundle-version="3.4.0",
  toolbus_ng;bundle-version="1.0.6",
  aterm_java;bundle-version="1.7.0",
  shared_objects;bundle-version="1.4.5",
- JJTraveler;bundle-version="0.5.0",
- org.junit4,
- org.eclipse.jdt.core;bundle-version="3.4.0"
+ JJTraveler;bundle-version="0.5.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Import-Package: org.eclipse.ui.part

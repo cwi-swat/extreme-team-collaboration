@@ -24,7 +24,7 @@ import org.eclipse.ui.texteditor.ITextEditor;
  */
 public class DocumentReplacerJob extends UIJob {
 
-	private TextualChange change;
+	private final TextualChange change;
 
 	/**
 	 * Replace some text inside an editor. Schedules itself to be run. Will can
@@ -33,7 +33,7 @@ public class DocumentReplacerJob extends UIJob {
 	 * @param change
 	 *            The change to apply.
 	 */
-	public DocumentReplacerJob(TextualChange change) {
+	public DocumentReplacerJob(final TextualChange change) {
 		super(DocumentReplacerJob.class.getName());
 
 		this.change = change;
@@ -51,7 +51,7 @@ public class DocumentReplacerJob extends UIJob {
 	 * IProgressMonitor)
 	 */
 	@Override
-	public IStatus runInUIThread(IProgressMonitor monitor) {
+	public IStatus runInUIThread(final IProgressMonitor monitor) {
 		return DocumentReplacerJob.replace(change);
 	}
 
@@ -63,7 +63,7 @@ public class DocumentReplacerJob extends UIJob {
 	 *            The change to apply.
 	 * @return Status of replace.
 	 */
-	public static IStatus replace(TextualChange change) {
+	public static IStatus replace(final TextualChange change) {
 		IStatus status;
 
 		Activator.LOGGER.log(Level.INFO, "Replacing text in resource "
@@ -85,15 +85,11 @@ public class DocumentReplacerJob extends UIJob {
 			status = new Status(IStatus.OK, Activator.PLUGIN_ID,
 					"TextualChange ignored.");
 		} else {
-			status = new Status(IStatus.OK, Activator.PLUGIN_ID,
-					"Change applied successfully.");
+			IDocumentProvider documentProvider = editor.getDocumentProvider();
+			IDocument document = documentProvider.getDocument(editor
+					.getEditorInput());
 			try {
 				synchronized (Activator.documentListener) {
-					IDocumentProvider documentProvider = editor
-							.getDocumentProvider();
-					IDocument document = documentProvider.getDocument(editor
-							.getEditorInput());
-
 					document.removeDocumentListener(Activator.documentListener);
 
 					int offset = change.getOffset();
@@ -101,8 +97,6 @@ public class DocumentReplacerJob extends UIJob {
 					String text = change.getText();
 
 					document.replace(offset, length, text);
-
-					document.addDocumentListener(Activator.documentListener);
 				}
 
 				status = new Status(IStatus.OK, Activator.PLUGIN_ID,
@@ -112,10 +106,13 @@ public class DocumentReplacerJob extends UIJob {
 
 				status = new Status(IStatus.ERROR, Activator.PLUGIN_ID,
 						"TextualChange could not be applied.");
-				
+
 				// Rejoin. Already in a UIThread, so can call directly
-				Activator.COMMON_ACTIONS.revertToSaved(resource);
-				Activator.SESSION.requestTextualChanges(resource.getProjectRelativePath());
+				RevertToSavedJob.revertToSaved(resource);
+				Activator.SESSION.requestTextualChanges(resource
+						.getProjectRelativePath());
+			} finally {
+				document.addDocumentListener(Activator.documentListener);
 			}
 		}
 

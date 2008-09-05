@@ -8,7 +8,10 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.ui.progress.UIJob;
+import org.eclipse.ui.texteditor.IDocumentProvider;
+import org.eclipse.ui.texteditor.ITextEditor;
 
 /**
  * Reverts the editors input to its last save state.
@@ -50,12 +53,48 @@ public class RevertToSavedJob extends UIJob {
 		Activator.LOGGER.log(Level.INFO, "Reverting to saved input "
 				+ resource.getName());
 
-		Activator.COMMON_ACTIONS.revertToSaved(resource);
+		revertToSaved(resource);
 
 		status = new Status(IStatus.OK, Activator.PLUGIN_ID,
 				"Reverted document successfully.");
 
 		return status;
+	}
+
+	/**
+	 * Reverts the editors input to its last save state. Does nothing when
+	 * resource is not opened by an editor.
+	 * 
+	 * Should only be called from within an {@link UIJob}. Otherwise use
+	 * {@link RevertToSavedJob}.
+	 * 
+	 * TODO javadoc
+	 */
+	public static void revertToSaved(final IResource resource) {
+		ITextEditor editor = Activator.COMMON_ACTIONS.findEditor(resource);
+
+		if (editor != null) {
+			// If resource is reverted, and being listened to, this revert
+			// change is also caught by the listener (and thus send to the
+			// server). We don't want this.
+			if (resource == Activator.documentListener.getResource()) {
+				IDocumentProvider documentProvider = editor
+						.getDocumentProvider();
+				IDocument document = documentProvider.getDocument(editor
+						.getEditorInput());
+				document.removeDocumentListener(Activator.documentListener);
+
+				// Reload file from file system.
+				editor.doRevertToSaved();
+
+				document.addDocumentListener(Activator.documentListener);
+			} else {
+				// Not listening to this resource, so can revert.
+				// Reload file from file system.
+				editor.doRevertToSaved();
+			}
+		}
+
 	}
 
 }

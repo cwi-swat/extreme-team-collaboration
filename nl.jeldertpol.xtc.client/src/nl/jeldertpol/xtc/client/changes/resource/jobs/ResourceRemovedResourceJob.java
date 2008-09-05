@@ -48,8 +48,8 @@ public class ResourceRemovedResourceJob extends HighPriorityJob {
 	protected IStatus run(final IProgressMonitor monitor) {
 		IStatus status;
 
-		IProject project = Activator.COMMON_ACTIONS.getProject(
-				removedResourceChange.getProjectName());
+		IProject project = Activator.COMMON_ACTIONS
+				.getProject(removedResourceChange.getProjectName());
 		IResource resource = project.findMember(removedResourceChange
 				.getResourceName());
 

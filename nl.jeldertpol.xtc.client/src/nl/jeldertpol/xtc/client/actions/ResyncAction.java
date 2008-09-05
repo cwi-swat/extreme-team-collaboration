@@ -1,6 +1,7 @@
 package nl.jeldertpol.xtc.client.actions;
 
 import nl.jeldertpol.xtc.client.Activator;
+import nl.jeldertpol.xtc.client.changes.editor.RevertToSavedJob;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -22,12 +23,12 @@ public class ResyncAction extends AbstractHandler {
 	 * ExecutionEvent)
 	 */
 	@Override
-	public Object execute(ExecutionEvent event) throws ExecutionException {
+	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		IResource resource = Activator.documentListener.getResource();
 		IPath resourcePath = resource.getProjectRelativePath();
 
 		// Action is called from UIJob, so can directly call this method.
-		Activator.COMMON_ACTIONS.revertToSaved(resource);
+		RevertToSavedJob.revertToSaved(resource);
 
 		Activator.SESSION.requestTextualChanges(resourcePath);
 

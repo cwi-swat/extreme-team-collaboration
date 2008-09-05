@@ -95,7 +95,7 @@ public class SubclipseInfoExtractor extends InfoExtractor {
 	 * @return A list containing each unmanaged {@link IResource}.
 	 */
 	@Override
-	public List<IResource> unmanagedFiles(IProject project) {
+	public List<IResource> unmanagedFiles(final IProject project) {
 		List<IResource> resources = getResources(project);
 		List<IResource> unmanagedFiles = new ArrayList<IResource>();
 
@@ -122,7 +122,7 @@ public class SubclipseInfoExtractor extends InfoExtractor {
 	}
 
 	@Override
-	public void revert(IProject project) {
+	public void revert(final IProject project) {
 		ISVNLocalResource svnResource = SVNWorkspaceRoot
 				.getSVNResourceFor(project);
 

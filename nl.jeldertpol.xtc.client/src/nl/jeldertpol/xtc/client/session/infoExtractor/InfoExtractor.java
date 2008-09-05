@@ -71,6 +71,6 @@ public abstract class InfoExtractor {
 	public abstract List<IResource> modifiedFiles(final IProject project);
 
 	public abstract List<IResource> unmanagedFiles(final IProject project);
-	
+
 	public abstract void revert(final IProject project);
 }

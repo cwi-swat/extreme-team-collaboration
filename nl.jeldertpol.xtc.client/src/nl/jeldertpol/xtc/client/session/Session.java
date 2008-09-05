@@ -171,7 +171,7 @@ public class Session {
 		} catch (UnableToConnectException e) {
 			connected = false;
 			server = new Server();
-			
+
 			throw e;
 		}
 	}
@@ -429,7 +429,11 @@ public class Session {
 	 * @see Activator#partListener
 	 */
 	private void addPartListener() {
-		getWorkbenchPage().addPartListener(Activator.partListener);
+		try {
+			getWorkbenchPage().addPartListener(Activator.partListener);
+		} catch (NullPointerException e) {
+			Activator.LOGGER.log(Level.WARNING, "Could not addPartListener.");
+		}
 	}
 
 	/**
@@ -438,20 +442,28 @@ public class Session {
 	 * @see Activator#partListener
 	 */
 	private void removePartListener() {
-		getWorkbenchPage().removePartListener(Activator.partListener);
+		try {
+			getWorkbenchPage().removePartListener(Activator.partListener);
+		} catch (NullPointerException e) {
+			Activator.LOGGER
+					.log(Level.WARNING, "Could not removePartListener.");
+		}
 	}
 
 	/**
 	 * Get the active {@link IWorkbenchPage}.
 	 * 
-	 * @return The active {@link IWorkbenchPage}.
+	 * @return The active {@link IWorkbenchPage}, or <code>null</code>.
 	 */
 	private IWorkbenchPage getWorkbenchPage() {
 		IWorkbench workbench = PlatformUI.getWorkbench();
 		IWorkbenchWindow workbenchWindow = workbench.getActiveWorkbenchWindow();
-		IWorkbenchPage workbenchPage = workbenchWindow.getActivePage();
 
-		return workbenchPage;
+		if (workbenchWindow != null) {
+			IWorkbenchPage workbenchPage = workbenchWindow.getActivePage();
+			return workbenchPage;
+		}
+		return null;
 	}
 
 	/**
@@ -809,7 +821,7 @@ public class Session {
 				}
 
 				// Also update whosWhere
-				whosWhere.change(nickname, change.getFilename());
+				whosWhere.change(change.getNickname(), change.getFilename());
 			}
 			try {
 				job.join();

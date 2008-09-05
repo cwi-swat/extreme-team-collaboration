@@ -281,14 +281,9 @@ public class Server extends AbstractJavaTool {
 		// Check if project exists
 		Session session = getSession(projectName);
 		if (session != null) {
-			// Check if nickname is available
-			boolean available = nicknameAvailable(session, nickname);
-
-			// Remove client if nickname is present
-			if (!available) {
-				session.removeClient(nickname);
-				success = true;
-			}
+			// Remove client
+			session.removeClient(nickname);
+			success = true;
 
 			if (session.getClients().isEmpty()) {
 				sessions.remove(session);
