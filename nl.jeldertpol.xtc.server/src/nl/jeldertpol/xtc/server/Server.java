@@ -72,6 +72,15 @@ public class Server extends AbstractJavaTool {
 	public ATerm getSessions() {
 		LOGGER.log(Level.INFO, "Requested sessions.");
 
+		List<SimpleSession> simpleSessions = getSimpleSessions();
+
+		byte[] blob = Conversion.objectToByte(simpleSessions);
+
+		ATerm response = factory.make("getSessions(<blob>)", blob);
+		return response;
+	}
+
+	public List<SimpleSession> getSimpleSessions() {
 		ArrayList<SimpleSession> simpleSessions = new ArrayList<SimpleSession>(
 				sessions.size());
 
@@ -90,10 +99,7 @@ public class Server extends AbstractJavaTool {
 			simpleSessions.add(simpleSession);
 		}
 
-		byte[] blob = Conversion.objectToByte(simpleSessions);
-
-		ATerm response = factory.make("getSessions(<blob>)", blob);
-		return response;
+		return simpleSessions;
 	}
 
 	/**
