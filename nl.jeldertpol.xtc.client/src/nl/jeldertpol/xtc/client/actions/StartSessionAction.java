@@ -1,20 +1,17 @@
 package nl.jeldertpol.xtc.client.actions;
 
-import java.util.logging.Level;
-
-import nl.jeldertpol.xtc.client.Activator;
 import nl.jeldertpol.xtc.client.actions.projects.ShowProjects;
-import nl.jeldertpol.xtc.client.exceptions.XtcException;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.jface.dialogs.MessageDialog;
 
 /**
- * @author Jeldert Pol
+ * Shows the projects in the workspace. When one is selected, it tries to start
+ * a session.
  * 
+ * @author Jeldert Pol
  */
 public class StartSessionAction extends AbstractHandler {
 
@@ -31,12 +28,7 @@ public class StartSessionAction extends AbstractHandler {
 		IProject project = showProjects.showProjects("Projects in workspace.");
 
 		if (project != null) {
-			try {
-				Activator.SESSION.startJoinSession(project);
-			} catch (XtcException e) {
-				Activator.LOGGER.log(Level.WARNING, e);
-				MessageDialog.openError(null, "XTC Start/Join", e.getMessage());
-			}
+			StartJoinSession.startJoinSession(project);
 		}
 
 		return null;

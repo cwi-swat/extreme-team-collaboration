@@ -5,7 +5,6 @@ import java.util.logging.Level;
 import nl.jeldertpol.xtc.client.Activator;
 import nl.jeldertpol.xtc.client.actions.sessions.ShowSessions;
 import nl.jeldertpol.xtc.client.exceptions.ProjectNotOnClientException;
-import nl.jeldertpol.xtc.client.exceptions.XtcException;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -14,7 +13,8 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.dialogs.MessageDialog;
 
 /**
- * Shows the projects in the workspace.
+ * Shows the sessions on the server. When one is selected, it tries to join that
+ * session.
  * 
  * @author Jeldert Pol
  */
@@ -41,13 +41,9 @@ public class ShowSessionsAction extends AbstractHandler {
 			for (IProject project : projects) {
 				if (project.getName().equals(projectName)) {
 					found = true;
-					try {
-						Activator.SESSION.startJoinSession(project);
-					} catch (XtcException e) {
-						Activator.LOGGER.log(Level.WARNING, e);
-						MessageDialog.openError(null, "XTC Start/Join", e
-								.getMessage());
-					}
+
+					StartJoinSession.startJoinSession(project);
+
 					break;
 				}
 			}

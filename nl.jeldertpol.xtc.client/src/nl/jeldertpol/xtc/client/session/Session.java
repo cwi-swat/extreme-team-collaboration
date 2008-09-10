@@ -90,7 +90,7 @@ public class Session {
 	/**
 	 * Holds the paths to ignore.
 	 */
-	private List<IPath> ignorePathList;
+	private List<IPath> ignoredPathsList;
 
 	/**
 	 * Holds the project of the current session, or an empty String.
@@ -124,7 +124,7 @@ public class Session {
 		inSession = false;
 		paused = false;
 		pauseList = new ArrayList<AbstractChange>();
-		ignorePathList = new ArrayList<IPath>();
+		ignoredPathsList = new ArrayList<IPath>();
 		projectName = "";
 		nickname = "";
 		whosWhere = new WhosWhere();
@@ -240,12 +240,34 @@ public class Session {
 			UnversionedProjectException, UnableToConnectException,
 			WrongRevisionException, ProjectAlreadyPresentException,
 			NicknameAlreadyTakenException {
+		// No resources to ignore.
+		List<IPath> ignoredResources = new ArrayList<IPath>(0);
+		startJoinSession(project, ignoredResources);
+	}
+
+	/**
+	 * @param project
+	 *            The project for the session.
+	 * @param ignoredResources
+	 *            Resources to ignore.
+	 * 
+	 * @see #startJoinSession(IProject).
+	 */
+	public void startJoinSession(final IProject project,
+			List<IPath> ignoredResources) throws AlreadyInSessionException,
+			ProjectModifiedException, ProjectUnmanagedFilesException,
+			RevisionExtractorException, UnversionedProjectException,
+			UnableToConnectException, WrongRevisionException,
+			ProjectAlreadyPresentException, NicknameAlreadyTakenException {
 		if (inSession) {
 			throw new AlreadyInSessionException();
 		}
 
 		// Ignoring output location (build path/bin folder)
+		ignoredPathsList.clear();
 		ignoreBuildPath(project);
+		// Ignoring other files
+		ignoreFiles(ignoredResources);
 
 		List<IResource> modifiedFiles = infoExtractor.modifiedFiles(project);
 		if (!modifiedFiles.isEmpty()) {
@@ -254,8 +276,13 @@ public class Session {
 
 		List<IResource> unmanagedFiles = infoExtractor.unmanagedFiles(project);
 		if (!unmanagedFiles.isEmpty()) {
-			throw new ProjectUnmanagedFilesException(project.getName(),
-					unmanagedFiles);
+			List<IPath> ignored = new ArrayList<IPath>(unmanagedFiles.size());
+
+			for (IResource resource : unmanagedFiles) {
+				ignored.add(resource.getProjectRelativePath());
+			}
+
+			throw new ProjectUnmanagedFilesException(project.getName(), ignored);
 		}
 
 		if (!connected) {
@@ -343,7 +370,7 @@ public class Session {
 			// revert
 			infoExtractor.revert(project);
 
-			startJoinSession(project);
+			startJoinSession(project, ignoredPathsList);
 		} catch (XtcException e) {
 			Activator.LOGGER.log(Level.SEVERE, "Could not rejoin.", e);
 		} catch (CoreException e) {
@@ -366,7 +393,7 @@ public class Session {
 		if (javaProject != null) {
 			try {
 				IPath outputLocation = javaProject.readOutputLocation();
-				ignorePathList.add(relativeToProject(outputLocation));
+				ignoredPathsList.add(relativeToProject(outputLocation));
 
 				// Each source location could have their own output location.
 				IClasspathEntry[] rawClassPaths = javaProject.getRawClasspath();
@@ -374,16 +401,24 @@ public class Session {
 					outputLocation = classpathEntry.getOutputLocation();
 					if (outputLocation != null) {
 						IPath relative = relativeToProject(outputLocation);
-						if (!ignorePathList.contains(relative)) {
-							ignorePathList.add(relative);
+						if (!ignoredPathsList.contains(relative)) {
+							ignoredPathsList.add(relative);
 						}
 					}
 				}
 				Activator.LOGGER.log(Level.INFO, "Ignoring build path: "
-						+ ignorePathList);
+						+ ignoredPathsList);
 			} catch (JavaModelException e) {
 				Activator.LOGGER.log(Level.SEVERE,
 						"Error ignoring build path.", e);
+			}
+		}
+	}
+
+	public void ignoreFiles(List<IPath> ignoreFiles) {
+		for (IPath path : ignoreFiles) {
+			if (!ignoredPathsList.contains(path)) {
+				ignoredPathsList.add(path);
 			}
 		}
 	}
@@ -486,7 +521,7 @@ public class Session {
 			inSession = false;
 			paused = false;
 			pauseList = new ArrayList<AbstractChange>();
-			ignorePathList = new ArrayList<IPath>();
+			ignoredPathsList = new ArrayList<IPath>();
 			projectName = "";
 			nickname = "";
 
@@ -719,6 +754,7 @@ public class Session {
 		// If should send, check if resource should be ignored.
 		if (send) {
 			send = !isIgnored(resourcePath);
+			// && !isIgnored(project.findMember(resourcePath));
 		}
 
 		return send;
@@ -735,8 +771,8 @@ public class Session {
 	public boolean isIgnored(final IPath resourcePath) {
 		boolean ignored = false;
 
-		for (IPath toIgnore : ignorePathList) {
-			if (toIgnore.isPrefixOf(resourcePath)) {
+		for (IPath ignorePath : ignoredPathsList) {
+			if (ignorePath.isPrefixOf(resourcePath)) {
 				ignored = true;
 				break;
 			}
