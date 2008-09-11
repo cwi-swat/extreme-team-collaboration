@@ -52,13 +52,12 @@ public class SubclipseInfoExtractor extends InfoExtractor {
 		return number;
 	}
 
-	/**
-	 * Returns a list of modified {@link IResource} in a {@link IProject}
-	 * (inclusive), based on information from Subclipse.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @param project
-	 *            The project in which to look for modified {@link IResource}.
-	 * @return A list containing each modified {@link IResource}.
+	 * @see
+	 * nl.jeldertpol.xtc.client.session.infoExtractor.InfoExtractor#modifiedFiles
+	 * (org.eclipse.core.resources.IProject)
 	 */
 	@Override
 	public List<IResource> modifiedFiles(final IProject project) {
@@ -86,13 +85,12 @@ public class SubclipseInfoExtractor extends InfoExtractor {
 		return modifiedFiles;
 	}
 
-	/**
-	 * Returns a list of unmanaged {@link IResource} in a {@link IProject}
-	 * (inclusive), based on information from Subclipse.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @param project
-	 *            The project in which to look for unmanaged {@link IResource}.
-	 * @return A list containing each unmanaged {@link IResource}.
+	 * @see
+	 * nl.jeldertpol.xtc.client.session.infoExtractor.InfoExtractor#unmanagedFiles
+	 * (org.eclipse.core.resources.IProject)
 	 */
 	@Override
 	public List<IResource> unmanagedFiles(final IProject project) {
@@ -121,6 +119,13 @@ public class SubclipseInfoExtractor extends InfoExtractor {
 		return unmanagedFiles;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * nl.jeldertpol.xtc.client.session.infoExtractor.InfoExtractor#revert(org
+	 * .eclipse.core.resources.IProject)
+	 */
 	@Override
 	public void revert(final IProject project) {
 		ISVNLocalResource svnResource = SVNWorkspaceRoot

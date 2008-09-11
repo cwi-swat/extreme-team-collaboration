@@ -15,17 +15,17 @@ public class ProjectUnmanagedFilesException extends XtcException {
 	private static final String MESSAGE2 = ") has unmanaged files (";
 	private static final String MESSAGE3 = ").";
 
-	private final List<IPath> modifiedFiles;
+	private final List<IPath> unmanagedFiles;
 
 	public ProjectUnmanagedFilesException(final String project,
-			final List<IPath> modifiedFiles) {
-		super(MESSAGE1 + project + MESSAGE2 + modifiedFiles.toString()
+			final List<IPath> unmanagedFiles) {
+		super(MESSAGE1 + project + MESSAGE2 + unmanagedFiles.toString()
 				+ MESSAGE3);
 
-		this.modifiedFiles = modifiedFiles;
+		this.unmanagedFiles = unmanagedFiles;
 	}
 
-	public List<IPath> getModifiedFiles() {
-		return modifiedFiles;
+	public List<IPath> getUnmanagedFiles() {
+		return unmanagedFiles;
 	}
 }

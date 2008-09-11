@@ -34,7 +34,7 @@ public abstract class InfoExtractor {
 	public abstract Long getRevision(final IProject project)
 			throws RevisionExtractorException, UnversionedProjectException;
 
-	public final List<IResource> getResources(final IProject project) {
+	protected final List<IResource> getResources(final IProject project) {
 		return getResources((IResource) project);
 	}
 
@@ -68,9 +68,34 @@ public abstract class InfoExtractor {
 		return resources;
 	}
 
+	/**
+	 * Returns a list of modified {@link IResource} (can be empty) in a
+	 * {@link IProject} (inclusive), based on information from a version control
+	 * system.
+	 * 
+	 * @param project
+	 *            The project in which to look for modified {@link IResource}.
+	 * @return A list containing each modified {@link IResource}.
+	 */
 	public abstract List<IResource> modifiedFiles(final IProject project);
 
+	/**
+	 * Returns a list of unmanaged {@link IResource} (can be empty) in a
+	 * {@link IProject} (inclusive), based on information from a version control
+	 * system.
+	 * 
+	 * @param project
+	 *            The project in which to look for unmanaged {@link IResource}.
+	 * @return A list containing each unmanaged {@link IResource}.
+	 */
 	public abstract List<IResource> unmanagedFiles(final IProject project);
 
+	/**
+	 * Revert a project. All modifications made to it will be undone to the
+	 * state the project resides on the version control system.
+	 * 
+	 * @param project
+	 *            The project to revert.
+	 */
 	public abstract void revert(final IProject project);
 }

@@ -13,11 +13,23 @@ public class ProjectModifiedException extends XtcException {
 
 	private static final String MESSAGE1 = "The project (";
 	private static final String MESSAGE2 = ") has local modifications (";
-	private static final String MESSAGE3 = "). Only unmodified projects can be used.";
+	private static final String MESSAGE3 = ").";
+
+	private final List<IResource> modifiedFiles;
 
 	public ProjectModifiedException(final String project,
 			final List<IResource> modifiedFiles) {
 		super(MESSAGE1 + project + MESSAGE2 + modifiedFiles.toString()
 				+ MESSAGE3);
+		
+		this.modifiedFiles = modifiedFiles;
 	}
+
+	/**
+	 * @return the modifiedFiles
+	 */
+	public List<IResource> getModifiedFiles() {
+		return modifiedFiles;
+	}
+	
 }

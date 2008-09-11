@@ -1,15 +1,13 @@
 package nl.jeldertpol.xtc.client.actions;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 
 import nl.jeldertpol.xtc.client.Activator;
+import nl.jeldertpol.xtc.client.exceptions.ProjectModifiedException;
 import nl.jeldertpol.xtc.client.exceptions.ProjectUnmanagedFilesException;
 import nl.jeldertpol.xtc.client.exceptions.XtcException;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.dialogs.MessageDialog;
 
 /**
@@ -34,26 +32,40 @@ public class StartJoinSession {
 	 *            The project for the session.
 	 */
 	public static void startJoinSession(final IProject project) {
-		// No resources to ignore.
-		List<IPath> ignoredResources = new ArrayList<IPath>(0);
-		startJoinSession(project, ignoredResources);
+		// Don't ignore unmanaged files.
+		boolean ignoreUnmanagedFiles = false;
+		// Don't send modified files.
+		boolean sendModifiedFiles = false;
+
+		startJoinSession(project, ignoreUnmanagedFiles, sendModifiedFiles);
 	}
 
 	public static void startJoinSession(final IProject project,
-			List<IPath> ignoredResources) {
+			final boolean ignoreUnmanagedFiles, final boolean sendModifiedFiles) {
 		try {
-			Activator.SESSION.startJoinSession(project, ignoredResources);
+			Activator.SESSION.startJoinSession(project, ignoreUnmanagedFiles,
+					sendModifiedFiles);
 		} catch (ProjectUnmanagedFilesException e) {
 			String question = e.getMessage()
 					+ "\n\n"
 					+ "If you ignore them, changes will not be send to the server. To prevent this question, you can delete the files, or add them to version control."
 					+ "\n\n" + "Ignore them?";
 
-			boolean ignoreFiles = MessageDialog.openQuestion(null,
+			boolean userIgnoresFiles = MessageDialog.openQuestion(null,
 					"XTC Start/Join", question);
-			if (ignoreFiles) {
-				StartJoinSession
-						.startJoinSession(project, e.getModifiedFiles());
+			if (userIgnoresFiles) {
+				StartJoinSession.startJoinSession(project, userIgnoresFiles, sendModifiedFiles);
+			}
+		} catch (ProjectModifiedException e) {
+			String question = e.getMessage()
+					+ "\n\n"
+					+ "If this project is already present on the server, it will send these modifications to all other clients, overwriting their files!"
+					+ "\n\n" + "Send content?";
+
+			boolean userSendFiles = MessageDialog.openQuestion(null,
+					"XTC Start/Join", question);
+			if (userSendFiles) {
+				StartJoinSession.startJoinSession(project, ignoreUnmanagedFiles, userSendFiles);
 			}
 		} catch (XtcException e) {
 			Activator.LOGGER.log(Level.WARNING, e);

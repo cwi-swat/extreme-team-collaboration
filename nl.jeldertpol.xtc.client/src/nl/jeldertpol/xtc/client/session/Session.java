@@ -214,6 +214,16 @@ public class Session {
 	 * 
 	 * @param project
 	 *            The project for the session.
+	 * @param ignoreUnmanagedFiles
+	 *            Ignore unmanaged files? When <code>true</code>, changes to
+	 *            these files will not be send to the server. When
+	 *            <code>false</code>, an {@link ProjectUnmanagedFilesException}
+	 *            is thrown.
+	 * @param sendModifiedFiles
+	 *            Send content of modified files? When <code>true</code>,
+	 *            changes are send to the server after joining the session. When
+	 *            <code>false</code>, a {@link ProjectModifiedException} is
+	 *            thrown.
 	 * @throws AlreadyInSessionException
 	 *             Client is already in a session.
 	 * @throws ProjectModifiedException
@@ -234,55 +244,49 @@ public class Session {
 	 * @throws NicknameAlreadyTakenException
 	 *             The nickname is already present in the session.
 	 */
-	public void startJoinSession(final IProject project)
-			throws AlreadyInSessionException, ProjectModifiedException,
-			ProjectUnmanagedFilesException, RevisionExtractorException,
-			UnversionedProjectException, UnableToConnectException,
-			WrongRevisionException, ProjectAlreadyPresentException,
-			NicknameAlreadyTakenException {
-		// No resources to ignore.
-		List<IPath> ignoredResources = new ArrayList<IPath>(0);
-		startJoinSession(project, ignoredResources);
-	}
-
-	/**
-	 * @param project
-	 *            The project for the session.
-	 * @param ignoredResources
-	 *            Resources to ignore.
-	 * 
-	 * @see #startJoinSession(IProject).
-	 */
 	public void startJoinSession(final IProject project,
-			List<IPath> ignoredResources) throws AlreadyInSessionException,
-			ProjectModifiedException, ProjectUnmanagedFilesException,
-			RevisionExtractorException, UnversionedProjectException,
-			UnableToConnectException, WrongRevisionException,
-			ProjectAlreadyPresentException, NicknameAlreadyTakenException {
+			final boolean ignoreUnmanagedFiles, final boolean sendModifiedFiles)
+			throws AlreadyInSessionException, RevisionExtractorException,
+			UnversionedProjectException, ProjectUnmanagedFilesException,
+			ProjectModifiedException, UnableToConnectException,
+			ProjectAlreadyPresentException, NicknameAlreadyTakenException,
+			WrongRevisionException {
 		if (inSession) {
 			throw new AlreadyInSessionException();
 		}
 
+		// Check if project is under version control.
+		Long revision = infoExtractor.getRevision(project);
+
 		// Ignoring output location (build path/bin folder)
 		ignoredPathsList.clear();
 		ignoreBuildPath(project);
-		// Ignoring other files
-		ignoreFiles(ignoredResources);
 
-		List<IResource> modifiedFiles = infoExtractor.modifiedFiles(project);
-		if (!modifiedFiles.isEmpty()) {
-			throw new ProjectModifiedException(project.getName(), modifiedFiles);
-		}
-
+		// Get unmanaged files.
 		List<IResource> unmanagedFiles = infoExtractor.unmanagedFiles(project);
-		if (!unmanagedFiles.isEmpty()) {
-			List<IPath> ignored = new ArrayList<IPath>(unmanagedFiles.size());
 
+		if (!unmanagedFiles.isEmpty()) {
+			// Converting to project relative IPaths.
+			List<IPath> ignoredFiles = new ArrayList<IPath>(unmanagedFiles
+					.size());
 			for (IResource resource : unmanagedFiles) {
-				ignored.add(resource.getProjectRelativePath());
+				ignoredFiles.add(resource.getProjectRelativePath());
 			}
 
-			throw new ProjectUnmanagedFilesException(project.getName(), ignored);
+			if (ignoreUnmanagedFiles) {
+				// Ignoring other files
+				ignoreFiles(ignoredFiles);
+			} else {
+				throw new ProjectUnmanagedFilesException(project.getName(),
+						ignoredFiles);
+			}
+		}
+
+		// Get modified files.
+		List<IResource> modifiedFiles = infoExtractor.modifiedFiles(project);
+
+		if (!modifiedFiles.isEmpty() && !sendModifiedFiles) {
+			throw new ProjectModifiedException(project.getName(), modifiedFiles);
 		}
 
 		if (!connected) {
@@ -307,8 +311,6 @@ public class Session {
 		// Get nickname
 		Preferences preferences = Activator.getDefault().getPluginPreferences();
 		nickname = preferences.getString(PreferenceConstants.P_NICKNAME);
-
-		Long revision = infoExtractor.getRevision(project);
 
 		if (!present) {
 			// Start new session
@@ -336,6 +338,13 @@ public class Session {
 		if (present) {
 			List<AbstractChange> changes = server.requestChanges(projectName);
 			applyChanges(projectName, changes);
+		} else {
+			// TODO always send, or only for new session?
+			// Send the modified files.
+			for (IResource resource : modifiedFiles) {
+				IPath filePath = resource.getProjectRelativePath();
+				sendContent(project, filePath);
+			}
 		}
 
 		addResourceChangeListener();
@@ -370,7 +379,13 @@ public class Session {
 			// revert
 			infoExtractor.revert(project);
 
-			startJoinSession(project, ignoredPathsList);
+			// Yes, ignore unmanaged files. This was true already, else it is
+			// impossible to join in the first place.
+			boolean ignoreUnmanagedFiles = true;
+			// There should not be any modified files when rejoining.
+			boolean sendModifiedFiles = false;
+
+			startJoinSession(project, ignoreUnmanagedFiles, sendModifiedFiles);
 		} catch (XtcException e) {
 			Activator.LOGGER.log(Level.SEVERE, "Could not rejoin.", e);
 		} catch (CoreException e) {
@@ -415,7 +430,7 @@ public class Session {
 		}
 	}
 
-	public void ignoreFiles(List<IPath> ignoreFiles) {
+	public void ignoreFiles(final List<IPath> ignoreFiles) {
 		for (IPath path : ignoreFiles) {
 			if (!ignoredPathsList.contains(path)) {
 				ignoredPathsList.add(path);
