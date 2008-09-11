@@ -30,8 +30,16 @@ public class Commandline {
 	 *             Thrown when something goes wrong during the parsing of the
 	 *             arguments or the establishing of the connection.
 	 */
-	public static void main(final String[] args) throws Exception {
-		new Commandline(args);
+	public static void main(final String[] args) {
+		try {
+			new Commandline(args);
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			System.out
+					.println("Arguments: -TB_TOOL_NAME server -TB_HOST localhost -TB_PORT 60000");
+			System.out.println("-TB_HOST and -TB_PORT can be redefined.");
+		}
 	}
 
 	/**
