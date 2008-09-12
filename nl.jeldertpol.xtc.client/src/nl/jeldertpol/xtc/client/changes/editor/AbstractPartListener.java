@@ -19,7 +19,7 @@ public abstract class AbstractPartListener implements IPartListener2 {
 	 * IWorkbenchPartReference)
 	 */
 	@Override
-	public abstract void partActivated(IWorkbenchPartReference partRef);
+	public abstract void partActivated(final IWorkbenchPartReference partRef);
 
 	/*
 	 * (non-Javadoc)
@@ -28,7 +28,7 @@ public abstract class AbstractPartListener implements IPartListener2 {
 	 * IWorkbenchPartReference)
 	 */
 	@Override
-	public final void partBroughtToTop(IWorkbenchPartReference partRef) {
+	public final void partBroughtToTop(final IWorkbenchPartReference partRef) {
 		// Nothing to do
 	}
 
@@ -39,7 +39,7 @@ public abstract class AbstractPartListener implements IPartListener2 {
 	 * IWorkbenchPartReference)
 	 */
 	@Override
-	public final void partClosed(IWorkbenchPartReference partRef) {
+	public final void partClosed(final IWorkbenchPartReference partRef) {
 		// Nothing to do
 	}
 
@@ -50,7 +50,7 @@ public abstract class AbstractPartListener implements IPartListener2 {
 	 * IWorkbenchPartReference)
 	 */
 	@Override
-	public final void partDeactivated(IWorkbenchPartReference partRef) {
+	public final void partDeactivated(final IWorkbenchPartReference partRef) {
 		// Nothing to do
 	}
 
@@ -61,7 +61,7 @@ public abstract class AbstractPartListener implements IPartListener2 {
 	 * IWorkbenchPartReference)
 	 */
 	@Override
-	public final void partHidden(IWorkbenchPartReference partRef) {
+	public final void partHidden(final IWorkbenchPartReference partRef) {
 		// Nothing to do
 	}
 
@@ -72,7 +72,7 @@ public abstract class AbstractPartListener implements IPartListener2 {
 	 * IWorkbenchPartReference)
 	 */
 	@Override
-	public final void partInputChanged(IWorkbenchPartReference partRef) {
+	public final void partInputChanged(final IWorkbenchPartReference partRef) {
 		// Nothing to do
 	}
 
@@ -83,7 +83,7 @@ public abstract class AbstractPartListener implements IPartListener2 {
 	 * IWorkbenchPartReference)
 	 */
 	@Override
-	public abstract void partOpened(IWorkbenchPartReference partRef);
+	public abstract void partOpened(final IWorkbenchPartReference partRef);
 
 	/*
 	 * (non-Javadoc)
@@ -92,7 +92,7 @@ public abstract class AbstractPartListener implements IPartListener2 {
 	 * IWorkbenchPartReference)
 	 */
 	@Override
-	public final void partVisible(IWorkbenchPartReference partRef) {
+	public final void partVisible(final IWorkbenchPartReference partRef) {
 		// Nothing to do
 	}
 

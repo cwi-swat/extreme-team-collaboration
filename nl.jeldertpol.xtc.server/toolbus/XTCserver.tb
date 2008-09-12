@@ -46,7 +46,7 @@ process XTCclient(Client : client, Server : server) is
 					Project : str,
 					Revision : term,
 					Nickname : str,
-					Success : bool
+					Success : blob
 				in
 					rec-request(Client, startJoinSession(Project?, Revision?, Nickname?))
 					. snd-eval(Server, startJoinSession(Project, Revision, Nickname))
@@ -56,6 +56,23 @@ process XTCclient(Client : client, Server : server) is
 					. subscribe(chat(<str>, <str>))	// Nickname, Message
 					. subscribe(whosWhere(<str>, <str>, <str>))	//Nickname, Project, Resource
 					. snd-response(Client, startJoinSession(Success))
+				endlet
+			)
+			+
+			(
+				// Leave a session
+				let
+					Project : str,
+					Nickname : str,
+					Success : bool
+				in
+					rec-request(Client, leaveSession(Project?, Nickname?))
+					. snd-eval(Server, leaveSession(Project, Nickname))
+					. rec-value(Server, leaveSession(Success?))
+					. unsubscribe(change(<str>, <term>, <str>))	// Project, Change, Nickname
+					. unsubscribe(chat(<str>, <str>))	// Nickname, Message
+					. unsubscribe(whosWhere(<str>, <str>, <str>))	//Nickname, Project, Resource
+					. snd-response(Client, leaveSession(Success))
 				endlet
 			)
 			+
@@ -87,23 +104,6 @@ process XTCclient(Client : client, Server : server) is
 			)
 			+
 			(
-				// Leave a session
-				let
-					Project : str,
-					Nickname : str,
-					Success : bool
-				in
-					rec-request(Client, leaveSession(Project?, Nickname?))
-					. snd-eval(Server, leaveSession(Project, Nickname))
-					. rec-value(Server, leaveSession(Success?))
-					. unsubscribe(change(<str>, <term>, <str>))	// Project, Change, Nickname
-					. unsubscribe(chat(<str>, <str>))	// Nickname, Message
-					. unsubscribe(whosWhere(<str>, <str>, <str>))	//Nickname, Project, Resource
-					. snd-response(Client, leaveSession(Success))
-				endlet
-			)
-			+
-			(
 				// Send a change
 				let
 					Project : str,
@@ -127,6 +127,7 @@ process XTCclient(Client : client, Server : server) is
 					Nickname : str
 				in
 					rec-note(change(Project?, Change?, Nickname?))
+					// Prevent sending change back to sender
 					. if not-equal(NicknameCheck, Nickname) then
 						snd-do(Client, receiveChange(Project, Change, Nickname))
 					else

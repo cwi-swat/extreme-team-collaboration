@@ -3,7 +3,7 @@ package nl.jeldertpol.xtc.client.actions;
 import java.util.logging.Level;
 
 import nl.jeldertpol.xtc.client.Activator;
-import nl.jeldertpol.xtc.client.exceptions.XtcException;
+import nl.jeldertpol.xtc.common.exceptions.XtcException;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;

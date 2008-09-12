@@ -9,6 +9,9 @@ import nl.jeldertpol.xtc.common.changes.AbstractChange;
 import nl.jeldertpol.xtc.common.changes.ContentChange;
 import nl.jeldertpol.xtc.common.changes.TextualChange;
 import nl.jeldertpol.xtc.common.conversion.Conversion;
+import nl.jeldertpol.xtc.common.exceptions.NicknameAlreadyTakenException;
+import nl.jeldertpol.xtc.common.exceptions.WrongRevisionException;
+import nl.jeldertpol.xtc.common.exceptions.XtcException;
 import nl.jeldertpol.xtc.common.logging.Logger;
 import nl.jeldertpol.xtc.common.session.SimpleSession;
 import nl.jeldertpol.xtc.server.session.Session;
@@ -111,15 +114,16 @@ public class Server extends AbstractJavaTool {
 	 *            An {@link ATermLong} containing the revision of the project.
 	 * @param nickname
 	 *            The nickname of the client.
-	 * @return An {@link ATerm} containing a {@link Boolean}, representing the
-	 *         success of this action.
+	 * @return An {@link ATerm} containing an {@link XtcException}, either
+	 *         {@link NicknameAlreadyTakenException} or
+	 *         {@link WrongRevisionException}.
 	 */
 	public ATerm startJoinSession(final String projectName,
 			final ATerm revisionTerm, final String nickname) {
 		LOGGER.log(Level.INFO, "StartJoin session (" + projectName + ", "
 				+ nickname + ").");
 
-		boolean success = false;
+		XtcException exception = null;
 
 		// Convert ATerms to right ATerm
 		ATermLong revisionTermLong = (ATermLong) revisionTerm;
@@ -131,20 +135,26 @@ public class Server extends AbstractJavaTool {
 			// Create new session
 			session = new Session(projectName, revision, nickname);
 			sessions.add(session);
-			success = true;
 		} else {
-			// Check if nickname is available
-			boolean available = nicknameAvailable(session, nickname);
-
-			// Add client if nickname is available
-			if (available) {
-				session.addClient(nickname);
-				success = true;
+			// Check if revision is the same.
+			if (session.getRevision().equals(revision)) {
+				// Check if nickname is available
+				if (nicknameAvailable(session, nickname)) {
+					// Join the session.
+					session.addClient(nickname);
+				} else {
+					exception = new NicknameAlreadyTakenException(nickname);
+				}
+			} else {
+				exception = new WrongRevisionException(revision, session
+						.getRevision());
 			}
 		}
 
-		ATerm startJoinSession = factory.make("startJoinSession(<bool>)", success);
-		return startJoinSession;
+		byte[] blob = Conversion.objectToByte(exception);
+
+		ATerm response = factory.make("startJoinSession(<blob>)", blob);
+		return response;
 	}
 
 	/**

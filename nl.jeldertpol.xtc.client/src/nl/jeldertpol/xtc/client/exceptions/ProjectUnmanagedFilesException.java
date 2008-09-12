@@ -2,6 +2,8 @@ package nl.jeldertpol.xtc.client.exceptions;
 
 import java.util.List;
 
+import nl.jeldertpol.xtc.common.exceptions.XtcException;
+
 import org.eclipse.core.runtime.IPath;
 
 /**

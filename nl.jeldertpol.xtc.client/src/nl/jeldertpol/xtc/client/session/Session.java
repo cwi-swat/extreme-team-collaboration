@@ -14,15 +14,11 @@ import nl.jeldertpol.xtc.client.changes.resource.jobs.ResourceRemovedResourceJob
 import nl.jeldertpol.xtc.client.changes.resource.jobs.ResourceSendContentJob;
 import nl.jeldertpol.xtc.client.exceptions.AlreadyInSessionException;
 import nl.jeldertpol.xtc.client.exceptions.LeaveSessionException;
-import nl.jeldertpol.xtc.client.exceptions.NicknameAlreadyTakenException;
-import nl.jeldertpol.xtc.client.exceptions.ProjectAlreadyPresentException;
 import nl.jeldertpol.xtc.client.exceptions.ProjectModifiedException;
 import nl.jeldertpol.xtc.client.exceptions.ProjectUnmanagedFilesException;
 import nl.jeldertpol.xtc.client.exceptions.RevisionExtractorException;
 import nl.jeldertpol.xtc.client.exceptions.UnableToConnectException;
 import nl.jeldertpol.xtc.client.exceptions.UnversionedProjectException;
-import nl.jeldertpol.xtc.client.exceptions.WrongRevisionException;
-import nl.jeldertpol.xtc.client.exceptions.XtcException;
 import nl.jeldertpol.xtc.client.preferences.connection.PreferenceConstants;
 import nl.jeldertpol.xtc.client.session.chat.Chat;
 import nl.jeldertpol.xtc.client.session.infoExtractor.InfoExtractor;
@@ -36,6 +32,9 @@ import nl.jeldertpol.xtc.common.changes.MoveChange;
 import nl.jeldertpol.xtc.common.changes.RemovedResourceChange;
 import nl.jeldertpol.xtc.common.changes.TextualChange;
 import nl.jeldertpol.xtc.common.chat.ChatMessage;
+import nl.jeldertpol.xtc.common.exceptions.NicknameAlreadyTakenException;
+import nl.jeldertpol.xtc.common.exceptions.WrongRevisionException;
+import nl.jeldertpol.xtc.common.exceptions.XtcException;
 import nl.jeldertpol.xtc.common.session.SimpleSession;
 
 import org.eclipse.core.resources.IProject;
@@ -224,33 +223,31 @@ public class Session {
 	 *            changes are send to the server after joining the session. When
 	 *            <code>false</code>, a {@link ProjectModifiedException} is
 	 *            thrown.
+	 * 
 	 * @throws AlreadyInSessionException
 	 *             Client is already in a session.
-	 * @throws ProjectModifiedException
-	 *             The project has local modifications.
-	 * @throws ProjectUnmanagedFilesException
-	 *             The project has unmanaged files.
 	 * @throws RevisionExtractorException
 	 *             The underlying version control system throws an error.
 	 * @throws UnversionedProjectException
 	 *             The project is not under version control.
+	 * @throws ProjectUnmanagedFilesException
+	 *             The project has unmanaged files.
+	 * @throws ProjectModifiedException
+	 *             The project has local modifications.
 	 * @throws UnableToConnectException
 	 *             Connecting to the server failed.
+	 * @throws NicknameAlreadyTakenException
+	 *             The nickname is already present in the session.
 	 * @throws WrongRevisionException
 	 *             The revision of the project does not match the revision of
 	 *             the server.
-	 * @throws ProjectAlreadyPresentException
-	 *             The project is already present on the server.
-	 * @throws NicknameAlreadyTakenException
-	 *             The nickname is already present in the session.
 	 */
 	public void startJoinSession(final IProject project,
 			final boolean ignoreUnmanagedFiles, final boolean sendModifiedFiles)
 			throws AlreadyInSessionException, RevisionExtractorException,
 			UnversionedProjectException, ProjectUnmanagedFilesException,
 			ProjectModifiedException, UnableToConnectException,
-			ProjectAlreadyPresentException, NicknameAlreadyTakenException,
-			WrongRevisionException {
+			NicknameAlreadyTakenException, WrongRevisionException {
 		if (inSession) {
 			throw new AlreadyInSessionException();
 		}
@@ -304,6 +301,7 @@ public class Session {
 		Activator.LOGGER.log(Level.INFO, "StartJoin session: " + projectName
 				+ ", " + revision + ", " + nickname + ".");
 
+		// NicknameAlreadyTakenException, WrongRevisionException
 		server.startJoinSession(projectName, revision, nickname);
 
 		// Nothing went wrong, so client is now in a session.

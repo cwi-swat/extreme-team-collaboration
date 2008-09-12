@@ -1,5 +1,7 @@
 package nl.jeldertpol.xtc.client.exceptions;
 
+import nl.jeldertpol.xtc.common.exceptions.XtcException;
+
 /**
  * @author Jeldert Pol
  */

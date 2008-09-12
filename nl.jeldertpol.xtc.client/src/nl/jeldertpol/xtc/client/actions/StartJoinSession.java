@@ -5,7 +5,7 @@ import java.util.logging.Level;
 import nl.jeldertpol.xtc.client.Activator;
 import nl.jeldertpol.xtc.client.exceptions.ProjectModifiedException;
 import nl.jeldertpol.xtc.client.exceptions.ProjectUnmanagedFilesException;
-import nl.jeldertpol.xtc.client.exceptions.XtcException;
+import nl.jeldertpol.xtc.common.exceptions.XtcException;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -54,7 +54,8 @@ public class StartJoinSession {
 			boolean userIgnoresFiles = MessageDialog.openQuestion(null,
 					"XTC Start/Join", question);
 			if (userIgnoresFiles) {
-				StartJoinSession.startJoinSession(project, userIgnoresFiles, sendModifiedFiles);
+				StartJoinSession.startJoinSession(project, userIgnoresFiles,
+						sendModifiedFiles);
 			}
 		} catch (ProjectModifiedException e) {
 			String question = e.getMessage()
@@ -65,7 +66,8 @@ public class StartJoinSession {
 			boolean userSendFiles = MessageDialog.openQuestion(null,
 					"XTC Start/Join", question);
 			if (userSendFiles) {
-				StartJoinSession.startJoinSession(project, ignoreUnmanagedFiles, userSendFiles);
+				StartJoinSession.startJoinSession(project,
+						ignoreUnmanagedFiles, userSendFiles);
 			}
 		} catch (XtcException e) {
 			Activator.LOGGER.log(Level.WARNING, e);

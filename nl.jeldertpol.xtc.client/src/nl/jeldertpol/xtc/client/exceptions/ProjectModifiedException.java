@@ -2,6 +2,8 @@ package nl.jeldertpol.xtc.client.exceptions;
 
 import java.util.List;
 
+import nl.jeldertpol.xtc.common.exceptions.XtcException;
+
 import org.eclipse.core.resources.IResource;
 
 /**
@@ -21,7 +23,7 @@ public class ProjectModifiedException extends XtcException {
 			final List<IResource> modifiedFiles) {
 		super(MESSAGE1 + project + MESSAGE2 + modifiedFiles.toString()
 				+ MESSAGE3);
-		
+
 		this.modifiedFiles = modifiedFiles;
 	}
 
@@ -31,5 +33,5 @@ public class ProjectModifiedException extends XtcException {
 	public List<IResource> getModifiedFiles() {
 		return modifiedFiles;
 	}
-	
+
 }

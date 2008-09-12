@@ -130,10 +130,11 @@ public class PartListener extends AbstractPartListener {
 
 			Activator.LOGGER.log(Level.INFO, "PartListener listens to "
 					+ resource.toString());
-			
+
 			// Send WhosWhere information
 			IProject project = resource.getProject();
-			Activator.SESSION.sendWhosWhere(project, resource.getProjectRelativePath());
+			Activator.SESSION.sendWhosWhere(project, resource
+					.getProjectRelativePath());
 		}
 	}
 

@@ -1,4 +1,4 @@
-package nl.jeldertpol.xtc.client.exceptions;
+package nl.jeldertpol.xtc.common.exceptions;
 
 /**
  * An {@link XtcException} is an {@link Exception} thrown by XTC. This is used

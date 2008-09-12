@@ -1,4 +1,4 @@
-package nl.jeldertpol.xtc.client.exceptions;
+package nl.jeldertpol.xtc.common.exceptions;
 
 /**
  * @author Jeldert Pol

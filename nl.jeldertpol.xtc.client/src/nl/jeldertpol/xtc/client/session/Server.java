@@ -5,11 +5,12 @@ import java.util.logging.Level;
 
 import nl.jeldertpol.xtc.client.Activator;
 import nl.jeldertpol.xtc.client.exceptions.LeaveSessionException;
-import nl.jeldertpol.xtc.client.exceptions.NicknameAlreadyTakenException;
-import nl.jeldertpol.xtc.client.exceptions.ProjectAlreadyPresentException;
 import nl.jeldertpol.xtc.client.exceptions.UnableToConnectException;
 import nl.jeldertpol.xtc.common.changes.AbstractChange;
 import nl.jeldertpol.xtc.common.conversion.Conversion;
+import nl.jeldertpol.xtc.common.exceptions.NicknameAlreadyTakenException;
+import nl.jeldertpol.xtc.common.exceptions.WrongRevisionException;
+import nl.jeldertpol.xtc.common.exceptions.XtcException;
 import nl.jeldertpol.xtc.common.session.SimpleSession;
 import toolbus.adapter.java.AbstractJavaTool;
 import aterm.ATerm;
@@ -99,11 +100,16 @@ public class Server extends AbstractJavaTool {
 	 *            The revision of the project.
 	 * @param nickname
 	 *            The nickname of the client.
+	 * 
 	 * @throws NicknameAlreadyTakenException
 	 *             The nickname is already present in the session.
+	 * @throws WrongRevisionException
+	 *             The revision of the project does not match the revision of
+	 *             the server.
 	 */
 	public void startJoinSession(final String projectName, final Long revision,
-			final String nickname) throws NicknameAlreadyTakenException {
+			final String nickname) throws NicknameAlreadyTakenException,
+			WrongRevisionException {
 		ATermLong revisionLong = factory.makeLong(revision);
 
 		ATerm startJoinSession = factory.make(
@@ -111,11 +117,19 @@ public class Server extends AbstractJavaTool {
 				revisionLong, nickname);
 		ATermAppl reply = sendRequest(startJoinSession);
 
-		ATerm answer = reply.getArgument(0);
-		boolean success = Boolean.parseBoolean(answer.toString());
+		ATermBlob blob = (ATermBlob) reply.getArgument(0);
+		XtcException exception = (XtcException) Conversion.byteToObject(blob
+				.getBlobData());
 
-		if (!success) {
-			throw new NicknameAlreadyTakenException(nickname);
+		// Is null when nothing went wrong
+		if (exception != null) {
+			if (exception instanceof NicknameAlreadyTakenException) {
+				throw (NicknameAlreadyTakenException) exception;
+			} else if (exception instanceof WrongRevisionException) {
+				throw (WrongRevisionException) exception;
+			} else {
+				Activator.LOGGER.log(Level.SEVERE, exception);
+			}
 		}
 	}
 
