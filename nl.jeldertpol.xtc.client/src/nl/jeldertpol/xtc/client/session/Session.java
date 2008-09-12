@@ -816,15 +816,15 @@ public class Session {
 	/**
 	 * Apply a list of changes.
 	 * 
-	 * @param projectName
+	 * @param remoteProjectName
 	 *            The project the change originated from.
 	 * @param changes
 	 *            Changes that should be applied.
 	 */
-	private void applyChanges(final String projectName,
+	private void applyChanges(final String remoteProjectName,
 			final List<AbstractChange> changes) {
 		for (AbstractChange abstractChange : changes) {
-			applyChange(projectName, abstractChange);
+			applyChange(remoteProjectName, abstractChange);
 		}
 	}
 
@@ -833,16 +833,16 @@ public class Session {
 	 * 
 	 * Change is only applied if it should be received.
 	 * 
-	 * @param projectName
+	 * @param remoteProjectName
 	 *            The project the change originated from.
 	 * @param abstractChange
 	 *            Change that should be applied.
 	 */
-	public void applyChange(final String projectName,
+	public void applyChange(final String remoteProjectName,
 			final AbstractChange abstractChange) {
 		if (paused) {
 			pauseList.add(abstractChange);
-		} else if (shouldReceive(projectName)) {
+		} else if (shouldReceive(remoteProjectName)) {
 			Job job = null;
 
 			// Remove listeners
@@ -870,9 +870,6 @@ public class Session {
 					// Already running in a UIThread, so apply change directly.
 					DocumentReplacerJob.replace(change);
 				}
-
-				// Also update whosWhere
-				whosWhere.change(change.getNickname(), change.getFilename());
 			}
 			try {
 				job.join();
@@ -888,18 +885,67 @@ public class Session {
 		}
 	}
 
+	/**
+	 * Send a chat message to the server.
+	 * 
+	 * @param message
+	 *            The message.
+	 */
 	public void sendChat(final String message) {
 		Activator.LOGGER.log(Level.INFO, "Sending chat.");
 
 		server.sendChat(nickname, message);
 	}
 
+	/**
+	 * Receive a chat message from the server.
+	 * 
+	 * @param nickname
+	 *            The client sending the message.
+	 * @param message
+	 *            The message.
+	 */
 	public void receiveChat(final String nickname, final String message) {
 		Activator.LOGGER.log(Level.INFO, "Receiving chat from " + nickname
 				+ ".");
 
 		ChatMessage chatMessage = new ChatMessage(nickname, message);
 		chat.newMessage(chatMessage);
+	}
+
+	/**
+	 * Send what resource is being viewed.
+	 * 
+	 * @param project
+	 *            The project the resource belongs to.
+	 * @param resourcePath
+	 *            The viewed resource, path must be relative to the project.
+	 */
+	public void sendWhosWhere(final IProject project, final IPath resourcePath) {
+		if (shouldSend(project, resourcePath)) {
+			Activator.LOGGER.log(Level.FINE, "Sending WhosWhere.");
+
+			String resourceName = resourcePath.toPortableString();
+
+			server.sendWhosWhere(nickname, projectName, resourceName);
+		}
+	}
+
+	/**
+	 * Receive what resource is being viewed by another client.
+	 * 
+	 * @param nickname
+	 *            The other client.
+	 * @param remoteProjectName
+	 *            The project the resource belongs to.
+	 * @param resource
+	 *            The viewed resource, path is relative to the project.
+	 */
+	public void receiveWhosWhere(final String nickname,
+			final String remoteProjectName, final String resource) {
+		if (shouldReceive(remoteProjectName)) {
+			whosWhere.change(nickname, resource);
+		}
 	}
 
 }

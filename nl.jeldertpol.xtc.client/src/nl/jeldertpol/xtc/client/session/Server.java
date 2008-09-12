@@ -248,14 +248,65 @@ public class Server extends AbstractJavaTool {
 		Activator.SESSION.applyChange(projectName, change);
 	}
 
+	/**
+	 * Send a chat message to the server.
+	 * 
+	 * @param nickname
+	 *            The nickname of the client the chat message originated from.
+	 * @param message
+	 *            The message.
+	 */
 	public void sendChat(final String nickname, final String message) {
 		ATerm sendChat = factory.make("sendChat(<str>, <str>)", nickname,
 				message);
 		sendEvent(sendChat);
 	}
 
+	/**
+	 * Receive a chat message from the server.
+	 * 
+	 * @param nickname
+	 *            The client sending the message.
+	 * @param message
+	 *            The message.
+	 */
 	public void receiveChat(final String nickname, final String message) {
 		Activator.SESSION.receiveChat(nickname, message);
+	}
+
+	/**
+	 * Send what resource is being viewed.
+	 * 
+	 * @param nickname
+	 *            The client viewing the resource.
+	 * @param project
+	 *            The project the resource belongs to.
+	 * @param resource
+	 *            The viewed resource, path must be relative to the project, and
+	 *            portable.
+	 */
+	public void sendWhosWhere(final String nickname, final String project,
+			final String resource) {
+		ATerm sendWhosWhere = factory.make(
+				"sendWhosWhere(<str>, <str>, <str>)", nickname, project,
+				resource);
+		sendEvent(sendWhosWhere);
+	}
+
+	/**
+	 * Receive what resource is being viewed by another client.
+	 * 
+	 * @param nickname
+	 *            The client viewing the resource.
+	 * @param project
+	 *            The project the resource belongs to.
+	 * @param resource
+	 *            The viewed resource, path is relative to the project, and
+	 *            portable.
+	 */
+	public void receiveWhosWhere(final String nickname, final String project,
+			final String resource) {
+		Activator.SESSION.receiveWhosWhere(nickname, project, resource);
 	}
 
 }

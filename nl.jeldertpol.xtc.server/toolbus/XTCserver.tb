@@ -54,6 +54,7 @@ process XTCclient(Client : client, Server : server) is
 					. NicknameCheck := Nickname
 					. subscribe(change(<str>, <term>, <str>))	// Project, Change, Nickname
 					. subscribe(chat(<str>, <str>))	// Nickname, Message
+					. subscribe(whosWhere(<str>, <str>, <str>))	//Nickname, Project, Resource
 					. snd-response(Client, startSession(Success))
 				endlet
 			)
@@ -71,6 +72,7 @@ process XTCclient(Client : client, Server : server) is
 					. NicknameCheck := Nickname
 					. subscribe(change(<str>, <term>, <str>))	// Project, Change, Nickname
 					. subscribe(chat(<str>, <str>))	// Nickname, Message
+					. subscribe(whosWhere(<str>, <str>, <str>))	//Nickname, Project, Resource
 					. snd-response(Client, joinSession(Success))
 				endlet
 			)
@@ -113,6 +115,8 @@ process XTCclient(Client : client, Server : server) is
 					. snd-eval(Server, leaveSession(Project, Nickname))
 					. rec-value(Server, leaveSession(Success?))
 					. unsubscribe(change(<str>, <term>, <str>))	// Project, Change, Nickname
+					. unsubscribe(chat(<str>, <str>))	// Nickname, Message
+					. unsubscribe(whosWhere(<str>, <str>, <str>))	//Nickname, Project, Resource
 					. snd-response(Client, leaveSession(Success))
 				endlet
 			)
@@ -169,6 +173,31 @@ process XTCclient(Client : client, Server : server) is
 				in
 					rec-note(chat(Nickname?, Message?))
 					. snd-do(Client, receiveChat(Nickname, Message))
+				endlet
+			)
+			+
+			(
+				// Send WhosWhere information
+				let
+					Nickname : str,
+					Project : str,
+					Resource : str
+				in
+					rec-event(Client, sendWhosWhere(Nickname?, Project?, Resource?))
+					. snd-note(whosWhere(Nickname, Project, Resource))
+					.snd-ack-event(Client, sendWhosWhere(Nickname, Project, Resource))
+				endlet
+			)
+			+
+			(
+				// Receive WhosWhere information
+				let
+					Nickname : str,
+					Project : str,
+					Resource : str
+				in
+					rec-note(whosWhere(Nickname?, Project?, Resource?))
+					. snd-do(Client, receiveWhosWhere(Nickname, Project, Resource))
 				endlet
 			)
 		)

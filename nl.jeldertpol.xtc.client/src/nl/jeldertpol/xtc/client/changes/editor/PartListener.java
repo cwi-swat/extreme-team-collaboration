@@ -4,6 +4,7 @@ import java.util.logging.Level;
 
 import nl.jeldertpol.xtc.client.Activator;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -11,7 +12,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.editors.text.TextFileDocumentProvider;
@@ -25,7 +25,7 @@ import org.eclipse.ui.texteditor.IDocumentProvider;
  * 
  * @author Jeldert Pol
  */
-public class PartListener implements IPartListener2 {
+public class PartListener extends AbstractPartListener {
 
 	private IDocument currentDocument;
 
@@ -115,7 +115,6 @@ public class PartListener implements IPartListener2 {
 	 */
 	@Override
 	public void partActivated(final IWorkbenchPartReference partRef) {
-		// Document afluisteren, linken met IResource
 		// Getting document
 		IDocument document = getDocument(partRef);
 		if (document != null) {
@@ -125,68 +124,17 @@ public class PartListener implements IPartListener2 {
 			// Get the IResource of the document.
 			String documentName = partRef.getPage().getActiveEditor()
 					.getEditorInput().getToolTipText();
-			IResource resouce = ResourcesPlugin.getWorkspace().getRoot()
+			IResource resource = ResourcesPlugin.getWorkspace().getRoot()
 					.findMember(documentName);
-			Activator.documentListener.setResource(resouce);
+			Activator.documentListener.setResource(resource);
 
 			Activator.LOGGER.log(Level.INFO, "PartListener listens to "
-					+ resouce.toString());
+					+ resource.toString());
+			
+			// Send WhosWhere information
+			IProject project = resource.getProject();
+			Activator.SESSION.sendWhosWhere(project, resource.getProjectRelativePath());
 		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seeorg.eclipse.ui.IPartListener2#partBroughtToTop(org.eclipse.ui.
-	 * IWorkbenchPartReference)
-	 */
-	@Override
-	public void partBroughtToTop(final IWorkbenchPartReference partRef) {
-		// Nothing to do
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seeorg.eclipse.ui.IPartListener2#partClosed(org.eclipse.ui.
-	 * IWorkbenchPartReference)
-	 */
-	@Override
-	public void partClosed(final IWorkbenchPartReference partRef) {
-		// Nothing to do
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seeorg.eclipse.ui.IPartListener2#partDeactivated(org.eclipse.ui.
-	 * IWorkbenchPartReference)
-	 */
-	@Override
-	public void partDeactivated(final IWorkbenchPartReference partRef) {
-		// Nothing to do
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seeorg.eclipse.ui.IPartListener2#partHidden(org.eclipse.ui.
-	 * IWorkbenchPartReference)
-	 */
-	@Override
-	public void partHidden(final IWorkbenchPartReference partRef) {
-		// Nothing to do
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seeorg.eclipse.ui.IPartListener2#partInputChanged(org.eclipse.ui.
-	 * IWorkbenchPartReference)
-	 */
-	@Override
-	public void partInputChanged(final IWorkbenchPartReference partRef) {
-		// Nothing to do
 	}
 
 	/*
@@ -203,24 +151,13 @@ public class PartListener implements IPartListener2 {
 			String documentName = partRef.getTitleToolTip();
 			IResource resource = ResourcesPlugin.getWorkspace().getRoot()
 					.findMember(documentName);
-			// Only request changes when a resource is opened.
+			// Only request changes when a resource exists.
 			if (resource.exists()) {
 				IPath resourcePath = resource.getProjectRelativePath();
 
 				Activator.SESSION.requestTextualChanges(resourcePath);
 			}
 		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seeorg.eclipse.ui.IPartListener2#partVisible(org.eclipse.ui.
-	 * IWorkbenchPartReference)
-	 */
-	@Override
-	public void partVisible(final IWorkbenchPartReference partRef) {
-		// Nothing to do
 	}
 
 }
