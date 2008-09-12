@@ -103,7 +103,7 @@ public class Server extends AbstractJavaTool {
 	}
 
 	/**
-	 * A client starts a new session.
+	 * A client wants to start or join a session.
 	 * 
 	 * @param projectName
 	 *            Name of the project in the session.
@@ -114,9 +114,9 @@ public class Server extends AbstractJavaTool {
 	 * @return An {@link ATerm} containing a {@link Boolean}, representing the
 	 *         success of this action.
 	 */
-	public ATerm startSession(final String projectName,
+	public ATerm startJoinSession(final String projectName,
 			final ATerm revisionTerm, final String nickname) {
-		LOGGER.log(Level.INFO, "Starting new session (" + projectName + ", "
+		LOGGER.log(Level.INFO, "StartJoin session (" + projectName + ", "
 				+ nickname + ").");
 
 		boolean success = false;
@@ -126,37 +126,13 @@ public class Server extends AbstractJavaTool {
 		Long revision = revisionTermLong.getLong();
 
 		// Check if project exists
-		Session existingSession = getSession(projectName);
-		if (existingSession == null) {
+		Session session = getSession(projectName);
+		if (session == null) {
 			// Create new session
-			Session session = new Session(projectName, revision, nickname);
+			session = new Session(projectName, revision, nickname);
 			sessions.add(session);
 			success = true;
-		}
-
-		ATerm startSession = factory.make("startSession(<bool>)", success);
-		return startSession;
-	}
-
-	/**
-	 * A client joins an existing session.
-	 * 
-	 * @param projectName
-	 *            Name of the project, to identify the session.
-	 * @param nickname
-	 *            The nickname of the client.
-	 * @return An {@link ATerm} containing a {@link Boolean}, representing the
-	 *         success of this action.
-	 */
-	public ATerm joinSession(final String projectName, final String nickname) {
-		LOGGER.log(Level.INFO, "Joining session (" + projectName + ", "
-				+ nickname + ").");
-
-		boolean success = false;
-
-		// Check if project exists
-		Session session = getSession(projectName);
-		if (session != null) {
+		} else {
 			// Check if nickname is available
 			boolean available = nicknameAvailable(session, nickname);
 
@@ -167,8 +143,8 @@ public class Server extends AbstractJavaTool {
 			}
 		}
 
-		ATerm joinSession = factory.make("joinSession(<bool>)", success);
-		return joinSession;
+		ATerm startJoinSession = factory.make("startJoinSession(<bool>)", success);
+		return startJoinSession;
 	}
 
 	/**

@@ -294,57 +294,30 @@ public class Session {
 			connect();
 		}
 
-		List<SimpleSession> sessions = getSessions();
 		String projectName = project.getName();
-
-		// Is project already present on server?
-		boolean present = false;
-		Long serverRevision = null;
-		for (SimpleSession simpleSession : sessions) {
-			if (simpleSession.getProjectName().equals(projectName)) {
-				present = true;
-				serverRevision = simpleSession.getRevision();
-				break;
-			}
-		}
 
 		// Get nickname
 		Preferences preferences = Activator.getDefault().getPluginPreferences();
 		nickname = preferences.getString(PreferenceConstants.P_NICKNAME);
 
-		if (!present) {
-			// Start new session
-			Activator.LOGGER.log(Level.INFO, "Starting new session: "
-					+ projectName + ", " + revision + ", " + nickname + ".");
+		// Start or join session.
+		Activator.LOGGER.log(Level.INFO, "StartJoin session: " + projectName
+				+ ", " + revision + ", " + nickname + ".");
 
-			server.startSession(projectName, revision, nickname);
-		} else {
-			// Join existing session
-			if (revision.equals(serverRevision)) {
-				Activator.LOGGER.log(Level.INFO, "Joining session: "
-						+ projectName + ", " + nickname + ".");
-
-				server.joinSession(projectName, nickname);
-			} else {
-				throw new WrongRevisionException(revision, serverRevision);
-			}
-		}
+		server.startJoinSession(projectName, revision, nickname);
 
 		// Nothing went wrong, so client is now in a session.
 		inSession = true;
 		this.projectName = projectName;
 
 		// Request and apply all changes made so far.
-		if (present) {
-			List<AbstractChange> changes = server.requestChanges(projectName);
-			applyChanges(projectName, changes);
-		} else {
-			// TODO always send, or only for new session?
-			// Send the modified files.
-			for (IResource resource : modifiedFiles) {
-				IPath filePath = resource.getProjectRelativePath();
-				sendContent(project, filePath);
-			}
+		List<AbstractChange> changes = server.requestChanges(projectName);
+		applyChanges(projectName, changes);
+
+		// Send the modified files.
+		for (IResource resource : modifiedFiles) {
+			IPath filePath = resource.getProjectRelativePath();
+			sendContent(project, filePath);
 		}
 
 		addResourceChangeListener();

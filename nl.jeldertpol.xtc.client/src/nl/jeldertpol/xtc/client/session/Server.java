@@ -91,7 +91,7 @@ public class Server extends AbstractJavaTool {
 	}
 
 	/**
-	 * Start a new session on the server.
+	 * Start or join a session on the server.
 	 * 
 	 * @param projectName
 	 *            The name of the project, to identify the session.
@@ -99,47 +99,22 @@ public class Server extends AbstractJavaTool {
 	 *            The revision of the project.
 	 * @param nickname
 	 *            The nickname of the client.
-	 * @throws ProjectAlreadyPresentException
-	 *             The project is already present on the server.
-	 */
-	public void startSession(final String projectName, final Long revision,
-			final String nickname) throws ProjectAlreadyPresentException {
-		ATermLong revisionLong = factory.makeLong(revision);
-
-		ATerm startSession = factory.make("startSession(<str>, <term>, <str>)",
-				projectName, revisionLong, nickname);
-		ATermAppl reply = sendRequest(startSession);
-
-		ATerm answer = reply.getArgument(0);
-		boolean success = Boolean.parseBoolean(answer.toString());
-
-		if (!success) {
-			throw new ProjectAlreadyPresentException(projectName);
-		}
-	}
-
-	/**
-	 * Join a session on the server.
-	 * 
-	 * @param projectName
-	 *            The name of the project, to identify the session.
-	 * @param nickname
-	 *            The nickname of the client.
 	 * @throws NicknameAlreadyTakenException
 	 *             The nickname is already present in the session.
 	 */
-	public void joinSession(final String projectName, final String nickname)
-			throws NicknameAlreadyTakenException {
-		ATerm joinSession = factory.make("joinSession(<str>, <str>)",
-				projectName, nickname);
-		ATermAppl reply = sendRequest(joinSession);
+	public void startJoinSession(final String projectName, final Long revision,
+			final String nickname) throws NicknameAlreadyTakenException {
+		ATermLong revisionLong = factory.makeLong(revision);
+
+		ATerm startJoinSession = factory.make(
+				"startJoinSession(<str>, <term>, <str>)", projectName,
+				revisionLong, nickname);
+		ATermAppl reply = sendRequest(startJoinSession);
 
 		ATerm answer = reply.getArgument(0);
 		boolean success = Boolean.parseBoolean(answer.toString());
 
 		if (!success) {
-			// Everything else should already be checked, this is the only
-			// exception left.
 			throw new NicknameAlreadyTakenException(nickname);
 		}
 	}

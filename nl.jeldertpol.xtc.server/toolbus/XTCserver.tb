@@ -41,39 +41,21 @@ process XTCclient(Client : client, Server : server) is
 			)
 			+
 			(
-				// Start a new session
+				// Start or join a session
 				let
 					Project : str,
 					Revision : term,
 					Nickname : str,
 					Success : bool
 				in
-					rec-request(Client, startSession(Project?, Revision?, Nickname?))
-					. snd-eval(Server, startSession(Project, Revision, Nickname))
-					. rec-value(Server, startSession(Success?))
+					rec-request(Client, startJoinSession(Project?, Revision?, Nickname?))
+					. snd-eval(Server, startJoinSession(Project, Revision, Nickname))
+					. rec-value(Server, startJoinSession(Success?))
 					. NicknameCheck := Nickname
 					. subscribe(change(<str>, <term>, <str>))	// Project, Change, Nickname
 					. subscribe(chat(<str>, <str>))	// Nickname, Message
 					. subscribe(whosWhere(<str>, <str>, <str>))	//Nickname, Project, Resource
-					. snd-response(Client, startSession(Success))
-				endlet
-			)
-			+
-			(
-				// Join an existing session
-				let
-					Project : str,
-					Nickname : str,
-					Success : bool
-				in
-					rec-request(Client, joinSession(Project?, Nickname?))
-					. snd-eval(Server, joinSession(Project, Nickname))
-					. rec-value(Server, joinSession(Success?))
-					. NicknameCheck := Nickname
-					. subscribe(change(<str>, <term>, <str>))	// Project, Change, Nickname
-					. subscribe(chat(<str>, <str>))	// Nickname, Message
-					. subscribe(whosWhere(<str>, <str>, <str>))	//Nickname, Project, Resource
-					. snd-response(Client, joinSession(Success))
+					. snd-response(Client, startJoinSession(Success))
 				endlet
 			)
 			+
