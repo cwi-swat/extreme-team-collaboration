@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: XTC Client UI Plug-in
 Bundle-SymbolicName: nl.jeldertpol.xtc.client;singleton:=true
-Bundle-Version: 0.0.3
+Bundle-Version: 0.0.4
 Bundle-Activator: nl.jeldertpol.xtc.client.Activator
 Bundle-Vendor: Jeldert Pol
 Require-Bundle: nl.jeldertpol.xtc.common;bundle-version="[0.0.2,0.0.2]",
