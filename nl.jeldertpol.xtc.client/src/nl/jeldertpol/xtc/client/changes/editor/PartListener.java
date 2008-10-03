@@ -110,8 +110,9 @@ public class PartListener extends AbstractPartListener {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @seeorg.eclipse.ui.IPartListener2#partActivated(org.eclipse.ui.
-	 * IWorkbenchPartReference)
+	 * @see
+	 * nl.jeldertpol.xtc.client.changes.editor.AbstractPartListener#partActivated
+	 * (org.eclipse.ui.IWorkbenchPartReference)
 	 */
 	@Override
 	public void partActivated(final IWorkbenchPartReference partRef) {
@@ -136,6 +137,20 @@ public class PartListener extends AbstractPartListener {
 			Activator.SESSION.sendWhosWhere(project, resource
 					.getProjectRelativePath());
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * nl.jeldertpol.xtc.client.changes.editor.AbstractPartListener#partInputChanged
+	 * (org.eclipse.ui.IWorkbenchPartReference)
+	 */
+	@Override
+	public void partInputChanged(IWorkbenchPartReference partRef) {
+		// The input of this editor changed, for instance when a file is
+		// renamed. This makes sure we still listen to changes.
+		partActivated(partRef);
 	}
 
 	/*

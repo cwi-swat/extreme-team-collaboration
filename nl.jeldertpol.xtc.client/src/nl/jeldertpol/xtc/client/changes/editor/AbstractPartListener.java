@@ -72,9 +72,7 @@ public abstract class AbstractPartListener implements IPartListener2 {
 	 * IWorkbenchPartReference)
 	 */
 	@Override
-	public final void partInputChanged(final IWorkbenchPartReference partRef) {
-		// Nothing to do
-	}
+	public abstract void partInputChanged(final IWorkbenchPartReference partRef);
 
 	/*
 	 * (non-Javadoc)
