@@ -29,6 +29,7 @@ import aterm.ATermLong;
  * @author Jeldert Pol
  */
 public class Server extends AbstractJavaTool {
+	// TODO extend Eclipse Blaa Tool
 
 	private final ATermFactory factory = getFactory();
 

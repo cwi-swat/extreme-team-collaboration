@@ -379,21 +379,26 @@ public class Session {
 		if (javaProject != null) {
 			try {
 				IPath outputLocation = javaProject.readOutputLocation();
-				ignoredPathsList.add(relativeToProject(outputLocation));
+				// Can be null if no outputlocation is set.
+				if (outputLocation != null) {
+					ignoredPathsList.add(relativeToProject(outputLocation));
 
-				// Each source location could have their own output location.
-				IClasspathEntry[] rawClassPaths = javaProject.getRawClasspath();
-				for (IClasspathEntry classpathEntry : rawClassPaths) {
-					outputLocation = classpathEntry.getOutputLocation();
-					if (outputLocation != null) {
-						IPath relative = relativeToProject(outputLocation);
-						if (!ignoredPathsList.contains(relative)) {
-							ignoredPathsList.add(relative);
+					// Each source location could have their own output
+					// location.
+					IClasspathEntry[] rawClassPaths = javaProject
+							.getRawClasspath();
+					for (IClasspathEntry classpathEntry : rawClassPaths) {
+						outputLocation = classpathEntry.getOutputLocation();
+						if (outputLocation != null) {
+							IPath relative = relativeToProject(outputLocation);
+							if (!ignoredPathsList.contains(relative)) {
+								ignoredPathsList.add(relative);
+							}
 						}
 					}
+					Activator.LOGGER.log(Level.INFO, "Ignoring build path: "
+							+ ignoredPathsList);
 				}
-				Activator.LOGGER.log(Level.INFO, "Ignoring build path: "
-						+ ignoredPathsList);
 			} catch (JavaModelException e) {
 				Activator.LOGGER.log(Level.SEVERE,
 						"Error ignoring build path.", e);

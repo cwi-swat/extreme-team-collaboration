@@ -17,7 +17,8 @@ Require-Bundle: nl.jeldertpol.xtc.common;bundle-version="[0.0.4,0.0.4]",
  toolbus_ng;bundle-version="1.0.8",
  aterm_java;bundle-version="1.8.0",
  shared_objects;bundle-version="1.4.5",
- JJTraveler;bundle-version="0.5.0"
+ JJTraveler;bundle-version="0.5.0",
+ toolbus_ng_eclipse_imp;bundle-version="1.0.3"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Import-Package: org.eclipse.ui.part
