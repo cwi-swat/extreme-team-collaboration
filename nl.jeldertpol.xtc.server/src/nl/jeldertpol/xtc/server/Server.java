@@ -1,5 +1,11 @@
 package nl.jeldertpol.xtc.server;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -278,6 +284,10 @@ public class Server extends AbstractJavaTool {
 			success = true;
 
 			if (session.getClients().isEmpty()) {
+				// Saving all changes
+				LOGGER.log(Level.INFO, "Saving session.");
+				saveSession(session);
+
 				sessions.remove(session);
 			}
 		}
@@ -419,6 +429,53 @@ public class Server extends AbstractJavaTool {
 			}
 		}
 		return available;
+	}
+
+	/**
+	 * Save a session to a file.
+	 * 
+	 * @param session
+	 *            The session to be saved.
+	 */
+	private void saveSession(final Session session) {
+		try {
+			String filename = session.getProjectName() + session.getRevision();
+
+			FileOutputStream fos = new FileOutputStream(filename);
+			ObjectOutputStream oos = new ObjectOutputStream(fos);
+			oos.writeObject(session);
+			oos.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Load a {@link Session} from a file.
+	 * 
+	 * @param filename
+	 *            The session to be loaded.
+	 * @return The {@link Session}, or <code>null</code>.
+	 */
+	private Session loadSession(final String filename) {
+		Session session = null;
+
+		try {
+			FileInputStream fis = new FileInputStream(filename);
+			ObjectInputStream ois = new ObjectInputStream(fis);
+			session = (Session) ois.readObject();
+			ois.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+
+		return session;
 	}
 
 }
