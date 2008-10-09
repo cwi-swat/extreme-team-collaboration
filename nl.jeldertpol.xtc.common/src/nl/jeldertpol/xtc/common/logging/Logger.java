@@ -5,6 +5,7 @@ import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
 import java.util.logging.Level;
 import java.util.logging.SimpleFormatter;
+import java.util.logging.XMLFormatter;
 
 /**
  * 
@@ -16,12 +17,25 @@ public class Logger {
 
 	private final static String logName = "nl.jeldertpol.xtc";
 
+	/**
+	 * 
+	 */
 	private final String logFile = "XTC.log";
 
 	/**
-	 * Creates a new logger. Writes log messages to a file.
+	 * Defines the types of log file.
 	 */
-	public Logger() {
+	public static enum LogType {
+		PLAIN, XML
+	};
+
+	/**
+	 * Creates a new logger. Writes log messages to a file.
+	 * 
+	 * @param logType
+	 *            The format of the log file.
+	 */
+	public Logger(final LogType logType) {
 		log = java.util.logging.Logger.getLogger(logName);
 		log.setLevel(Level.ALL);
 
@@ -30,7 +44,13 @@ public class Logger {
 			FileHandler fileHandler = new FileHandler(logFile, append);
 			log.addHandler(fileHandler);
 
-			Formatter formatter = new SimpleFormatter();
+			Formatter formatter;
+			if (logType == LogType.XML) {
+				formatter = new XMLFormatter();
+			} else {
+				formatter = new SimpleFormatter();
+			}
+
 			fileHandler.setFormatter(formatter);
 		} catch (SecurityException e) {
 			// TODO Auto-generated catch block

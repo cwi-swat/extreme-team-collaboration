@@ -143,6 +143,7 @@ process XTCclient(Client : client, Server : server) is
 					Message : str
 				in
 					rec-event(Client, sendChat(Nickname?, Message?))
+					. snd-do(Server, chat(Nickname, Message))
 					. snd-note(chat(Nickname, Message))
 					.snd-ack-event(Client, sendChat(Nickname, Message))
 				endlet
@@ -167,8 +168,9 @@ process XTCclient(Client : client, Server : server) is
 					Resource : str
 				in
 					rec-event(Client, sendWhosWhere(Nickname?, Project?, Resource?))
+					. snd-do(Server, whosWhere(Nickname, Project, Resource))
 					. snd-note(whosWhere(Nickname, Project, Resource))
-					.snd-ack-event(Client, sendWhosWhere(Nickname, Project, Resource))
+					. snd-ack-event(Client, sendWhosWhere(Nickname, Project, Resource))
 				endlet
 			)
 			+

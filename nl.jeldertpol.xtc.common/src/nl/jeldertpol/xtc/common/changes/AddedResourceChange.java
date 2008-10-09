@@ -6,10 +6,8 @@ package nl.jeldertpol.xtc.common.changes;
  * @author Jeldert Pol
  */
 public class AddedResourceChange extends AbstractChange {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
+	private static final long serialVersionUID = 2L;
 
 	private final String resourceName;
 	private final int type;
@@ -47,11 +45,44 @@ public class AddedResourceChange extends AbstractChange {
 		return type;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see nl.jeldertpol.xtc.common.changes.AbstractChange#toString()
+	 */
 	@Override
 	public String toString() {
 		String string = "AddedResource: " + resourceName + "\n\t type: " + type
 				+ "\n\t client: " + getNickname();
 		return string;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see nl.jeldertpol.xtc.common.changes.AbstractChange#toXMLString()
+	 */
+	@Override
+	public String toXMLString() {
+		StringBuilder sb = new StringBuilder(103); // Guaranteed minimum needed.
+
+		sb.append("<addedresourcechange>");
+
+		sb.append("<resourcename>");
+		sb.append(resourceName);
+		sb.append("</resourcename>");
+
+		sb.append("<type>");
+		sb.append(type);
+		sb.append("</type>");
+
+		sb.append("<client>");
+		sb.append(getNickname());
+		sb.append("</client>");
+
+		sb.append("</addedresourcechange>");
+
+		return sb.toString();
 	}
 
 }

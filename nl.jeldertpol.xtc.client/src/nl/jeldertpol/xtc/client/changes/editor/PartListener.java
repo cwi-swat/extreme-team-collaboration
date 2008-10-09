@@ -147,7 +147,7 @@ public class PartListener extends AbstractPartListener {
 	 * (org.eclipse.ui.IWorkbenchPartReference)
 	 */
 	@Override
-	public void partInputChanged(IWorkbenchPartReference partRef) {
+	public void partInputChanged(final IWorkbenchPartReference partRef) {
 		// The input of this editor changed, for instance when a file is
 		// renamed. This makes sure we still listen to changes.
 		partActivated(partRef);

@@ -8,10 +8,8 @@ import java.io.Serializable;
  * @author Jeldert Pol
  */
 public abstract class AbstractChange implements Serializable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
+	private static final long serialVersionUID = 2L;
 
 	private final String projectName;
 
@@ -55,5 +53,12 @@ public abstract class AbstractChange implements Serializable {
 	 */
 	@Override
 	public abstract String toString();
+
+	/**
+	 * Returns a textual representation of the object, in XML format.
+	 * 
+	 * @return a textual representation of the object, in XML format.
+	 */
+	public abstract String toXMLString();
 
 }

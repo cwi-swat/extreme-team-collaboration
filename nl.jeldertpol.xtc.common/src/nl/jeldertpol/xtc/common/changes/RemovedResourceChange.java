@@ -10,7 +10,7 @@ public class RemovedResourceChange extends AbstractChange {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 2L;
 
 	private final String resourceName;
 
@@ -38,10 +38,39 @@ public class RemovedResourceChange extends AbstractChange {
 		return resourceName;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see nl.jeldertpol.xtc.common.changes.AbstractChange#toString()
+	 */
 	@Override
 	public String toString() {
 		String string = "RemovedResource: " + resourceName + "\n\t client: "
 				+ getNickname();
 		return string;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see nl.jeldertpol.xtc.common.changes.AbstractChange#toXMLString()
+	 */
+	@Override
+	public String toXMLString() {
+		StringBuilder sb = new StringBuilder(94); // Guaranteed minimum needed.
+
+		sb.append("<removedresourcechange>");
+
+		sb.append("<resourcename>");
+		sb.append(resourceName);
+		sb.append("</resourcename>");
+
+		sb.append("<client>");
+		sb.append(getNickname());
+		sb.append("</client>");
+
+		sb.append("</removedresourcechange>");
+
+		return sb.toString();
 	}
 }

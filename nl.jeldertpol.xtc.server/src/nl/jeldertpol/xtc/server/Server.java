@@ -36,7 +36,7 @@ public class Server extends AbstractJavaTool {
 	 */
 	private final List<Session> sessions = new ArrayList<Session>();
 
-	private static final Logger LOGGER = new Logger();
+	private static final Logger LOGGER = new Logger(Logger.LogType.XML);
 
 	/**
 	 * Starting point for XTC Server. Can be called directly from the Toolbus
@@ -311,11 +311,71 @@ public class Server extends AbstractJavaTool {
 					.byteToObject(changeBlob);
 			session.addChange(change);
 			success = true;
-			LOGGER.log(Level.FINE, change.toString());
+			LOGGER.log(Level.FINE, change.toXMLString());
 		}
 
 		ATerm sendChange = factory.make("sendChange(<bool>)", success);
 		return sendChange;
+	}
+
+	/**
+	 * Log WhosWhere.
+	 * 
+	 * @param nickname
+	 *            The client viewing the resource.
+	 * @param projectName
+	 *            The project the resource belongs to.
+	 * @param resource
+	 *            The viewed resource, path must be relative to the project, and
+	 *            portable.
+	 */
+	public void whosWhere(final String nickname, final String projectName,
+			final String resource) {
+		StringBuilder sb = new StringBuilder(89); // Guaranteed minimum needed.
+
+		sb.append("<whoswhere>");
+
+		sb.append("<client>");
+		sb.append(nickname);
+		sb.append("</client>");
+
+		sb.append("<projectname>");
+		sb.append(projectName);
+		sb.append("</projectname>");
+
+		sb.append("<resource>");
+		sb.append(resource);
+		sb.append("</resource>");
+
+		sb.append("</whoswhere>");
+
+		LOGGER.log(Level.FINE, sb.toString());
+	}
+
+	/**
+	 * Log chat.
+	 * 
+	 * @param nickname
+	 *            The nickname of the client the chat message originated from.
+	 * @param message
+	 *            The message.
+	 */
+	public void chat(final String nickname, final String message) {
+		StringBuilder sb = new StringBuilder(50); // Guaranteed minimum needed.
+
+		sb.append("<chat>");
+
+		sb.append("<client>");
+		sb.append(nickname);
+		sb.append("</client>");
+
+		sb.append("<message>");
+		sb.append(message);
+		sb.append("</message>");
+
+		sb.append("</chat>");
+
+		LOGGER.log(Level.FINE, sb.toString());
 	}
 
 	/**
@@ -360,4 +420,5 @@ public class Server extends AbstractJavaTool {
 		}
 		return available;
 	}
+
 }

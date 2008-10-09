@@ -6,10 +6,8 @@ package nl.jeldertpol.xtc.common.changes;
  * @author Jeldert Pol
  */
 public class MoveChange extends AbstractChange {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
+	private static final long serialVersionUID = 2L;
 
 	private final String from;
 	private final String to;
@@ -46,10 +44,43 @@ public class MoveChange extends AbstractChange {
 		return to;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see nl.jeldertpol.xtc.common.changes.AbstractChange#toString()
+	 */
 	@Override
 	public String toString() {
 		String string = "MoveChange: " + from + "\n\t to: " + to
 				+ "\n\t client: " + getNickname();
 		return string;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see nl.jeldertpol.xtc.common.changes.AbstractChange#toXMLString()
+	 */
+	@Override
+	public String toXMLString() {
+		StringBuilder sb = new StringBuilder(65); // Guaranteed minimum needed.
+
+		sb.append("<movechange>");
+
+		sb.append("<from>");
+		sb.append(from);
+		sb.append("</from>");
+
+		sb.append("<to>");
+		sb.append(to);
+		sb.append("</to>");
+
+		sb.append("<client>");
+		sb.append(getNickname());
+		sb.append("</client>");
+
+		sb.append("</movechange>");
+
+		return sb.toString();
 	}
 }

@@ -26,7 +26,7 @@ public class Activator extends AbstractUIPlugin {
 
 	public static final Session SESSION = new Session();
 
-	public static final Logger LOGGER = new Logger();
+	public static final Logger LOGGER = new Logger(Logger.LogType.PLAIN);
 
 	public static final CommonActions COMMON_ACTIONS = new CommonActions();
 
