@@ -68,7 +68,8 @@ public class SubclipseInfoExtractor extends InfoExtractor {
 			ISVNLocalResource svnResource = SVNWorkspaceRoot
 					.getSVNResourceFor(resource);
 			try {
-				if (svnResource.isManaged()) {
+				// When file is managed by SVN, or not ignored, so a new resource.
+				if (svnResource.isManaged() || !svnResource.isIgnored()) {
 					LocalResourceStatus localResourceStatus = svnResource
 							.getStatus();
 					SVNStatusKind statusKind = localResourceStatus
@@ -76,7 +77,11 @@ public class SubclipseInfoExtractor extends InfoExtractor {
 					if (!statusKind.equals(SVNStatusKind.NORMAL)) {
 						modifiedFiles.add(resource);
 					}
+//				} else if (!svnResource.isManaged()) {
+//					// Not managed, so must be modified.
+//					System.out.println("niet managed: " + resource);
 				}
+
 			} catch (SVNException e) {
 				Activator.LOGGER.log(Level.SEVERE, e);
 			}

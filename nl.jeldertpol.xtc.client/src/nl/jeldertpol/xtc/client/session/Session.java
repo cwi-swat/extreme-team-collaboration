@@ -213,17 +213,15 @@ public class Session {
 	 * 
 	 * @param project
 	 *            The project for the session.
-	 * @param ignoreUnmanagedFiles
-	 *            Ignore unmanaged files? When <code>true</code>, changes to
-	 *            these files will not be send to the server. When
-	 *            <code>false</code>, an {@link ProjectUnmanagedFilesException}
-	 *            is thrown.
+	 * @param sendUnmanagedFiles
+	 *            Send unmanaged files? When <code>true</code>, these new files
+	 *            will be send to the server. When <code>false</code>, an
+	 *            {@link ProjectUnmanagedFilesException} is thrown.
 	 * @param sendModifiedFiles
 	 *            Send content of modified files? When <code>true</code>,
 	 *            changes are send to the server after joining the session. When
 	 *            <code>false</code>, a {@link ProjectModifiedException} is
 	 *            thrown.
-	 * 
 	 * @throws AlreadyInSessionException
 	 *             Client is already in a session.
 	 * @throws RevisionExtractorException
@@ -243,7 +241,7 @@ public class Session {
 	 *             the server.
 	 */
 	public void startJoinSession(final IProject project,
-			final boolean ignoreUnmanagedFiles, final boolean sendModifiedFiles)
+			final boolean sendUnmanagedFiles, final boolean sendModifiedFiles)
 			throws AlreadyInSessionException, RevisionExtractorException,
 			UnversionedProjectException, ProjectUnmanagedFilesException,
 			ProjectModifiedException, UnableToConnectException,
@@ -264,18 +262,18 @@ public class Session {
 
 		if (!unmanagedFiles.isEmpty()) {
 			// Converting to project relative IPaths.
-			List<IPath> ignoredFiles = new ArrayList<IPath>(unmanagedFiles
-					.size());
+			List<IPath> unmanagedFilesPath = new ArrayList<IPath>(
+					unmanagedFiles.size());
 			for (IResource resource : unmanagedFiles) {
-				ignoredFiles.add(resource.getProjectRelativePath());
+				unmanagedFilesPath.add(resource.getProjectRelativePath());
 			}
 
-			if (ignoreUnmanagedFiles) {
+			if (sendUnmanagedFiles) {
 				// Ignoring other files
-				ignoreFiles(ignoredFiles);
+				// ignoreFiles(ignoredFiles);
 			} else {
 				throw new ProjectUnmanagedFilesException(project.getName(),
-						ignoredFiles);
+						unmanagedFilesPath);
 			}
 		}
 

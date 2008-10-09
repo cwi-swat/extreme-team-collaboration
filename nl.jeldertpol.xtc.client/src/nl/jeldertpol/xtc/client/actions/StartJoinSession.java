@@ -48,13 +48,13 @@ public class StartJoinSession {
 		} catch (ProjectUnmanagedFilesException e) {
 			String question = e.getMessage()
 					+ "\n\n"
-					+ "If you ignore them, changes will not be send to the server. To prevent this question, you can delete the files, or add them to version control."
-					+ "\n\n" + "Ignore them?";
+					+ "You can now send them to the server. If you choose not to do so, you can not not join the session. To prevent this question, you can delete the files, or add them to version control."
+					+ "\n\n" + "Send these files to the server?";
 
-			boolean userIgnoresFiles = MessageDialog.openQuestion(null,
+			boolean userSendNewFiles = MessageDialog.openQuestion(null,
 					"XTC Start/Join", question);
-			if (userIgnoresFiles) {
-				StartJoinSession.startJoinSession(project, userIgnoresFiles,
+			if (userSendNewFiles) {
+				StartJoinSession.startJoinSession(project, userSendNewFiles,
 						sendModifiedFiles);
 			}
 		} catch (ProjectModifiedException e) {
