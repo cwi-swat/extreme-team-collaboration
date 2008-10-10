@@ -15,6 +15,8 @@ public abstract class AbstractChange implements Serializable {
 
 	private final String nickname;
 
+	private long timestamp = 0L;
+
 	/**
 	 * A change to a resource made during a session.
 	 * 
@@ -44,6 +46,21 @@ public abstract class AbstractChange implements Serializable {
 	 */
 	public String getNickname() {
 		return nickname;
+	}
+
+	/**
+	 * @return The timestamp
+	 */
+	public long getTimestamp() {
+		return timestamp;
+	}
+
+	/**
+	 * @param timestamp
+	 *            The timestamp to set
+	 */
+	public void setTimestamp(long timestamp) {
+		this.timestamp = timestamp;
 	}
 
 	/*

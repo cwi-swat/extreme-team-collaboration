@@ -5,7 +5,7 @@ package nl.jeldertpol.xtc.common.changes;
  * 
  * @author Jeldert Pol
  */
-public class MoveChange extends AbstractChange {
+public class MovedChange extends AbstractChange {
 
 	private static final long serialVersionUID = 2L;
 
@@ -22,7 +22,7 @@ public class MoveChange extends AbstractChange {
 	 * @param nickname
 	 *            The nickname of the client the move originated from.
 	 */
-	public MoveChange(final String from, final String to,
+	public MovedChange(final String from, final String to,
 			final String projectName, final String nickname) {
 		super(projectName, nickname);
 

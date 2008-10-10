@@ -8,7 +8,7 @@ import nl.jeldertpol.xtc.client.Activator;
 import nl.jeldertpol.xtc.client.changes.editor.DocumentReplacerJob;
 import nl.jeldertpol.xtc.client.changes.editor.PartListener;
 import nl.jeldertpol.xtc.client.changes.resource.jobs.ResourceAddedResourceJob;
-import nl.jeldertpol.xtc.client.changes.resource.jobs.ResourceMoveJob;
+import nl.jeldertpol.xtc.client.changes.resource.jobs.ResourceMovedJob;
 import nl.jeldertpol.xtc.client.changes.resource.jobs.ResourceReceiveContentJob;
 import nl.jeldertpol.xtc.client.changes.resource.jobs.ResourceRemovedResourceJob;
 import nl.jeldertpol.xtc.client.changes.resource.jobs.ResourceSendContentJob;
@@ -28,7 +28,7 @@ import nl.jeldertpol.xtc.client.session.whosWhere.WhosWhere;
 import nl.jeldertpol.xtc.common.changes.AbstractChange;
 import nl.jeldertpol.xtc.common.changes.AddedResourceChange;
 import nl.jeldertpol.xtc.common.changes.ContentChange;
-import nl.jeldertpol.xtc.common.changes.MoveChange;
+import nl.jeldertpol.xtc.common.changes.MovedChange;
 import nl.jeldertpol.xtc.common.changes.RemovedResourceChange;
 import nl.jeldertpol.xtc.common.changes.TextualChange;
 import nl.jeldertpol.xtc.common.chat.ChatMessage;
@@ -575,7 +575,7 @@ public class Session {
 			String from = moveFrom.toPortableString();
 			String to = moveTo.toPortableString();
 
-			MoveChange change = new MoveChange(from, to, projectName, nickname);
+			MovedChange change = new MovedChange(from, to, projectName, nickname);
 
 			sendChange(change);
 		}
@@ -828,9 +828,9 @@ public class Session {
 			} else if (abstractChange instanceof ContentChange) {
 				ContentChange change = (ContentChange) abstractChange;
 				job = new ResourceReceiveContentJob(change);
-			} else if (abstractChange instanceof MoveChange) {
-				MoveChange change = (MoveChange) abstractChange;
-				job = new ResourceMoveJob(change);
+			} else if (abstractChange instanceof MovedChange) {
+				MovedChange change = (MovedChange) abstractChange;
+				job = new ResourceMovedJob(change);
 			} else if (abstractChange instanceof RemovedResourceChange) {
 				RemovedResourceChange change = (RemovedResourceChange) abstractChange;
 				job = new ResourceRemovedResourceJob(change);
@@ -868,7 +868,8 @@ public class Session {
 	public void sendChat(final String message) {
 		Activator.LOGGER.log(Level.INFO, "Sending chat.");
 
-		server.sendChat(nickname, message);
+		ChatMessage chatMessage = new ChatMessage(nickname, message);
+		server.sendChat(chatMessage);
 	}
 
 	/**
@@ -879,11 +880,10 @@ public class Session {
 	 * @param message
 	 *            The message.
 	 */
-	public void receiveChat(final String nickname, final String message) {
+	public void receiveChat(final ChatMessage chatMessage) {
 		Activator.LOGGER.log(Level.INFO, "Receiving chat from " + nickname
 				+ ".");
 
-		ChatMessage chatMessage = new ChatMessage(nickname, message);
 		chat.newMessage(chatMessage);
 	}
 

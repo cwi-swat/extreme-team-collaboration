@@ -53,7 +53,7 @@ process XTCclient(Client : client, Server : server) is
 					. rec-value(Server, startJoinSession(Success?))
 					. NicknameCheck := Nickname
 					. subscribe(change(<str>, <term>, <str>))	// Project, Change, Nickname
-					. subscribe(chat(<str>, <str>))	// Nickname, Message
+					. subscribe(chat(<blob>))	// ChatMessage
 					. subscribe(whosWhere(<str>, <str>, <str>))	//Nickname, Project, Resource
 					. snd-response(Client, startJoinSession(Success))
 				endlet
@@ -70,7 +70,7 @@ process XTCclient(Client : client, Server : server) is
 					. snd-eval(Server, leaveSession(Project, Nickname))
 					. rec-value(Server, leaveSession(Success?))
 					. unsubscribe(change(<str>, <term>, <str>))	// Project, Change, Nickname
-					. unsubscribe(chat(<str>, <str>))	// Nickname, Message
+					. unsubscribe(chat(<blob>))	// ChatMessage
 					. unsubscribe(whosWhere(<str>, <str>, <str>))	//Nickname, Project, Resource
 					. snd-response(Client, leaveSession(Success))
 				endlet
@@ -139,24 +139,22 @@ process XTCclient(Client : client, Server : server) is
 			(
 				// Send a chat message
 				let
-					Nickname : str,
-					Message : str
+					ChatMessage : blob
 				in
-					rec-event(Client, sendChat(Nickname?, Message?))
-					. snd-do(Server, chat(Nickname, Message))
-					. snd-note(chat(Nickname, Message))
-					.snd-ack-event(Client, sendChat(Nickname, Message))
+					rec-event(Client, sendChat(ChatMessage?))
+					. snd-do(Server, chat(ChatMessage))
+					. snd-note(chat(ChatMessage))
+					.snd-ack-event(Client, sendChat(ChatMessage))
 				endlet
 			)
 			+
 			(
 				// Receive a chat message
 				let
-					Nickname : str,
-					Message : str
+					ChatMessage : blob
 				in
-					rec-note(chat(Nickname?, Message?))
-					. snd-do(Client, receiveChat(Nickname, Message))
+					rec-note(chat(ChatMessage?))
+					. snd-do(Client, receiveChat(ChatMessage))
 				endlet
 			)
 			+

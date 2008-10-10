@@ -14,6 +14,7 @@ import java.util.logging.Level;
 import nl.jeldertpol.xtc.common.changes.AbstractChange;
 import nl.jeldertpol.xtc.common.changes.ContentChange;
 import nl.jeldertpol.xtc.common.changes.TextualChange;
+import nl.jeldertpol.xtc.common.chat.ChatMessage;
 import nl.jeldertpol.xtc.common.conversion.Conversion;
 import nl.jeldertpol.xtc.common.exceptions.NicknameAlreadyTakenException;
 import nl.jeldertpol.xtc.common.exceptions.WrongRevisionException;
@@ -370,17 +371,19 @@ public class Server extends AbstractJavaTool {
 	 * @param message
 	 *            The message.
 	 */
-	public void chat(final String nickname, final String message) {
+	public void chat(final byte[] chatBlob) {
+		ChatMessage chatMessage = (ChatMessage) Conversion.byteToObject(chatBlob);
+
 		StringBuilder sb = new StringBuilder(50); // Guaranteed minimum needed.
 
 		sb.append("<chat>");
 
 		sb.append("<client>");
-		sb.append(nickname);
+		sb.append(chatMessage.getNickname());
 		sb.append("</client>");
 
 		sb.append("<message>");
-		sb.append(message);
+		sb.append(chatMessage.getMessage());
 		sb.append("</message>");
 
 		sb.append("</chat>");

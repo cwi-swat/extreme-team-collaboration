@@ -151,20 +151,12 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 			// The resource was moved to another location. The location it
 			// was moved to is indicated by IResourceDelta.getMovedToPath.
 			if ((flags & IResourceDelta.MOVED_TO) != 0) {
-				IPath moveFrom = delta.getResource().getProjectRelativePath();
-				IPath moveTo = delta.getMovedToPath().removeFirstSegments(1); // Removes
-				// the
-				// project
-				// name
-				// ,
-				// thus
-				// making
-				// path
-				// relative
-				// .
+				IPath movedFrom = delta.getResource().getProjectRelativePath();
+				// Remove the project name, thus making path relative.
+				IPath movedTo = delta.getMovedToPath().removeFirstSegments(1);
 				IProject project = resource.getProject();
 
-				Activator.SESSION.sendMove(project, moveFrom, moveTo);
+				Activator.SESSION.sendMove(project, movedFrom, movedTo);
 
 				// Children will be moved by Eclipse, no need to visit them.
 				visitChildren = false;

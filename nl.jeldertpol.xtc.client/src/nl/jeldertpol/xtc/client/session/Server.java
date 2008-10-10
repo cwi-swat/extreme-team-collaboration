@@ -7,6 +7,7 @@ import nl.jeldertpol.xtc.client.Activator;
 import nl.jeldertpol.xtc.client.exceptions.LeaveSessionException;
 import nl.jeldertpol.xtc.client.exceptions.UnableToConnectException;
 import nl.jeldertpol.xtc.common.changes.AbstractChange;
+import nl.jeldertpol.xtc.common.chat.ChatMessage;
 import nl.jeldertpol.xtc.common.conversion.Conversion;
 import nl.jeldertpol.xtc.common.exceptions.NicknameAlreadyTakenException;
 import nl.jeldertpol.xtc.common.exceptions.WrongRevisionException;
@@ -246,22 +247,28 @@ public class Server extends AbstractJavaTool {
 	 * @param message
 	 *            The message.
 	 */
-	public void sendChat(final String nickname, final String message) {
-		ATerm sendChat = factory.make("sendChat(<str>, <str>)", nickname,
-				message);
+	public void sendChat(final ChatMessage chatMessage) {// String nickname,
+		// final String
+		// message) {
+		// ATerm sendChat = factory.make("sendChat(<str>, <str>)", nickname,
+		// message);
+		byte[] blob = Conversion.objectToByte(chatMessage);
+
+		ATerm sendChat = factory.make("sendChat(<blob>)", blob);
 		sendEvent(sendChat);
 	}
 
 	/**
 	 * Receive a chat message from the server.
 	 * 
-	 * @param nickname
-	 *            The client sending the message.
-	 * @param message
-	 *            The message.
+	 * @param chatBlob
+	 *            Serialized {@link ChatMessage}.
 	 */
-	public void receiveChat(final String nickname, final String message) {
-		Activator.SESSION.receiveChat(nickname, message);
+	public void receiveChat(final byte[] chatBlob) {
+		ChatMessage chatMessage = (ChatMessage) Conversion
+				.byteToObject(chatBlob);
+
+		Activator.SESSION.receiveChat(chatMessage);
 	}
 
 	/**

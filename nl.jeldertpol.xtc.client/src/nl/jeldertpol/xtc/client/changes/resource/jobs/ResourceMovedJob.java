@@ -4,7 +4,7 @@ import java.util.logging.Level;
 
 import nl.jeldertpol.xtc.client.Activator;
 import nl.jeldertpol.xtc.client.session.rejoin.RejoinJob;
-import nl.jeldertpol.xtc.common.changes.MoveChange;
+import nl.jeldertpol.xtc.common.changes.MovedChange;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -20,21 +20,21 @@ import org.eclipse.core.runtime.Status;
  * 
  * @author Jeldert Pol
  */
-public class ResourceMoveJob extends HighPriorityJob {
+public class ResourceMovedJob extends HighPriorityJob {
 
-	final private MoveChange moveChange;
+	final private MovedChange movedChange;
 
 	/**
 	 * Move a resource to a new location. Schedules itself to be run.
 	 * 
-	 * @param moveChange
+	 * @param movedChange
 	 *            Contains all information needed about the change.
 	 */
-	public ResourceMoveJob(final MoveChange moveChange) {
-		super(ResourceMoveJob.class.getName() + ": " + moveChange.getFrom()
-				+ " --> " + moveChange.getTo());
+	public ResourceMovedJob(final MovedChange movedChange) {
+		super(ResourceMovedJob.class.getName() + ": " + movedChange.getFrom()
+				+ " --> " + movedChange.getTo());
 
-		this.moveChange = moveChange;
+		this.movedChange = movedChange;
 
 		schedule();
 	}
@@ -50,13 +50,13 @@ public class ResourceMoveJob extends HighPriorityJob {
 
 		IStatus status;
 
-		IProject project = Activator.COMMON_ACTIONS.getProject(moveChange
+		IProject project = Activator.COMMON_ACTIONS.getProject(movedChange
 				.getProjectName());
 
-		IPath moveFrom = Path.fromPortableString(moveChange.getFrom());
+		IPath moveFrom = Path.fromPortableString(movedChange.getFrom());
 		IResource resource = project.findMember(moveFrom);
 
-		IPath moveTo = Path.fromPortableString(moveChange.getTo());
+		IPath moveTo = Path.fromPortableString(movedChange.getTo());
 		// Making full path from root, so move can find destination.
 		moveTo = project.getFullPath().append(moveTo);
 
