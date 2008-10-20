@@ -71,7 +71,8 @@ public class PartListener extends AbstractPartListener {
 						if (document != null) {
 							return document;
 						} else {
-							Activator.getLogger().log(Level.SEVERE,
+							Activator.getLogger().log(
+									Level.SEVERE,
 									"No document for editor "
 											+ editorInput.getToolTipText());
 						}
@@ -81,8 +82,10 @@ public class PartListener extends AbstractPartListener {
 					}
 				}
 
-				Activator.getLogger().log(Level.SEVERE, "No document for editor "
-						+ editorInput.getToolTipText());
+				Activator.getLogger().log(
+						Level.SEVERE,
+						"No document for editor "
+								+ editorInput.getToolTipText());
 			}
 		}
 		return null;
@@ -129,8 +132,8 @@ public class PartListener extends AbstractPartListener {
 					.findMember(documentName);
 			Activator.documentListener.setResource(resource);
 
-			Activator.getLogger().log(Level.INFO, "PartListener listens to "
-					+ resource.toString());
+			Activator.getLogger().log(Level.INFO,
+					"PartListener listens to " + resource.toString());
 
 			// Send WhosWhere information
 			IProject project = resource.getProject();

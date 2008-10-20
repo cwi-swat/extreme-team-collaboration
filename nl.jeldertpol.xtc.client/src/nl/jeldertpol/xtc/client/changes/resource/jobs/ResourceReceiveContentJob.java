@@ -59,8 +59,8 @@ public class ResourceReceiveContentJob extends HighPriorityJob {
 		IPath location = resource.getLocation();
 		File file = location.toFile();
 
-		Activator.getLogger().log(Level.INFO, "Setting content of file "
-				+ file.toString() + ".");
+		Activator.getLogger().log(Level.INFO,
+				"Setting content of file " + file.toString() + ".");
 
 		byte[] content = contentChange.getContent();
 		try {

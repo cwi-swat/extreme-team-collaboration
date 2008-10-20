@@ -161,8 +161,8 @@ public class Session {
 		String host = preferences.getString(PreferenceConstants.P_HOST);
 		String port = preferences.getString(PreferenceConstants.P_PORT);
 
-		Activator.getLogger().log(Level.INFO, "Connecting to server: " + host + ":"
-				+ port);
+		Activator.getLogger().log(Level.INFO,
+				"Connecting to server: " + host + ":" + port);
 
 		try {
 			server.connect(host, port);
@@ -185,7 +185,7 @@ public class Session {
 		try {
 			leaveSession();
 		} catch (LeaveSessionException e) {
-			e.printStackTrace();
+			Activator.getLogger().log(Level.SEVERE, e);
 		}
 		server.disconnect();
 		server = new Server();
@@ -269,6 +269,7 @@ public class Session {
 			}
 
 			if (sendUnmanagedFiles) {
+				// FIXME
 				// Ignoring other files
 				// ignoreFiles(ignoredFiles);
 			} else {
@@ -296,8 +297,10 @@ public class Session {
 		nickname = preferences.getString(PreferenceConstants.P_NICKNAME);
 
 		// Start or join session.
-		Activator.getLogger().log(Level.INFO, "StartJoin session: " + projectName
-				+ ", " + revision + ", " + nickname + ".");
+		Activator.getLogger().log(
+				Level.INFO,
+				"StartJoin session: " + projectName + ", " + revision + ", "
+						+ nickname + ".");
 
 		// NicknameAlreadyTakenException, WrongRevisionException
 		server.startJoinSession(projectName, revision, nickname);
@@ -394,8 +397,8 @@ public class Session {
 							}
 						}
 					}
-					Activator.getLogger().log(Level.INFO, "Ignoring build path: "
-							+ ignoredPathsList);
+					Activator.getLogger().log(Level.INFO,
+							"Ignoring build path: " + ignoredPathsList);
 				}
 			} catch (JavaModelException e) {
 				Activator.getLogger().log(Level.SEVERE,
@@ -456,7 +459,8 @@ public class Session {
 		try {
 			getWorkbenchPage().addPartListener(Activator.partListener);
 		} catch (NullPointerException e) {
-			Activator.getLogger().log(Level.WARNING, "Could not addPartListener.");
+			Activator.getLogger().log(Level.WARNING,
+					"Could not addPartListener.");
 		}
 	}
 
@@ -469,8 +473,8 @@ public class Session {
 		try {
 			getWorkbenchPage().removePartListener(Activator.partListener);
 		} catch (NullPointerException e) {
-			Activator.getLogger()
-					.log(Level.WARNING, "Could not removePartListener.");
+			Activator.getLogger().log(Level.WARNING,
+					"Could not removePartListener.");
 		}
 	}
 
@@ -483,11 +487,13 @@ public class Session {
 		IWorkbench workbench = PlatformUI.getWorkbench();
 		IWorkbenchWindow workbenchWindow = workbench.getActiveWorkbenchWindow();
 
+		IWorkbenchPage workbenchPage = null;
+
 		if (workbenchWindow != null) {
-			IWorkbenchPage workbenchPage = workbenchWindow.getActivePage();
-			return workbenchPage;
+			workbenchPage = workbenchWindow.getActivePage();
 		}
-		return null;
+
+		return workbenchPage;
 	}
 
 	/**
@@ -575,7 +581,8 @@ public class Session {
 			String from = moveFrom.toPortableString();
 			String to = moveTo.toPortableString();
 
-			MovedChange change = new MovedChange(from, to, projectName, nickname);
+			MovedChange change = new MovedChange(from, to, projectName,
+					nickname);
 
 			sendChange(change);
 		}
@@ -673,8 +680,8 @@ public class Session {
 	public void requestTextualChanges(final IPath resourcePath) {
 		String resource = resourcePath.toPortableString();
 
-		Activator.getLogger().log(Level.INFO, "Requesting textual changes for: "
-				+ resource + ".");
+		Activator.getLogger().log(Level.INFO,
+				"Requesting textual changes for: " + resource + ".");
 
 		List<AbstractChange> changes = server.requestTextualChanges(
 				projectName, resource);
@@ -743,7 +750,6 @@ public class Session {
 		// If should send, check if resource should be ignored.
 		if (send) {
 			send = !isIgnored(resourcePath);
-			// && !isIgnored(project.findMember(resourcePath));
 		}
 
 		return send;
@@ -848,7 +854,8 @@ public class Session {
 			try {
 				job.join();
 			} catch (InterruptedException e) {
-				Activator.getLogger().log(Level.SEVERE, "Error rejoining job", e);
+				Activator.getLogger().log(Level.SEVERE, "Error rejoining job",
+						e);
 				// TODO What to do?
 			} catch (NullPointerException e) {
 				// TextualChange may not create a job.
@@ -881,8 +888,8 @@ public class Session {
 	 *            The message.
 	 */
 	public void receiveChat(final ChatMessage chatMessage) {
-		Activator.getLogger().log(Level.INFO, "Receiving chat from " + chatMessage.getNickname()
-				+ ".");
+		Activator.getLogger().log(Level.INFO,
+				"Receiving chat from " + chatMessage.getNickname() + ".");
 
 		chatTracker.newMessage(chatMessage);
 	}
@@ -901,7 +908,8 @@ public class Session {
 
 			String resourceName = resourcePath.toPortableString();
 
-			nl.jeldertpol.xtc.common.whosWhere.WhosWhere whosWhere = new nl.jeldertpol.xtc.common.whosWhere.WhosWhere(projectName, resourceName, nickname);
+			nl.jeldertpol.xtc.common.whosWhere.WhosWhere whosWhere = new nl.jeldertpol.xtc.common.whosWhere.WhosWhere(
+					projectName, resourceName, nickname);
 
 			server.sendWhosWhere(whosWhere);
 		}
@@ -917,7 +925,8 @@ public class Session {
 	 * @param resource
 	 *            The viewed resource, path is relative to the project.
 	 */
-	public void receiveWhosWhere(final nl.jeldertpol.xtc.common.whosWhere.WhosWhere whosWhere) {
+	public void receiveWhosWhere(
+			final nl.jeldertpol.xtc.common.whosWhere.WhosWhere whosWhere) {
 		if (shouldReceive(whosWhere.getProjectName())) {
 			whosWhereTracker.change(whosWhere);
 		}

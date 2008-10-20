@@ -89,21 +89,22 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 			ofInterest = true;
 			break;
 		case IResourceDelta.ADDED_PHANTOM:
-			Activator.getLogger().log(Level.FINE, "Added Phantom: "
-					+ resourcePortableString + ".");
+			Activator.getLogger().log(Level.FINE,
+					"Added Phantom: " + resourcePortableString + ".");
 			// TODO of interest?
 			ofInterest = true;
 			break;
 		case IResourceDelta.REMOVED_PHANTOM:
-			Activator.getLogger().log(Level.FINE, "Removed Phantom: "
-					+ resourcePortableString + ".");
+			Activator.getLogger().log(Level.FINE,
+					"Removed Phantom: " + resourcePortableString + ".");
 			// TODO of interest?
 			ofInterest = true;
 			break;
 		default:
-			Activator.getLogger().log(Level.WARNING, "Unhandled kind of delta: "
-					+ delta.getKind() + ". For resource "
-					+ resourcePortableString + ".");
+			Activator.getLogger().log(
+					Level.WARNING,
+					"Unhandled kind of delta: " + delta.getKind()
+							+ ". For resource " + resourcePortableString + ".");
 			// ofInterest = false;
 			break;
 		}
@@ -172,9 +173,11 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 			if ((flags & IResourceDelta.TYPE) != 0) {
 				// Will this ever happen?
 				// Ignoring for now.
-				Activator.getLogger().log(Level.WARNING, "Type changed to "
-						+ resource.getType() + ", but not handled. Resource "
-						+ resourcePortableString);
+				Activator.getLogger().log(
+						Level.WARNING,
+						"Type changed to " + resource.getType()
+								+ ", but not handled. Resource "
+								+ resourcePortableString);
 			}
 			// The resource's synchronization information has changed. Sync
 			// info is used to determine if a resource is in sync with some
@@ -198,7 +201,8 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 			// same location (i.e., the resource has been deleted and then
 			// re-added).
 			if ((flags & IResourceDelta.REPLACED) != 0) {
-				Activator.getLogger().log(Level.WARNING,
+				Activator.getLogger().log(
+						Level.WARNING,
 						"Resource replaced, but not handled. Resource "
 								+ resourcePortableString + ".");
 			}

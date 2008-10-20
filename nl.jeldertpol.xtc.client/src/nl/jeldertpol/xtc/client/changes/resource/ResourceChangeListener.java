@@ -32,7 +32,8 @@ public class ResourceChangeListener implements IResourceChangeListener {
 			} catch (NullPointerException e) {
 				// Resource changed for a project other that the project in the
 				// session. Ignoring.
-				Activator.getLogger()
+				Activator
+						.getLogger()
 						.log(Level.FINE,
 								"Resource does not belong to session project, ignoring.");
 			} catch (CoreException e) {

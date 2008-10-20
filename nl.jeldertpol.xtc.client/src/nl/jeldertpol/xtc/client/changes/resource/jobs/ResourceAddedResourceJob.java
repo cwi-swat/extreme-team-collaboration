@@ -64,8 +64,8 @@ public class ResourceAddedResourceJob extends HighPriorityJob {
 
 				if (file.exists()) {
 					// TODO File already exists, ignoring?
-					Activator.getLogger().log(Level.WARNING, "File "
-							+ file.toString() + " already exists.");
+					Activator.getLogger().log(Level.WARNING,
+							"File " + file.toString() + " already exists.");
 
 					status = new Status(IStatus.OK, Activator.PLUGIN_ID,
 							"Resource already exists. Ignoring add.");
@@ -78,8 +78,8 @@ public class ResourceAddedResourceJob extends HighPriorityJob {
 					file.create(source, force, monitor);
 					file.refreshLocal(IResource.NONE, monitor);
 
-					Activator.getLogger().log(Level.INFO, "File " + file.toString()
-							+ " created.");
+					Activator.getLogger().log(Level.INFO,
+							"File " + file.toString() + " created.");
 
 					status = new Status(IStatus.OK, Activator.PLUGIN_ID,
 							"Resource added successfully.");
@@ -89,8 +89,8 @@ public class ResourceAddedResourceJob extends HighPriorityJob {
 
 				if (folder.exists()) {
 					// TODO Folder already exists, ignoring?
-					Activator.getLogger().log(Level.WARNING, "Folder "
-							+ folder.toString() + " already exists.");
+					Activator.getLogger().log(Level.WARNING,
+							"Folder " + folder.toString() + " already exists.");
 
 					status = new Status(IStatus.OK, Activator.PLUGIN_ID,
 							"Resource already exists. Ignoring add.");
@@ -106,14 +106,15 @@ public class ResourceAddedResourceJob extends HighPriorityJob {
 						Activator.SESSION.addResourceChangeListener();
 					}
 
-					Activator.getLogger().log(Level.INFO, "Folder "
-							+ folder.toString() + " created.");
+					Activator.getLogger().log(Level.INFO,
+							"Folder " + folder.toString() + " created.");
 
 					status = new Status(IStatus.OK, Activator.PLUGIN_ID,
 							"Resource added successfully.");
 				}
 			} else {
-				Activator.getLogger().log(Level.SEVERE,
+				Activator.getLogger().log(
+						Level.SEVERE,
 						"Resource not a file or folder, but of type " + type
 								+ ".");
 

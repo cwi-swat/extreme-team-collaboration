@@ -51,19 +51,20 @@ public class ProjectLabelProvider extends AbstractLabelProvider {
 	 */
 	@Override
 	public String getText(final Object element) {
-		String text = null;
+		StringBuilder sb = new StringBuilder();
 
 		if (element instanceof IProject) {
 			IProject project = (IProject) element;
-			text = project.getName();
+			sb.append(project.getName());
 
 			InfoExtractor infoExtractor = new SubclipseInfoExtractor();
 
 			try {
 				Long revision = infoExtractor.getRevision(project);
-				text += " (revision " + revision + ")";
+				sb.append(" (revision " + revision + ")");
 			} catch (UnversionedProjectException e) {
-				Activator.getLogger()
+				Activator
+						.getLogger()
 						.log(
 								Level.SEVERE,
 								"The underlying version control system throws an error.",
@@ -71,6 +72,12 @@ public class ProjectLabelProvider extends AbstractLabelProvider {
 			} catch (RevisionExtractorException e) {
 				Activator.getLogger().log(Level.FINEST, e);
 			}
+		}
+
+		String text = null;
+
+		if (sb.length() != 0) {
+			text = sb.toString();
 		}
 
 		return text;

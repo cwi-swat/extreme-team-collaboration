@@ -30,7 +30,7 @@ public class Activator extends AbstractUIPlugin {
 	public static final String CHAT_VIEW_ID = "nl.jeldertpol.xtc.client.view.chat";
 
 	private static Logger LOGGER = new NullLogger();
-	
+
 	public static final Session SESSION = new Session();
 
 	public static final CommonActions COMMON_ACTIONS = new CommonActions();
@@ -70,7 +70,7 @@ public class Activator extends AbstractUIPlugin {
 	public void start(final BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
-		
+
 		LOGGER = createLogger();
 
 		getLogger().log(Level.FINEST, "XTC plug-in started.");
@@ -91,16 +91,16 @@ public class Activator extends AbstractUIPlugin {
 		Logger logger = new NullLogger();
 
 		if (enabled) {
-			if (format.equals("XML")) {
+			if ("XML".equals(format)) {
 				logger = new FileLogger(LogType.XML);
-			} else if (format.equals("PLAIN")) {
+			} else if ("PLAIN".equals(format)) {
 				logger = new FileLogger(LogType.PLAIN);
 			}
 		}
 
 		return logger;
 	}
-	
+
 	public static Logger getLogger() {
 		return LOGGER;
 	}

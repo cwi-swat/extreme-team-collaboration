@@ -57,8 +57,8 @@ public class ResourceRemovedResourceJob extends HighPriorityJob {
 		IContainer parent = resource.getParent();
 
 		try {
-			Activator.getLogger().log(Level.INFO, "Deleting resource "
-					+ resource.toString() + ".");
+			Activator.getLogger().log(Level.INFO,
+					"Deleting resource " + resource.toString() + ".");
 
 			resource.delete(force, monitor);
 			try {

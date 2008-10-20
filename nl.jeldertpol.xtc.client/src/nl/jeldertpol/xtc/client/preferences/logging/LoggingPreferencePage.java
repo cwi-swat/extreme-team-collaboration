@@ -49,7 +49,7 @@ public class LoggingPreferencePage extends FieldEditorPreferencePage implements
 	 * org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
 	 */
 	@Override
-	public void init(IWorkbench workbench) {
+	public void init(final IWorkbench workbench) {
 		// Nothing to do
 	}
 

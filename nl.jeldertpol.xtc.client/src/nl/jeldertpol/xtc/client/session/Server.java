@@ -66,7 +66,6 @@ public class Server extends AbstractJavaTool {
 					host, "-TB_PORT", port };
 			connect(connectioninfo);
 		} catch (Exception ex) {
-			// disconnect();
 			throw new UnableToConnectException(ex.getMessage());
 		}
 	}
@@ -220,6 +219,7 @@ public class Server extends AbstractJavaTool {
 		boolean success = Boolean.parseBoolean(answer.toString());
 
 		if (!success) {
+			// TODO
 			// throw new LeaveSessionException(projectName);
 		}
 	}
@@ -300,7 +300,7 @@ public class Server extends AbstractJavaTool {
 	 */
 	public void receiveWhosWhere(final byte[] whosWhereBlob) {
 		WhosWhere whosWhere = (WhosWhere) Conversion
-		.byteToObject(whosWhereBlob);
+				.byteToObject(whosWhereBlob);
 
 		Activator.SESSION.receiveWhosWhere(whosWhere);
 	}

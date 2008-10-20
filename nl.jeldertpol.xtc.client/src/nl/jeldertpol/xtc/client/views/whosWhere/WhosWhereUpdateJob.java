@@ -12,8 +12,9 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.progress.UIJob;
 
 /**
- * An {@link UIJob} that can safely update {@link WhosWhereTracker} information in the
- * view. Needs to be safe to prevent invalid thread access exception from SWT.
+ * An {@link UIJob} that can safely update {@link WhosWhereTracker} information
+ * in the view. Needs to be safe to prevent invalid thread access exception from
+ * SWT.
  * 
  * @author Jeldert Pol
  */

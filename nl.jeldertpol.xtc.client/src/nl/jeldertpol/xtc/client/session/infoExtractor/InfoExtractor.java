@@ -2,7 +2,9 @@ package nl.jeldertpol.xtc.client.session.infoExtractor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
+import nl.jeldertpol.xtc.client.Activator;
 import nl.jeldertpol.xtc.client.exceptions.RevisionExtractorException;
 import nl.jeldertpol.xtc.client.exceptions.UnversionedProjectException;
 
@@ -50,8 +52,7 @@ public abstract class InfoExtractor {
 					resources.addAll(getResources(member));
 				}
 			} catch (CoreException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Activator.getLogger().log(Level.SEVERE, e);
 			}
 		} else if (resource instanceof IProject) {
 			IProject project = (IProject) resource;
@@ -60,8 +61,7 @@ public abstract class InfoExtractor {
 					resources.addAll(getResources(member));
 				}
 			} catch (CoreException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Activator.getLogger().log(Level.SEVERE, e);
 			}
 		}
 

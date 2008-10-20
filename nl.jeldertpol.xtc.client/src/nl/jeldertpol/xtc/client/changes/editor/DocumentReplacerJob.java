@@ -66,8 +66,8 @@ public class DocumentReplacerJob extends UIJob {
 	public static IStatus replace(final TextualChange change) {
 		IStatus status;
 
-		Activator.getLogger().log(Level.INFO, "Replacing text in resource "
-				+ change.getFilename());
+		Activator.getLogger().log(Level.INFO,
+				"Replacing text in resource " + change.getFilename());
 
 		IProject project = Activator.COMMON_ACTIONS.getProject(change
 				.getProjectName());
@@ -78,7 +78,8 @@ public class DocumentReplacerJob extends UIJob {
 		if (editor == null) {
 			// There is no editor open with this resource
 			// Ignoring change, will be requested when opening editor
-			Activator.getLogger().log(Level.FINE,
+			Activator.getLogger().log(
+					Level.FINE,
 					"Ignoring textual change, no editor for resource "
 							+ resource.getName() + " found.");
 

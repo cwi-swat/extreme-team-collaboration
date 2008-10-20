@@ -1,8 +1,8 @@
 package nl.jeldertpol.xtc.client.views.chat;
 
 import nl.jeldertpol.xtc.client.Activator;
-import nl.jeldertpol.xtc.client.session.chat.ChatTracker;
 import nl.jeldertpol.xtc.client.session.chat.ChatListener;
+import nl.jeldertpol.xtc.client.session.chat.ChatTracker;
 import nl.jeldertpol.xtc.common.chat.ChatMessage;
 
 import org.eclipse.swt.SWT;
@@ -15,6 +15,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.part.ViewPart;
 
 /**
@@ -23,9 +24,8 @@ import org.eclipse.ui.part.ViewPart;
  */
 public class ChatView extends ViewPart implements ChatListener {
 
-	private Button nicknames;
 	private StyledText chatText;
-	private Button sendButton;
+
 	private StyledText inputText;
 
 	/*
@@ -40,11 +40,10 @@ public class ChatView extends ViewPart implements ChatListener {
 		GridLayout layout = new GridLayout(2, false);
 		parent.setLayout(layout);
 
-		// TODO Contains all nicknames?
-		nicknames = new Button(parent, SWT.NONE);
-		nicknames.setText("nicknames");
+		// Empty placeholder
+		Label emptyLabel = new Label(parent, SWT.NONE);
 		GridData data = new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1);
-		nicknames.setLayoutData(data);
+		emptyLabel.setLayoutData(data);
 
 		// Contains all received messages.
 		chatText = new StyledText(parent, SWT.WRAP | SWT.BORDER | SWT.V_SCROLL);
@@ -53,7 +52,7 @@ public class ChatView extends ViewPart implements ChatListener {
 		chatText.setLayoutData(data);
 
 		// Send a message button
-		sendButton = new Button(parent, SWT.PUSH);
+		Button sendButton = new Button(parent, SWT.PUSH);
 		sendButton.setText("Send");
 		data = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
 		sendButton.setLayoutData(data);

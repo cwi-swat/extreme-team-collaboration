@@ -22,8 +22,9 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.ui.progress.UIJob;
 
 /**
- * An {@link UIJob} that can safely update {@link WhosWhereTracker} information in the
- * view. Needs to be safe to prevent invalid thread access exception from SWT.
+ * An {@link UIJob} that can safely update {@link WhosWhereTracker} information
+ * in the view. Needs to be safe to prevent invalid thread access exception from
+ * SWT.
  * 
  * @author Jeldert Pol
  */
@@ -75,7 +76,7 @@ public class ChatUpdateJob extends UIJob {
 			// Get time and format it
 			Calendar calendar = new GregorianCalendar();
 			calendar.setTimeInMillis(chatMessage.getTimestamp());
-			
+
 			NumberFormat formatter = new DecimalFormat("00");
 			String hour = formatter.format(calendar.get(Calendar.HOUR_OF_DAY));
 			String minute = formatter.format(calendar.get(Calendar.MINUTE));
