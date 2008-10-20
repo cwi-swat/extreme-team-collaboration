@@ -139,12 +139,14 @@ process XTCclient(Client : client, Server : server) is
 			(
 				// Send a chat message
 				let
-					ChatMessage : blob
+					ChatMessage : blob,
+					ChatMessageProcessed : blob
 				in
 					rec-event(Client, sendChat(ChatMessage?))
-					. snd-do(Server, chat(ChatMessage))
-					. snd-note(chat(ChatMessage))
-					.snd-ack-event(Client, sendChat(ChatMessage))
+					. snd-eval(Server, sendChat(ChatMessage))
+					. rec-value(Server, sendChat(ChatMessageProcessed?))
+					. snd-ack-event(Client, sendChat(ChatMessage))
+					. snd-note(chat(ChatMessageProcessed))
 				endlet
 			)
 			+

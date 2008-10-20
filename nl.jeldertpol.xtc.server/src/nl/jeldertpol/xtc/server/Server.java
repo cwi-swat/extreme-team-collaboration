@@ -452,25 +452,18 @@ public class Server extends AbstractJavaTool {
 	 * @param message
 	 *            The message.
 	 */
-	public void chat(final byte[] chatBlob) {
+	public ATerm sendChat(final byte[] chatBlob) {
 		ChatMessage chatMessage = (ChatMessage) Conversion
 				.byteToObject(chatBlob);
 
-		StringBuilder sb = new StringBuilder(50); // Guaranteed minimum needed.
+		chatMessage.setTimestamp(System.currentTimeMillis());
 
-		sb.append("<chat>");
+		LOGGER.log(Level.FINE, chatMessage.toXMLString());
+		
+		byte[] blob = Conversion.objectToByte(chatMessage);
 
-		sb.append("<client>");
-		sb.append(chatMessage.getNickname());
-		sb.append("</client>");
-
-		sb.append("<message>");
-		sb.append(chatMessage.getMessage());
-		sb.append("</message>");
-
-		sb.append("</chat>");
-
-		LOGGER.log(Level.FINE, sb.toString());
+		ATerm response = factory.make("sendChat(<blob>)", blob);
+		return response;
 	}
 
 	/**

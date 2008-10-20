@@ -247,11 +247,7 @@ public class Server extends AbstractJavaTool {
 	 * @param message
 	 *            The message.
 	 */
-	public void sendChat(final ChatMessage chatMessage) {// String nickname,
-		// final String
-		// message) {
-		// ATerm sendChat = factory.make("sendChat(<str>, <str>)", nickname,
-		// message);
+	public void sendChat(final ChatMessage chatMessage) {
 		byte[] blob = Conversion.objectToByte(chatMessage);
 
 		ATerm sendChat = factory.make("sendChat(<blob>)", blob);

@@ -881,7 +881,7 @@ public class Session {
 	 *            The message.
 	 */
 	public void receiveChat(final ChatMessage chatMessage) {
-		Activator.getLogger().log(Level.INFO, "Receiving chat from " + nickname
+		Activator.getLogger().log(Level.INFO, "Receiving chat from " + chatMessage.getNickname()
 				+ ".");
 
 		chat.newMessage(chatMessage);

@@ -74,6 +74,8 @@ public class ChatUpdateJob extends UIJob {
 		try {
 			// Get time and format it
 			Calendar calendar = new GregorianCalendar();
+			calendar.setTimeInMillis(chatMessage.getTimestamp());
+			
 			NumberFormat formatter = new DecimalFormat("00");
 			String hour = formatter.format(calendar.get(Calendar.HOUR_OF_DAY));
 			String minute = formatter.format(calendar.get(Calendar.MINUTE));
