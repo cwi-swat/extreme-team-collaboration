@@ -32,7 +32,7 @@ public class ToolbusThread implements Runnable {
 	 *            When <code>true</code>, start a ToolBus with debugging
 	 *            support. When <code>false</code>, start a normal ToolBus.
 	 */
-	public ToolbusThread(String args[], boolean debug) {
+	public ToolbusThread(final String args[], final boolean debug) {
 		this.args = args;
 		this.debug = debug;
 	}

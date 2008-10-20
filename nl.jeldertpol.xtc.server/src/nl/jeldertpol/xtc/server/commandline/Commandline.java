@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.logging.Level;
 
 import nl.jeldertpol.xtc.common.session.SimpleSession;
 import nl.jeldertpol.xtc.server.Server;
@@ -62,13 +63,13 @@ public class Commandline extends Server {
 		while (true) {
 			String input = readInput();
 
-			if (input.equals("H")) {
+			if ("H".equals(input)) {
 				printHelpInput();
-			} else if (input.equals("S")) {
+			} else if ("S".equals(input)) {
 				showSessions();
-			} else if (input.equals("K")) {
+			} else if ("K".equals(input)) {
 				kickClient();
-			} else if (input.equals("Q")) {
+			} else if ("Q".equals(input)) {
 				quit();
 			}
 		}
@@ -81,15 +82,16 @@ public class Commandline extends Server {
 	 */
 	private String readInput() {
 		// open up standard input
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		BufferedReader bufferedReader = new BufferedReader(
+				new InputStreamReader(System.in));
 
 		String input = "";
 
 		// Read the input from the command-line.
 		try {
-			input = br.readLine();
+			input = bufferedReader.readLine();
 		} catch (IOException ioe) {
-			System.out.println("IO error trying to read input!");
+			LOGGER.log(Level.SEVERE, ioe);
 		}
 
 		return input;
@@ -180,7 +182,7 @@ public class Commandline extends Server {
 		System.out.println("Are you sure? (Y/N)");
 		String sure = readInput();
 
-		if (sure.equals("Y")) {
+		if ("Y".equals(sure)) {
 			// Kick everyone
 			List<SimpleSession> sessions = getSimpleSessions();
 

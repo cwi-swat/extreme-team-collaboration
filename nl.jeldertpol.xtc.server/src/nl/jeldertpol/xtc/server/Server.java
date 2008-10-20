@@ -51,7 +51,7 @@ public class Server extends AbstractJavaTool {
 	 */
 	private final List<ChatMessage> chatMessages = new ArrayList<ChatMessage>();
 
-	private static final Logger LOGGER = new FileLogger(LogType.XML);
+	protected static final Logger LOGGER = new FileLogger(LogType.XML);
 
 	/*
 	 * (non-Javadoc)
@@ -79,6 +79,8 @@ public class Server extends AbstractJavaTool {
 	 * @see #printHelp()
 	 */
 	public Server(final String[] args) throws InterruptedException, Exception {
+		super();
+
 		printHelp();
 
 		boolean localToolbus = false;
@@ -90,19 +92,19 @@ public class Server extends AbstractJavaTool {
 		for (int i = 0; i < args.length; i++) {
 			String arg = args[i];
 
-			if (arg.equals("-TB_HOST")) {
+			if ("-TB_HOST".equals(arg)) {
 				argumentsToolbus[0] = "-TB_HOST";
 				argumentsToolbus[1] = args[i + 1];
-			} else if (arg.equals("-TB_PORT")) {
+			} else if ("-TB_PORT".equals(arg)) {
 				argumentsToolbusServer[0] = "-P" + args[i + 1];
 
 				argumentsToolbus[2] = "-TB_PORT";
 				argumentsToolbus[3] = args[i + 1];
-			} else if (arg.equals("-LOCAL")) {
+			} else if ("-LOCAL".equals(arg)) {
 				localToolbus = true;
-			} else if (arg.equals("-DEBUG")) {
+			} else if ("-DEBUG".equals(arg)) {
 				debugToolbus = true;
-			} else if (arg.equals("-S")) {
+			} else if ("-S".equals(arg)) {
 				argumentsToolbusServer[1] = "-S" + args[i + 1];
 			}
 		}
@@ -123,15 +125,13 @@ public class Server extends AbstractJavaTool {
 	 * @see toolbus.adapter.java.AbstractJavaTool#connect(java.lang.String[])
 	 */
 	@Override
-	public void connect(String[] args) throws Exception {
+	public void connect(final String[] args) throws Exception {
 		String[] arguments = new String[args.length + 2];
 
 		arguments[0] = "-TB_TOOL_NAME";
 		arguments[1] = "server";
 
-		for (int i = 0; i < args.length; i++) {
-			arguments[i + 2] = args[i];
-		}
+		System.arraycopy(args, 0, arguments, 2, args.length);
 
 		super.connect(arguments);
 	}
@@ -449,9 +449,9 @@ public class Server extends AbstractJavaTool {
 			oos.writeObject(chatMessages);
 			oos.close();
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			LOGGER.log(Level.SEVERE, e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.log(Level.SEVERE, e);
 		}
 	}
 
@@ -545,9 +545,9 @@ public class Server extends AbstractJavaTool {
 			oos.writeObject(session);
 			oos.close();
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			LOGGER.log(Level.SEVERE, e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.log(Level.SEVERE, e);
 		}
 	}
 
@@ -567,11 +567,11 @@ public class Server extends AbstractJavaTool {
 			session = (Session) ois.readObject();
 			ois.close();
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			LOGGER.log(Level.SEVERE, e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.log(Level.SEVERE, e);
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			LOGGER.log(Level.SEVERE, e);
 		}
 
 		return session;
