@@ -40,7 +40,7 @@ public class DocumentListener implements IDocumentListener {
 		// Text inserted into the document.
 		String text = event.getText();
 
-		Activator.LOGGER.log(Level.FINEST, event.toString());
+		Activator.getLogger().log(Level.FINEST, event.toString());
 
 		Activator.SESSION
 				.sendTextualChange(project, file, length, offset, text);

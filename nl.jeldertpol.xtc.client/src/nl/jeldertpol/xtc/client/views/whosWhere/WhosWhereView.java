@@ -175,7 +175,7 @@ public class WhosWhereView extends ViewPart implements WhosWhereListener {
 					chatView.appendMessage(text + ": ");
 				}
 			} catch (PartInitException e) {
-				Activator.LOGGER.log(Level.SEVERE,
+				Activator.getLogger().log(Level.SEVERE,
 						"Chat view could not be shown.", e);
 			}
 
@@ -217,7 +217,7 @@ public class WhosWhereView extends ViewPart implements WhosWhereListener {
 					// Open new editor
 					page.openEditor(new FileEditorInput(file), editorID);
 				} catch (PartInitException e) {
-					Activator.LOGGER.log(Level.SEVERE,
+					Activator.getLogger().log(Level.SEVERE,
 							"Editor could not be opened.", e);
 				}
 			}

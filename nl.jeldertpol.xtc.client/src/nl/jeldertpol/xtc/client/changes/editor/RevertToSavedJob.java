@@ -50,7 +50,7 @@ public class RevertToSavedJob extends UIJob {
 	public IStatus runInUIThread(final IProgressMonitor monitor) {
 		IStatus status;
 
-		Activator.LOGGER.log(Level.INFO, "Reverting to saved input "
+		Activator.getLogger().log(Level.INFO, "Reverting to saved input "
 				+ resource.getName());
 
 		revertToSaved(resource);

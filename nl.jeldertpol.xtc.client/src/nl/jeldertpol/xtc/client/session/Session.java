@@ -161,7 +161,7 @@ public class Session {
 		String host = preferences.getString(PreferenceConstants.P_HOST);
 		String port = preferences.getString(PreferenceConstants.P_PORT);
 
-		Activator.LOGGER.log(Level.INFO, "Connecting to server: " + host + ":"
+		Activator.getLogger().log(Level.INFO, "Connecting to server: " + host + ":"
 				+ port);
 
 		try {
@@ -296,7 +296,7 @@ public class Session {
 		nickname = preferences.getString(PreferenceConstants.P_NICKNAME);
 
 		// Start or join session.
-		Activator.LOGGER.log(Level.INFO, "StartJoin session: " + projectName
+		Activator.getLogger().log(Level.INFO, "StartJoin session: " + projectName
 				+ ", " + revision + ", " + nickname + ".");
 
 		// NicknameAlreadyTakenException, WrongRevisionException
@@ -328,7 +328,7 @@ public class Session {
 	 * {@link RejoinJob}.
 	 */
 	public void rejoin() {
-		Activator.LOGGER.log(Level.SEVERE, "Rejoining!");
+		Activator.getLogger().log(Level.SEVERE, "Rejoining!");
 
 		IProject project = Activator.COMMON_ACTIONS.getProject(projectName);
 
@@ -356,9 +356,9 @@ public class Session {
 
 			startJoinSession(project, ignoreUnmanagedFiles, sendModifiedFiles);
 		} catch (XtcException e) {
-			Activator.LOGGER.log(Level.SEVERE, "Could not rejoin.", e);
+			Activator.getLogger().log(Level.SEVERE, "Could not rejoin.", e);
 		} catch (CoreException e) {
-			Activator.LOGGER.log(Level.SEVERE, "Could not rejoin.", e);
+			Activator.getLogger().log(Level.SEVERE, "Could not rejoin.", e);
 		}
 
 	}
@@ -394,11 +394,11 @@ public class Session {
 							}
 						}
 					}
-					Activator.LOGGER.log(Level.INFO, "Ignoring build path: "
+					Activator.getLogger().log(Level.INFO, "Ignoring build path: "
 							+ ignoredPathsList);
 				}
 			} catch (JavaModelException e) {
-				Activator.LOGGER.log(Level.SEVERE,
+				Activator.getLogger().log(Level.SEVERE,
 						"Error ignoring build path.", e);
 			}
 		}
@@ -456,7 +456,7 @@ public class Session {
 		try {
 			getWorkbenchPage().addPartListener(Activator.partListener);
 		} catch (NullPointerException e) {
-			Activator.LOGGER.log(Level.WARNING, "Could not addPartListener.");
+			Activator.getLogger().log(Level.WARNING, "Could not addPartListener.");
 		}
 	}
 
@@ -469,7 +469,7 @@ public class Session {
 		try {
 			getWorkbenchPage().removePartListener(Activator.partListener);
 		} catch (NullPointerException e) {
-			Activator.LOGGER
+			Activator.getLogger()
 					.log(Level.WARNING, "Could not removePartListener.");
 		}
 	}
@@ -498,7 +498,7 @@ public class Session {
 	 */
 	public void leaveSession() throws LeaveSessionException {
 		if (inSession) {
-			Activator.LOGGER.log(Level.INFO, "Leaving session.");
+			Activator.getLogger().log(Level.INFO, "Leaving session.");
 
 			// Remove listeners
 			removeResourceChangeListener();
@@ -525,7 +525,7 @@ public class Session {
 			resume();
 		}
 
-		Activator.LOGGER.log(Level.INFO, "Sending change: " + change);
+		Activator.getLogger().log(Level.INFO, "Sending change: " + change);
 
 		server.sendChange(projectName, change, nickname);
 	}
@@ -673,7 +673,7 @@ public class Session {
 	public void requestTextualChanges(final IPath resourcePath) {
 		String resource = resourcePath.toPortableString();
 
-		Activator.LOGGER.log(Level.INFO, "Requesting textual changes for: "
+		Activator.getLogger().log(Level.INFO, "Requesting textual changes for: "
 				+ resource + ".");
 
 		List<AbstractChange> changes = server.requestTextualChanges(
@@ -848,7 +848,7 @@ public class Session {
 			try {
 				job.join();
 			} catch (InterruptedException e) {
-				Activator.LOGGER.log(Level.SEVERE, "Error rejoining job", e);
+				Activator.getLogger().log(Level.SEVERE, "Error rejoining job", e);
 				// TODO What to do?
 			} catch (NullPointerException e) {
 				// TextualChange may not create a job.
@@ -866,7 +866,7 @@ public class Session {
 	 *            The message.
 	 */
 	public void sendChat(final String message) {
-		Activator.LOGGER.log(Level.INFO, "Sending chat.");
+		Activator.getLogger().log(Level.INFO, "Sending chat.");
 
 		ChatMessage chatMessage = new ChatMessage(nickname, message);
 		server.sendChat(chatMessage);
@@ -881,7 +881,7 @@ public class Session {
 	 *            The message.
 	 */
 	public void receiveChat(final ChatMessage chatMessage) {
-		Activator.LOGGER.log(Level.INFO, "Receiving chat from " + nickname
+		Activator.getLogger().log(Level.INFO, "Receiving chat from " + nickname
 				+ ".");
 
 		chat.newMessage(chatMessage);
@@ -897,7 +897,7 @@ public class Session {
 	 */
 	public void sendWhosWhere(final IProject project, final IPath resourcePath) {
 		if (shouldSend(project, resourcePath)) {
-			Activator.LOGGER.log(Level.FINE, "Sending WhosWhere.");
+			Activator.getLogger().log(Level.FINE, "Sending WhosWhere.");
 
 			String resourceName = resourcePath.toPortableString();
 

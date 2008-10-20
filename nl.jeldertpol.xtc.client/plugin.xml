@@ -131,11 +131,20 @@
             id="nl.jeldertpol.xtc.client.preferences.connection.ConnectionPreferencePage"
             name="Connection preferences">
       </page>
+      <page
+            category="nl.jeldertpol.xtc.client.preferences.XtcPreferencePage"
+            class="nl.jeldertpol.xtc.client.preferences.logging.LoggingPreferencePage"
+            id="nl.jeldertpol.xtc.client.preferences.logging.LoggingPreferencePage"
+            name="Logging preferences">
+      </page>
    </extension>
    <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer
             class="nl.jeldertpol.xtc.client.preferences.connection.PreferenceInitializer">
+      </initializer>
+      <initializer
+            class="nl.jeldertpol.xtc.client.preferences.logging.PreferenceInitializer">
       </initializer>
    </extension>
    <extension

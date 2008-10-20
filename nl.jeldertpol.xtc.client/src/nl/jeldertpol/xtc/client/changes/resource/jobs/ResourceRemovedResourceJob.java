@@ -57,14 +57,14 @@ public class ResourceRemovedResourceJob extends HighPriorityJob {
 		IContainer parent = resource.getParent();
 
 		try {
-			Activator.LOGGER.log(Level.INFO, "Deleting resource "
+			Activator.getLogger().log(Level.INFO, "Deleting resource "
 					+ resource.toString() + ".");
 
 			resource.delete(force, monitor);
 			try {
 				parent.refreshLocal(IResource.NONE, monitor);
 			} catch (CoreException e) {
-				Activator.LOGGER.log(Level.SEVERE, e);
+				Activator.getLogger().log(Level.SEVERE, e);
 
 				status = new Status(IStatus.ERROR, Activator.PLUGIN_ID,
 						"Error refreshing resource.");
@@ -72,7 +72,7 @@ public class ResourceRemovedResourceJob extends HighPriorityJob {
 			status = new Status(IStatus.OK, Activator.PLUGIN_ID,
 					"Resource content set successfully.");
 		} catch (CoreException e) {
-			Activator.LOGGER.log(Level.SEVERE,
+			Activator.getLogger().log(Level.SEVERE,
 					"Resource could not be deleted.", e);
 
 			status = new Status(IStatus.ERROR, Activator.PLUGIN_ID,

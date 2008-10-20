@@ -64,7 +64,7 @@ public class ResourceAddedResourceJob extends HighPriorityJob {
 
 				if (file.exists()) {
 					// TODO File already exists, ignoring?
-					Activator.LOGGER.log(Level.WARNING, "File "
+					Activator.getLogger().log(Level.WARNING, "File "
 							+ file.toString() + " already exists.");
 
 					status = new Status(IStatus.OK, Activator.PLUGIN_ID,
@@ -78,7 +78,7 @@ public class ResourceAddedResourceJob extends HighPriorityJob {
 					file.create(source, force, monitor);
 					file.refreshLocal(IResource.NONE, monitor);
 
-					Activator.LOGGER.log(Level.INFO, "File " + file.toString()
+					Activator.getLogger().log(Level.INFO, "File " + file.toString()
 							+ " created.");
 
 					status = new Status(IStatus.OK, Activator.PLUGIN_ID,
@@ -89,7 +89,7 @@ public class ResourceAddedResourceJob extends HighPriorityJob {
 
 				if (folder.exists()) {
 					// TODO Folder already exists, ignoring?
-					Activator.LOGGER.log(Level.WARNING, "Folder "
+					Activator.getLogger().log(Level.WARNING, "Folder "
 							+ folder.toString() + " already exists.");
 
 					status = new Status(IStatus.OK, Activator.PLUGIN_ID,
@@ -106,14 +106,14 @@ public class ResourceAddedResourceJob extends HighPriorityJob {
 						Activator.SESSION.addResourceChangeListener();
 					}
 
-					Activator.LOGGER.log(Level.INFO, "Folder "
+					Activator.getLogger().log(Level.INFO, "Folder "
 							+ folder.toString() + " created.");
 
 					status = new Status(IStatus.OK, Activator.PLUGIN_ID,
 							"Resource added successfully.");
 				}
 			} else {
-				Activator.LOGGER.log(Level.SEVERE,
+				Activator.getLogger().log(Level.SEVERE,
 						"Resource not a file or folder, but of type " + type
 								+ ".");
 
@@ -122,7 +122,7 @@ public class ResourceAddedResourceJob extends HighPriorityJob {
 								+ ".");
 			}
 		} catch (CoreException e) {
-			Activator.LOGGER.log(Level.SEVERE,
+			Activator.getLogger().log(Level.SEVERE,
 					"Resource content could not be set.", e);
 
 			status = new Status(IStatus.ERROR, Activator.PLUGIN_ID,

@@ -70,12 +70,12 @@ public class ResourceSendContentJob extends HighPriorityJob {
 			status = new Status(IStatus.OK, Activator.PLUGIN_ID,
 					"Resource content set successfully.");
 		} catch (FileNotFoundException e) {
-			Activator.LOGGER.log(Level.WARNING, e);
+			Activator.getLogger().log(Level.WARNING, e);
 
 			status = new Status(IStatus.ERROR, Activator.PLUGIN_ID,
 					"Resource not found.");
 		} catch (IOException e) {
-			Activator.LOGGER.log(Level.SEVERE, e);
+			Activator.getLogger().log(Level.SEVERE, e);
 
 			status = new Status(IStatus.ERROR, Activator.PLUGIN_ID,
 					"Resource could not be read.");

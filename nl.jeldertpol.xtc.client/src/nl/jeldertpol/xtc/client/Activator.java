@@ -5,11 +5,16 @@ import java.util.logging.Level;
 import nl.jeldertpol.xtc.client.changes.editor.DocumentListener;
 import nl.jeldertpol.xtc.client.changes.editor.PartListener;
 import nl.jeldertpol.xtc.client.changes.resource.ResourceChangeListener;
+import nl.jeldertpol.xtc.client.preferences.logging.PreferenceConstants;
 import nl.jeldertpol.xtc.client.session.Session;
 import nl.jeldertpol.xtc.client.workspace.CommonActions;
+import nl.jeldertpol.xtc.common.logging.FileLogger;
 import nl.jeldertpol.xtc.common.logging.Logger;
+import nl.jeldertpol.xtc.common.logging.NullLogger;
+import nl.jeldertpol.xtc.common.logging.FileLogger.LogType;
 
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Preferences;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -24,9 +29,9 @@ public class Activator extends AbstractUIPlugin {
 
 	public static final String CHAT_VIEW_ID = "nl.jeldertpol.xtc.client.view.chat";
 
+	private static Logger LOGGER = new NullLogger();
+	
 	public static final Session SESSION = new Session();
-
-	public static final Logger LOGGER = new Logger(Logger.LogType.PLAIN);
 
 	public static final CommonActions COMMON_ACTIONS = new CommonActions();
 
@@ -65,8 +70,39 @@ public class Activator extends AbstractUIPlugin {
 	public void start(final BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
+		
+		LOGGER = createLogger();
 
-		LOGGER.log(Level.FINEST, "XTC plug-in started.");
+		getLogger().log(Level.FINEST, "XTC plug-in started.");
+	}
+
+	/**
+	 * Create a logger, based on preferences.
+	 * 
+	 * @return A logger.
+	 */
+	private Logger createLogger() {
+		Preferences preferences = Activator.getDefault().getPluginPreferences();
+		boolean enabled = preferences
+				.getBoolean(PreferenceConstants.P_LOGGING_ENABLED);
+		String format = preferences
+				.getString(PreferenceConstants.P_LOGGING_FORMAT);
+
+		Logger logger = new NullLogger();
+
+		if (enabled) {
+			if (format.equals("XML")) {
+				logger = new FileLogger(LogType.XML);
+			} else if (format.equals("PLAIN")) {
+				logger = new FileLogger(LogType.PLAIN);
+			}
+		}
+
+		return logger;
+	}
+	
+	public static Logger getLogger() {
+		return LOGGER;
 	}
 
 	/*
@@ -83,7 +119,7 @@ public class Activator extends AbstractUIPlugin {
 
 		SESSION.disconnect();
 
-		LOGGER.log(Level.FINEST, "XTC plug-in stopped.");
+		getLogger().log(Level.FINEST, "XTC plug-in stopped.");
 
 		plugin = null;
 		super.stop(context);

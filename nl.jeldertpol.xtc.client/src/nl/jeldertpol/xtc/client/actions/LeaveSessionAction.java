@@ -50,7 +50,7 @@ public class LeaveSessionAction extends AbstractHandler {
 				try {
 					Activator.SESSION.leaveSession();
 				} catch (XtcException e) {
-					Activator.LOGGER.log(Level.WARNING, e);
+					Activator.getLogger().log(Level.WARNING, e);
 					MessageDialog.openError(null, "XTC Leave", e.getMessage());
 				}
 			}

@@ -66,7 +66,7 @@ public class DocumentReplacerJob extends UIJob {
 	public static IStatus replace(final TextualChange change) {
 		IStatus status;
 
-		Activator.LOGGER.log(Level.INFO, "Replacing text in resource "
+		Activator.getLogger().log(Level.INFO, "Replacing text in resource "
 				+ change.getFilename());
 
 		IProject project = Activator.COMMON_ACTIONS.getProject(change
@@ -78,7 +78,7 @@ public class DocumentReplacerJob extends UIJob {
 		if (editor == null) {
 			// There is no editor open with this resource
 			// Ignoring change, will be requested when opening editor
-			Activator.LOGGER.log(Level.FINE,
+			Activator.getLogger().log(Level.FINE,
 					"Ignoring textual change, no editor for resource "
 							+ resource.getName() + " found.");
 
@@ -102,7 +102,7 @@ public class DocumentReplacerJob extends UIJob {
 				status = new Status(IStatus.OK, Activator.PLUGIN_ID,
 						"TextualChange applied successfully.");
 			} catch (BadLocationException e) {
-				Activator.LOGGER.log(Level.SEVERE, e);
+				Activator.getLogger().log(Level.SEVERE, e);
 
 				status = new Status(IStatus.ERROR, Activator.PLUGIN_ID,
 						"TextualChange could not be applied.");

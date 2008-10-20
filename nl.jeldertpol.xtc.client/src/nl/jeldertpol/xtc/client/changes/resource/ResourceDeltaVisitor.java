@@ -89,19 +89,19 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 			ofInterest = true;
 			break;
 		case IResourceDelta.ADDED_PHANTOM:
-			Activator.LOGGER.log(Level.FINE, "Added Phantom: "
+			Activator.getLogger().log(Level.FINE, "Added Phantom: "
 					+ resourcePortableString + ".");
 			// TODO of interest?
 			ofInterest = true;
 			break;
 		case IResourceDelta.REMOVED_PHANTOM:
-			Activator.LOGGER.log(Level.FINE, "Removed Phantom: "
+			Activator.getLogger().log(Level.FINE, "Removed Phantom: "
 					+ resourcePortableString + ".");
 			// TODO of interest?
 			ofInterest = true;
 			break;
 		default:
-			Activator.LOGGER.log(Level.WARNING, "Unhandled kind of delta: "
+			Activator.getLogger().log(Level.WARNING, "Unhandled kind of delta: "
 					+ delta.getKind() + ". For resource "
 					+ resourcePortableString + ".");
 			// ofInterest = false;
@@ -139,13 +139,13 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 			// The project has either been opened or closed. If the project
 			// is now open, then it was previously closed, and vice-versa.
 			if ((flags & IResourceDelta.OPEN) != 0) {
-				Activator.LOGGER.log(Level.INFO,
+				Activator.getLogger().log(Level.INFO,
 						"Project opened or closed. Leaving session.");
 
 				try {
 					Activator.SESSION.leaveSession();
 				} catch (LeaveSessionException e) {
-					Activator.LOGGER.log(Level.SEVERE, e);
+					Activator.getLogger().log(Level.SEVERE, e);
 				}
 			}
 			// The resource was moved to another location. The location it
@@ -172,7 +172,7 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 			if ((flags & IResourceDelta.TYPE) != 0) {
 				// Will this ever happen?
 				// Ignoring for now.
-				Activator.LOGGER.log(Level.WARNING, "Type changed to "
+				Activator.getLogger().log(Level.WARNING, "Type changed to "
 						+ resource.getType() + ", but not handled. Resource "
 						+ resourcePortableString);
 			}
@@ -198,7 +198,7 @@ public class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 			// same location (i.e., the resource has been deleted and then
 			// re-added).
 			if ((flags & IResourceDelta.REPLACED) != 0) {
-				Activator.LOGGER.log(Level.WARNING,
+				Activator.getLogger().log(Level.WARNING,
 						"Resource replaced, but not handled. Resource "
 								+ resourcePortableString + ".");
 			}

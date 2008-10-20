@@ -38,12 +38,12 @@ public class Server extends AbstractJavaTool {
 
 	@Override
 	public void receiveAckEvent(final ATerm term) {
-		Activator.LOGGER.log(Level.INFO, "receiveAckEvent: " + term.toString());
+		Activator.getLogger().log(Level.INFO, "receiveAckEvent: " + term.toString());
 	}
 
 	@Override
 	public void receiveTerminate(final ATerm term) {
-		Activator.LOGGER
+		Activator.getLogger()
 				.log(Level.INFO, "receiveTerminate: " + term.toString());
 	}
 
@@ -130,7 +130,7 @@ public class Server extends AbstractJavaTool {
 			} else if (exception instanceof WrongRevisionException) {
 				throw (WrongRevisionException) exception;
 			} else {
-				Activator.LOGGER.log(Level.SEVERE, exception);
+				Activator.getLogger().log(Level.SEVERE, exception);
 			}
 		}
 	}

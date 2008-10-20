@@ -81,7 +81,7 @@ public class ShowProjects {
 				infoExtractor.getRevision(project);
 				versionedProjects.add(project);
 			} catch (RevisionExtractorException e) {
-				Activator.LOGGER
+				Activator.getLogger()
 						.log(
 								Level.SEVERE,
 								"The underlying version control system throws an error.",
@@ -89,7 +89,7 @@ public class ShowProjects {
 				MessageDialog.openError(null, "XTC Start/Join", e.getMessage());
 			} catch (UnversionedProjectException e) {
 				// Project is not under version control. Log and ignore.
-				Activator.LOGGER.log(Level.INFO, e);
+				Activator.getLogger().log(Level.INFO, e);
 			}
 		}
 

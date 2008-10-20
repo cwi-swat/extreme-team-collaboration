@@ -63,13 +63,13 @@ public class ProjectLabelProvider extends AbstractLabelProvider {
 				Long revision = infoExtractor.getRevision(project);
 				text += " (revision " + revision + ")";
 			} catch (UnversionedProjectException e) {
-				Activator.LOGGER
+				Activator.getLogger()
 						.log(
 								Level.SEVERE,
 								"The underlying version control system throws an error.",
 								e);
 			} catch (RevisionExtractorException e) {
-				Activator.LOGGER.log(Level.FINEST, e);
+				Activator.getLogger().log(Level.FINEST, e);
 			}
 		}
 

@@ -59,19 +59,19 @@ public class ResourceReceiveContentJob extends HighPriorityJob {
 		IPath location = resource.getLocation();
 		File file = location.toFile();
 
-		Activator.LOGGER.log(Level.INFO, "Setting content of file "
+		Activator.getLogger().log(Level.INFO, "Setting content of file "
 				+ file.toString() + ".");
 
 		byte[] content = contentChange.getContent();
 		try {
 			Conversion.byteToFile(content, file);
 		} catch (FileNotFoundException e) {
-			Activator.LOGGER.log(Level.WARNING, e);
+			Activator.getLogger().log(Level.WARNING, e);
 
 			// Rejoin
 			new RejoinJob();
 		} catch (IOException e) {
-			Activator.LOGGER.log(Level.WARNING, e);
+			Activator.getLogger().log(Level.WARNING, e);
 
 			// Rejoin
 			new RejoinJob();
@@ -83,7 +83,7 @@ public class ResourceReceiveContentJob extends HighPriorityJob {
 			status = new Status(IStatus.OK, Activator.PLUGIN_ID,
 					"Resource content set successfully.");
 		} catch (CoreException e) {
-			Activator.LOGGER.log(Level.SEVERE, e);
+			Activator.getLogger().log(Level.SEVERE, e);
 
 			status = new Status(IStatus.ERROR, Activator.PLUGIN_ID,
 					"Error refreshing resource.");

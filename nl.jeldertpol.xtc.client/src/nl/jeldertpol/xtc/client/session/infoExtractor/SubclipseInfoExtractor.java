@@ -83,7 +83,7 @@ public class SubclipseInfoExtractor extends InfoExtractor {
 				}
 
 			} catch (SVNException e) {
-				Activator.LOGGER.log(Level.SEVERE, e);
+				Activator.getLogger().log(Level.SEVERE, e);
 			}
 		}
 
@@ -117,7 +117,7 @@ public class SubclipseInfoExtractor extends InfoExtractor {
 				}
 
 			} catch (SVNException e) {
-				Activator.LOGGER.log(Level.SEVERE, e);
+				Activator.getLogger().log(Level.SEVERE, e);
 			}
 		}
 

@@ -1,4 +1,4 @@
-package nl.jeldertpol.xtc.client.preferences.connection;
+package nl.jeldertpol.xtc.client.preferences.logging;
 
 import nl.jeldertpol.xtc.client.Activator;
 
@@ -21,10 +21,8 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	@Override
 	public void initializeDefaultPreferences() {
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
-		store.setDefault(PreferenceConstants.P_HOST, "localhost");
-		store.setDefault(PreferenceConstants.P_PORT, 60000);
-		store.setDefault(PreferenceConstants.P_NICKNAME, System
-				.getProperty("user.name"));
+		store.setDefault(PreferenceConstants.P_LOGGING_ENABLED, true);
+		store.setDefault(PreferenceConstants.P_LOGGING_FORMAT, "xml");
 	}
 
 }

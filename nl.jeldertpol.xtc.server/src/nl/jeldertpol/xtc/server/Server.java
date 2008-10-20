@@ -19,7 +19,9 @@ import nl.jeldertpol.xtc.common.conversion.Conversion;
 import nl.jeldertpol.xtc.common.exceptions.NicknameAlreadyTakenException;
 import nl.jeldertpol.xtc.common.exceptions.WrongRevisionException;
 import nl.jeldertpol.xtc.common.exceptions.XtcException;
+import nl.jeldertpol.xtc.common.logging.FileLogger;
 import nl.jeldertpol.xtc.common.logging.Logger;
+import nl.jeldertpol.xtc.common.logging.FileLogger.LogType;
 import nl.jeldertpol.xtc.common.session.SimpleSession;
 import nl.jeldertpol.xtc.server.session.Session;
 import toolbus.adapter.java.AbstractJavaTool;
@@ -43,7 +45,7 @@ public class Server extends AbstractJavaTool {
 	 */
 	private final List<Session> sessions = new ArrayList<Session>();
 
-	private static final Logger LOGGER = new Logger(Logger.LogType.XML);
+	private static final Logger LOGGER = new FileLogger(LogType.XML);
 
 	/*
 	 * (non-Javadoc)

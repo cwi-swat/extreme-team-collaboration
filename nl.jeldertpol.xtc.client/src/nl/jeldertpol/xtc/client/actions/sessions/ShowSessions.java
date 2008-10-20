@@ -63,7 +63,7 @@ public class ShowSessions {
 				projectName = getProjectNameFromSelection(selection);
 			}
 		} catch (XtcException e) {
-			Activator.LOGGER.log(Level.WARNING, e);
+			Activator.getLogger().log(Level.WARNING, e);
 			MessageDialog.openError(null, "XTC Start/Join", e.getMessage());
 		}
 

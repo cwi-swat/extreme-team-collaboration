@@ -125,7 +125,7 @@ public class ChatUpdateJob extends UIJob {
 				status = new Status(IStatus.OK, Activator.PLUGIN_ID,
 						"ChatUpdateJob finished successfully.");
 			} else {
-				Activator.LOGGER.log(Level.SEVERE, e);
+				Activator.getLogger().log(Level.SEVERE, e);
 
 				status = new Status(IStatus.ERROR, Activator.PLUGIN_ID,
 						"ChatUpdateJob error.");

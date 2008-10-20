@@ -61,7 +61,7 @@ public class ResourceMovedJob extends HighPriorityJob {
 		moveTo = project.getFullPath().append(moveTo);
 
 		try {
-			Activator.LOGGER.log(Level.INFO, "Moving resource " + moveFrom
+			Activator.getLogger().log(Level.INFO, "Moving resource " + moveFrom
 					+ " --> " + moveTo);
 
 			// TODO true or false?
@@ -72,7 +72,7 @@ public class ResourceMovedJob extends HighPriorityJob {
 			status = new Status(IStatus.OK, Activator.PLUGIN_ID,
 					"Move applied successfully.");
 		} catch (CoreException e) {
-			Activator.LOGGER.log(Level.SEVERE, "Resource could not be moved.",
+			Activator.getLogger().log(Level.SEVERE, "Resource could not be moved.",
 					e);
 
 			status = new Status(IStatus.ERROR, Activator.PLUGIN_ID,
