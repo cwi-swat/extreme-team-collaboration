@@ -60,7 +60,7 @@ public class WhosWhere implements Serializable {
 	 * @param timestamp
 	 *            the timestamp to set
 	 */
-	public void setTimestamp(long timestamp) {
+	public void setTimestamp(final long timestamp) {
 		this.timestamp = timestamp;
 	}
 

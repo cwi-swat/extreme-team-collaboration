@@ -63,7 +63,7 @@ public class ChatMessage implements Serializable {
 	 * @param timestamp
 	 *            The timestamp to set
 	 */
-	public void setTimestamp(long timestamp) {
+	public void setTimestamp(final long timestamp) {
 		this.timestamp = timestamp;
 	}
 

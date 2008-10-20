@@ -14,7 +14,7 @@ import java.util.logging.XMLFormatter;
  */
 public class FileLogger implements Logger {
 
-	private final java.util.logging.Logger log;
+	private final java.util.logging.Logger logger;
 
 	private final static String logName = "nl.jeldertpol.xtc";
 
@@ -37,13 +37,13 @@ public class FileLogger implements Logger {
 	 *            The format of the log file.
 	 */
 	public FileLogger(final LogType logType) {
-		log = java.util.logging.Logger.getLogger(logName);
-		log.setLevel(Level.ALL);
+		logger = java.util.logging.Logger.getLogger(logName);
+		logger.setLevel(Level.ALL);
 
 		try {
 			boolean append = true;
 			FileHandler fileHandler = new FileHandler(logFile, append);
-			log.addHandler(fileHandler);
+			logger.addHandler(fileHandler);
 
 			Formatter formatter;
 			if (logType == LogType.XML) {
@@ -70,7 +70,7 @@ public class FileLogger implements Logger {
 	 * java.lang.String)
 	 */
 	public void log(final Level level, final String message) {
-		log.log(level, message);
+		logger.log(level, message);
 	}
 
 	/*
@@ -98,7 +98,7 @@ public class FileLogger implements Logger {
 	public void log(final Level level, final String message,
 			final Exception exception) {
 		if (level.intValue() > Level.INFO.intValue()) {
-			log.log(level, message, exception);
+			logger.log(level, message, exception);
 		} else {
 			log(level, message + "\n" + exception.getMessage());
 		}

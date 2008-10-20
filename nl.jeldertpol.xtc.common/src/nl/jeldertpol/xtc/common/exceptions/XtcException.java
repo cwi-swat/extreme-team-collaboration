@@ -9,9 +9,6 @@ package nl.jeldertpol.xtc.common.exceptions;
  */
 public abstract class XtcException extends Exception {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	/*

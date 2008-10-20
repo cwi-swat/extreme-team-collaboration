@@ -12,9 +12,6 @@ import java.util.List;
  */
 public class SimpleSession implements Serializable {
 
-	/**
-	 * TODO map to plug-in version
-	 */
 	private static final long serialVersionUID = 1L;
 
 	private final String projectName;
@@ -40,22 +37,6 @@ public class SimpleSession implements Serializable {
 		clients = new ArrayList<String>();
 	}
 
-	/**
-	 * Create a new session.
-	 * 
-	 * @param projectName
-	 *            The name of the project.
-	 * @param revision
-	 *            The revision of the project.
-	 * @param nickname
-	 *            The client that started this session.
-	 */
-	// public SimpleSession(final String projectName, final Long revision,
-	// final String nickname) {
-	// this(projectName, revision);
-	//
-	// addClient(nickname);
-	// }
 	/**
 	 * Get the name of this project.
 	 * 

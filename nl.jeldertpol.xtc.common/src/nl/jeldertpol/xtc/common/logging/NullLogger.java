@@ -17,7 +17,7 @@ public class NullLogger implements Logger {
 	 * java.lang.String)
 	 */
 	@Override
-	public void log(Level level, String message) {
+	public void log(final Level level, final String message) {
 		// Nothing to do
 	}
 
@@ -29,7 +29,7 @@ public class NullLogger implements Logger {
 	 * java.lang.Exception)
 	 */
 	@Override
-	public void log(Level level, Exception exception) {
+	public void log(final Level level, final Exception exception) {
 		// Nothing to do
 	}
 
@@ -41,7 +41,8 @@ public class NullLogger implements Logger {
 	 * java.lang.String, java.lang.Exception)
 	 */
 	@Override
-	public void log(Level level, String message, Exception exception) {
+	public void log(final Level level, final String message,
+			final Exception exception) {
 		// Nothing to do
 	}
 
