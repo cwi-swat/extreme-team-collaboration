@@ -7,7 +7,7 @@ import java.util.GregorianCalendar;
 import java.util.logging.Level;
 
 import nl.jeldertpol.xtc.client.Activator;
-import nl.jeldertpol.xtc.client.session.whosWhere.WhosWhere;
+import nl.jeldertpol.xtc.client.session.whosWhere.WhosWhereTracker;
 import nl.jeldertpol.xtc.common.chat.ChatMessage;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -22,7 +22,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.ui.progress.UIJob;
 
 /**
- * An {@link UIJob} that can safely update {@link WhosWhere} information in the
+ * An {@link UIJob} that can safely update {@link WhosWhereTracker} information in the
  * view. Needs to be safe to prevent invalid thread access exception from SWT.
  * 
  * @author Jeldert Pol

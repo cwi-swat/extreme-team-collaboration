@@ -10,4 +10,5 @@ Export-Package: nl.jeldertpol.xtc.common.changes,
  nl.jeldertpol.xtc.common.conversion,
  nl.jeldertpol.xtc.common.exceptions,
  nl.jeldertpol.xtc.common.logging,
- nl.jeldertpol.xtc.common.session
+ nl.jeldertpol.xtc.common.session,
+ nl.jeldertpol.xtc.common.whosWhere

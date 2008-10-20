@@ -4,9 +4,10 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import nl.jeldertpol.xtc.client.Activator;
-import nl.jeldertpol.xtc.client.session.whosWhere.WhosWhere;
 import nl.jeldertpol.xtc.client.session.whosWhere.WhosWhereListener;
+import nl.jeldertpol.xtc.client.session.whosWhere.WhosWhereTracker;
 import nl.jeldertpol.xtc.client.views.chat.ChatView;
+import nl.jeldertpol.xtc.common.whosWhere.WhosWhere;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -79,12 +80,13 @@ public class WhosWhereView extends ViewPart implements WhosWhereListener {
 		}
 
 		// Fill table with current information
-		WhosWhere whosWhere = Activator.SESSION.getWhosWhere();
-		Set<String> nicknames = whosWhere.getNicknames();
+		WhosWhereTracker whosWhereTracker = Activator.SESSION.getWhosWhere();
+		Set<String> nicknames = whosWhereTracker.getNicknames();
 		for (String nickname : nicknames) {
 			TableItem item = new TableItem(table, SWT.NONE);
 			item.setText(COLUMN_NICKNAME, nickname);
-			item.setText(COLUMN_RESOURCE, whosWhere.getFilePath(nickname));
+			item.setText(COLUMN_RESOURCE, whosWhereTracker
+					.getFilePath(nickname));
 		}
 
 		for (TableColumn column : table.getColumns()) {
@@ -129,7 +131,7 @@ public class WhosWhereView extends ViewPart implements WhosWhereListener {
 			}
 		});
 
-		whosWhere.addListener(this);
+		whosWhereTracker.addListener(this);
 	}
 
 	/*
@@ -150,15 +152,17 @@ public class WhosWhereView extends ViewPart implements WhosWhereListener {
 	 * (java.lang.String, java.lang.String)
 	 */
 	@Override
-	public void updateWhosWhere(final String nickname, final String filePath) {
+	public void updateWhosWhere(final WhosWhere whosWhere) {
 		// Job will update UI.
 
 		if (Display.getCurrent() == null) {
 			// Not running in a UIThread, so create a UIJob.
-			new WhosWhereUpdateJob(table, nickname, filePath);
+			new WhosWhereUpdateJob(table, whosWhere.getNickname(), whosWhere
+					.getResourceName());
 		} else {
 			// Already running in a UIThread, so apply change directly.
-			WhosWhereUpdateJob.update(table, nickname, filePath);
+			WhosWhereUpdateJob.update(table, whosWhere.getNickname(), whosWhere
+					.getResourceName());
 		}
 	}
 

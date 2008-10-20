@@ -23,6 +23,7 @@ import nl.jeldertpol.xtc.common.logging.FileLogger;
 import nl.jeldertpol.xtc.common.logging.Logger;
 import nl.jeldertpol.xtc.common.logging.FileLogger.LogType;
 import nl.jeldertpol.xtc.common.session.SimpleSession;
+import nl.jeldertpol.xtc.common.whosWhere.WhosWhere;
 import nl.jeldertpol.xtc.server.session.Session;
 import toolbus.adapter.java.AbstractJavaTool;
 import aterm.ATerm;
@@ -406,6 +407,7 @@ public class Server extends AbstractJavaTool {
 		if (session != null) {
 			AbstractChange change = (AbstractChange) Conversion
 					.byteToObject(changeBlob);
+			change.setTimestamp(System.currentTimeMillis());
 			session.addChange(change);
 			success = true;
 			LOGGER.log(Level.FINE, change.toXMLString());
@@ -428,7 +430,7 @@ public class Server extends AbstractJavaTool {
 				.byteToObject(chatBlob);
 
 		chatMessage.setTimestamp(System.currentTimeMillis());
-		
+
 		chatMessages.add(chatMessage);
 		LOGGER.log(Level.FINE, chatMessage.toXMLString());
 
@@ -437,7 +439,7 @@ public class Server extends AbstractJavaTool {
 		ATerm response = factory.make("sendChat(<blob>)", blob);
 		return response;
 	}
-	
+
 	public void saveChatMessages() {
 		try {
 			String filename = "chatMessages" + System.currentTimeMillis();
@@ -464,27 +466,25 @@ public class Server extends AbstractJavaTool {
 	 *            The viewed resource, path must be relative to the project, and
 	 *            portable.
 	 */
-	public void whosWhere(final String nickname, final String projectName,
-			final String resource) {
-		StringBuilder sb = new StringBuilder(89); // Guaranteed minimum needed.
+	public ATerm sendWhosWhere(final byte[] whosWhereBlob) {
+		WhosWhere whosWhere = (WhosWhere) Conversion
+				.byteToObject(whosWhereBlob);
 
-		sb.append("<whoswhere>");
+		whosWhere.setTimestamp(System.currentTimeMillis());
 
-		sb.append("<client>");
-		sb.append(nickname);
-		sb.append("</client>");
+		Session session = getSession(whosWhere.getProjectName());
+		if (session != null) {
+			session.addWhosWhere(whosWhere);
+			LOGGER.log(Level.FINE, whosWhere.toXMLString());
+		} else {
+			// TODO XML?
+			LOGGER.log(Level.SEVERE, "Session does not exist!");
+		}
 
-		sb.append("<projectname>");
-		sb.append(projectName);
-		sb.append("</projectname>");
+		byte[] blob = Conversion.objectToByte(whosWhere);
 
-		sb.append("<resource>");
-		sb.append(resource);
-		sb.append("</resource>");
-
-		sb.append("</whoswhere>");
-
-		LOGGER.log(Level.FINE, sb.toString());
+		ATerm response = factory.make("sendWhosWhere(<blob>)", blob);
+		return response;
 	}
 
 	/**

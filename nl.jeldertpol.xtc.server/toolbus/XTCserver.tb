@@ -54,7 +54,7 @@ process XTCclient(Client : client, Server : server) is
 					. NicknameCheck := Nickname
 					. subscribe(change(<str>, <term>, <str>))	// Project, Change, Nickname
 					. subscribe(chat(<blob>))	// ChatMessage
-					. subscribe(whosWhere(<str>, <str>, <str>))	//Nickname, Project, Resource
+					. subscribe(whosWhere(<blob>))	// WhosWhere
 					. snd-response(Client, startJoinSession(Success))
 				endlet
 			)
@@ -71,7 +71,7 @@ process XTCclient(Client : client, Server : server) is
 					. rec-value(Server, leaveSession(Success?))
 					. unsubscribe(change(<str>, <term>, <str>))	// Project, Change, Nickname
 					. unsubscribe(chat(<blob>))	// ChatMessage
-					. unsubscribe(whosWhere(<str>, <str>, <str>))	//Nickname, Project, Resource
+					. unsubscribe(whosWhere(<blob>))	// WhosWhere
 					. snd-response(Client, leaveSession(Success))
 				endlet
 			)
@@ -163,26 +163,27 @@ process XTCclient(Client : client, Server : server) is
 			(
 				// Send WhosWhere information
 				let
+					WhosWhere : blob,
+					WhosWhereProcessed : blob,
 					Nickname : str,
 					Project : str,
 					Resource : str
 				in
-					rec-event(Client, sendWhosWhere(Nickname?, Project?, Resource?))
-					. snd-do(Server, whosWhere(Nickname, Project, Resource))
-					. snd-note(whosWhere(Nickname, Project, Resource))
-					. snd-ack-event(Client, sendWhosWhere(Nickname, Project, Resource))
+					rec-event(Client, sendWhosWhere(WhosWhere?))
+					. snd-eval(Server, sendWhosWhere(WhosWhere))
+					. rec-value(Server, sendWhosWhere(WhosWhereProcessed?))
+					. snd-ack-event(Client, sendWhosWhere(WhosWhere))
+					. snd-note(whosWhere(WhosWhereProcessed))
 				endlet
 			)
 			+
 			(
 				// Receive WhosWhere information
 				let
-					Nickname : str,
-					Project : str,
-					Resource : str
+					WhosWhere : blob
 				in
-					rec-note(whosWhere(Nickname?, Project?, Resource?))
-					. snd-do(Client, receiveWhosWhere(Nickname, Project, Resource))
+					rec-note(whosWhere(WhosWhere?))
+					. snd-do(Client, receiveWhosWhere(WhosWhere))
 				endlet
 			)
 		)

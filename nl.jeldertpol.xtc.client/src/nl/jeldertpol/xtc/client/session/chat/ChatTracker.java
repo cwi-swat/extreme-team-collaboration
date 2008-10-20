@@ -6,10 +6,11 @@ import java.util.List;
 import nl.jeldertpol.xtc.common.chat.ChatMessage;
 
 /**
- * @author Jeldert Pol
+ * Tracks all received chat messages.
  * 
+ * @author Jeldert Pol
  */
-public class Chat {
+public class ChatTracker {
 
 	/**
 	 * Holds chat messages.
@@ -24,7 +25,7 @@ public class Chat {
 	/**
 	 * TODO Javadoc
 	 */
-	public Chat() {
+	public ChatTracker() {
 		super();
 
 		chatMessages = new ArrayList<ChatMessage>();

@@ -6,17 +6,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import nl.jeldertpol.xtc.common.whosWhere.WhosWhere;
+
 /**
  * Tracks which client is editing which file.
  * 
  * @author Jeldert Pol
  */
-public class WhosWhere {
+public class WhosWhereTracker {
 
 	/**
 	 * Holds the nicknames and their filePath.
 	 */
-	private Map<String, String> whosWhere;
+	private Map<String, String> whosWhereMap;
 
 	/**
 	 * Holds listeners.
@@ -26,10 +28,10 @@ public class WhosWhere {
 	/**
 	 * Constructor.
 	 */
-	public WhosWhere() {
+	public WhosWhereTracker() {
 		super();
 
-		whosWhere = new HashMap<String, String>();
+		whosWhereMap = new HashMap<String, String>();
 		listeners = new ArrayList<WhosWhereListener>();
 	}
 
@@ -42,11 +44,11 @@ public class WhosWhere {
 	 *            The file the change originated from, path is relative to the
 	 *            project, and portable.
 	 */
-	public void change(final String nickname, final String filePath) {
-		whosWhere.put(nickname, filePath);
+	public void change(final WhosWhere whosWhere) {
+		whosWhereMap.put(whosWhere.getNickname(), whosWhere.getResourceName());
 
 		for (WhosWhereListener listener : listeners) {
-			listener.updateWhosWhere(nickname, filePath);
+			listener.updateWhosWhere(whosWhere);
 		}
 	}
 
@@ -56,7 +58,7 @@ public class WhosWhere {
 	 * @return all nicknames.
 	 */
 	public Set<String> getNicknames() {
-		return whosWhere.keySet();
+		return whosWhereMap.keySet();
 	}
 
 	/**
@@ -68,11 +70,11 @@ public class WhosWhere {
 	 *         nickname is not present.
 	 */
 	public String getFilePath(final String nickname) {
-		return whosWhere.get(nickname);
+		return whosWhereMap.get(nickname);
 	}
 
 	public void clear() {
-		whosWhere = new HashMap<String, String>();
+		whosWhereMap = new HashMap<String, String>();
 	}
 
 	/**

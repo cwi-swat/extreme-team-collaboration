@@ -20,11 +20,11 @@ import nl.jeldertpol.xtc.client.exceptions.RevisionExtractorException;
 import nl.jeldertpol.xtc.client.exceptions.UnableToConnectException;
 import nl.jeldertpol.xtc.client.exceptions.UnversionedProjectException;
 import nl.jeldertpol.xtc.client.preferences.connection.PreferenceConstants;
-import nl.jeldertpol.xtc.client.session.chat.Chat;
+import nl.jeldertpol.xtc.client.session.chat.ChatTracker;
 import nl.jeldertpol.xtc.client.session.infoExtractor.InfoExtractor;
 import nl.jeldertpol.xtc.client.session.infoExtractor.SubclipseInfoExtractor;
 import nl.jeldertpol.xtc.client.session.rejoin.RejoinJob;
-import nl.jeldertpol.xtc.client.session.whosWhere.WhosWhere;
+import nl.jeldertpol.xtc.client.session.whosWhere.WhosWhereTracker;
 import nl.jeldertpol.xtc.common.changes.AbstractChange;
 import nl.jeldertpol.xtc.common.changes.AddedResourceChange;
 import nl.jeldertpol.xtc.common.changes.ContentChange;
@@ -102,9 +102,9 @@ public class Session {
 	 */
 	private String nickname;
 
-	final private WhosWhere whosWhere;
+	final private WhosWhereTracker whosWhereTracker;
 
-	final private Chat chat;
+	final private ChatTracker chatTracker;
 
 	/**
 	 * Holds the server.
@@ -126,8 +126,8 @@ public class Session {
 		ignoredPathsList = new ArrayList<IPath>();
 		projectName = "";
 		nickname = "";
-		whosWhere = new WhosWhere();
-		chat = new Chat();
+		whosWhereTracker = new WhosWhereTracker();
+		chatTracker = new ChatTracker();
 
 		server = new Server();
 	}
@@ -135,15 +135,15 @@ public class Session {
 	/**
 	 * @return the whosWhere
 	 */
-	public WhosWhere getWhosWhere() {
-		return whosWhere;
+	public WhosWhereTracker getWhosWhere() {
+		return whosWhereTracker;
 	}
 
 	/**
 	 * @return the chat
 	 */
-	public Chat getChat() {
-		return chat;
+	public ChatTracker getChat() {
+		return chatTracker;
 	}
 
 	/**
@@ -515,8 +515,8 @@ public class Session {
 			nickname = "";
 
 			// Clear data of views
-			whosWhere.clear();
-			chat.clear();
+			whosWhereTracker.clear();
+			chatTracker.clear();
 		}
 	}
 
@@ -884,7 +884,7 @@ public class Session {
 		Activator.getLogger().log(Level.INFO, "Receiving chat from " + chatMessage.getNickname()
 				+ ".");
 
-		chat.newMessage(chatMessage);
+		chatTracker.newMessage(chatMessage);
 	}
 
 	/**
@@ -901,7 +901,9 @@ public class Session {
 
 			String resourceName = resourcePath.toPortableString();
 
-			server.sendWhosWhere(nickname, projectName, resourceName);
+			nl.jeldertpol.xtc.common.whosWhere.WhosWhere whosWhere = new nl.jeldertpol.xtc.common.whosWhere.WhosWhere(projectName, resourceName, nickname);
+
+			server.sendWhosWhere(whosWhere);
 		}
 	}
 
@@ -915,10 +917,9 @@ public class Session {
 	 * @param resource
 	 *            The viewed resource, path is relative to the project.
 	 */
-	public void receiveWhosWhere(final String nickname,
-			final String remoteProjectName, final String resource) {
-		if (shouldReceive(remoteProjectName)) {
-			whosWhere.change(nickname, resource);
+	public void receiveWhosWhere(final nl.jeldertpol.xtc.common.whosWhere.WhosWhere whosWhere) {
+		if (shouldReceive(whosWhere.getProjectName())) {
+			whosWhereTracker.change(whosWhere);
 		}
 	}
 

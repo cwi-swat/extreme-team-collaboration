@@ -1,7 +1,7 @@
 package nl.jeldertpol.xtc.client.views.chat;
 
 import nl.jeldertpol.xtc.client.Activator;
-import nl.jeldertpol.xtc.client.session.chat.Chat;
+import nl.jeldertpol.xtc.client.session.chat.ChatTracker;
 import nl.jeldertpol.xtc.client.session.chat.ChatListener;
 import nl.jeldertpol.xtc.common.chat.ChatMessage;
 
@@ -98,13 +98,13 @@ public class ChatView extends ViewPart implements ChatListener {
 		});
 
 		// Fill chatText with current messages
-		Chat chat = Activator.SESSION.getChat();
-		for (ChatMessage chatMessage : chat.getChatMessages()) {
+		ChatTracker chatTracker = Activator.SESSION.getChat();
+		for (ChatMessage chatMessage : chatTracker.getChatMessages()) {
 			updateChat(chatMessage);
 		}
 
 		// Listen to new messages
-		chat.addListener(this);
+		chatTracker.addListener(this);
 	}
 
 	/**

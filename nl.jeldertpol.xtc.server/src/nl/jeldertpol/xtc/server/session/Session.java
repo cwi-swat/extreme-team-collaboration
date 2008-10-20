@@ -5,6 +5,7 @@ import java.util.List;
 
 import nl.jeldertpol.xtc.common.changes.AbstractChange;
 import nl.jeldertpol.xtc.common.session.SimpleSession;
+import nl.jeldertpol.xtc.common.whosWhere.WhosWhere;
 
 /**
  * Representation of a project. Also holds changes.
@@ -15,10 +16,9 @@ public class Session extends SimpleSession {
 
 	private final List<AbstractChange> changes;
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	private final List<WhosWhere> whosWheres;
+
+	private static final long serialVersionUID = 2L;
 
 	/**
 	 * Create a new project.
@@ -36,6 +36,7 @@ public class Session extends SimpleSession {
 		addClient(nickname);
 
 		changes = new ArrayList<AbstractChange>();
+		whosWheres = new ArrayList<WhosWhere>();
 	}
 
 	/**
@@ -45,7 +46,6 @@ public class Session extends SimpleSession {
 	 *            The change.
 	 */
 	public void addChange(final AbstractChange change) {
-		change.setTimestamp(System.currentTimeMillis());
 		changes.add(change);
 	}
 
@@ -56,6 +56,17 @@ public class Session extends SimpleSession {
 	 */
 	public List<AbstractChange> getChanges() {
 		return changes;
+	}
+
+	public void addWhosWhere(final WhosWhere whosWhere) {
+		whosWheres.add(whosWhere);
+	}
+
+	/**
+	 * @return the whosWheres
+	 */
+	public List<WhosWhere> getWhosWheres() {
+		return whosWheres;
 	}
 
 }

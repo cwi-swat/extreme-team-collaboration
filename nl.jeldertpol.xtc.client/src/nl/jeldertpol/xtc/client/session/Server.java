@@ -13,6 +13,7 @@ import nl.jeldertpol.xtc.common.exceptions.NicknameAlreadyTakenException;
 import nl.jeldertpol.xtc.common.exceptions.WrongRevisionException;
 import nl.jeldertpol.xtc.common.exceptions.XtcException;
 import nl.jeldertpol.xtc.common.session.SimpleSession;
+import nl.jeldertpol.xtc.common.whosWhere.WhosWhere;
 import toolbus.adapter.java.AbstractJavaTool;
 import aterm.ATerm;
 import aterm.ATermAppl;
@@ -38,13 +39,14 @@ public class Server extends AbstractJavaTool {
 
 	@Override
 	public void receiveAckEvent(final ATerm term) {
-		Activator.getLogger().log(Level.INFO, "receiveAckEvent: " + term.toString());
+		Activator.getLogger().log(Level.INFO,
+				"receiveAckEvent: " + term.toString());
 	}
 
 	@Override
 	public void receiveTerminate(final ATerm term) {
-		Activator.getLogger()
-				.log(Level.INFO, "receiveTerminate: " + term.toString());
+		Activator.getLogger().log(Level.INFO,
+				"receiveTerminate: " + term.toString());
 	}
 
 	/**
@@ -278,11 +280,10 @@ public class Server extends AbstractJavaTool {
 	 *            The viewed resource, path must be relative to the project, and
 	 *            portable.
 	 */
-	public void sendWhosWhere(final String nickname, final String project,
-			final String resource) {
-		ATerm sendWhosWhere = factory.make(
-				"sendWhosWhere(<str>, <str>, <str>)", nickname, project,
-				resource);
+	public void sendWhosWhere(final WhosWhere whosWhere) {
+		byte[] blob = Conversion.objectToByte(whosWhere);
+
+		ATerm sendWhosWhere = factory.make("sendWhosWhere(<blob>)", blob);
 		sendEvent(sendWhosWhere);
 	}
 
@@ -297,9 +298,11 @@ public class Server extends AbstractJavaTool {
 	 *            The viewed resource, path is relative to the project, and
 	 *            portable.
 	 */
-	public void receiveWhosWhere(final String nickname, final String project,
-			final String resource) {
-		Activator.SESSION.receiveWhosWhere(nickname, project, resource);
+	public void receiveWhosWhere(final byte[] whosWhereBlob) {
+		WhosWhere whosWhere = (WhosWhere) Conversion
+		.byteToObject(whosWhereBlob);
+
+		Activator.SESSION.receiveWhosWhere(whosWhere);
 	}
 
 }
