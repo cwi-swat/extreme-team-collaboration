@@ -68,6 +68,8 @@ public class Commandline extends Server {
 				showSessions();
 			} else if (input.equals("K")) {
 				kickClient();
+			} else if (input.equals("Q")) {
+				quit();
 			}
 		}
 	}
@@ -103,6 +105,8 @@ public class Commandline extends Server {
 		System.out.println("S: Show sessions and clients.");
 		System.out
 				.println("K: Kick a client. (Should only be used if client crashed!)");
+		System.out
+				.println("Q: Quit. Kicks all clients, and saves all sessions.");
 	}
 
 	/**
@@ -170,6 +174,25 @@ public class Commandline extends Server {
 		}
 
 		printHelpInput();
+	}
+
+	private void quit() {
+		System.out.println("Are you sure? (Y/N)");
+		String sure = readInput();
+
+		if (sure.equals("Y")) {
+			// Kick everyone
+			List<SimpleSession> sessions = getSimpleSessions();
+
+			for (SimpleSession simpleSession : sessions) {
+				for (String client : simpleSession.getClients()) {
+					leaveSession(simpleSession.getProjectName(), client);
+				}
+			}
+
+			// Save chat
+			saveChatMessages();
+		}
 	}
 
 }

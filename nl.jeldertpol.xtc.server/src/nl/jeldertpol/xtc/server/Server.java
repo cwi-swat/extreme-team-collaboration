@@ -45,6 +45,11 @@ public class Server extends AbstractJavaTool {
 	 */
 	private final List<Session> sessions = new ArrayList<Session>();
 
+	/**
+	 * Holds the chat messages.
+	 */
+	private final List<ChatMessage> chatMessages = new ArrayList<ChatMessage>();
+
 	private static final Logger LOGGER = new FileLogger(LogType.XML);
 
 	/*
@@ -411,6 +416,44 @@ public class Server extends AbstractJavaTool {
 	}
 
 	/**
+	 * Log chat.
+	 * 
+	 * @param nickname
+	 *            The nickname of the client the chat message originated from.
+	 * @param message
+	 *            The message.
+	 */
+	public ATerm sendChat(final byte[] chatBlob) {
+		ChatMessage chatMessage = (ChatMessage) Conversion
+				.byteToObject(chatBlob);
+
+		chatMessage.setTimestamp(System.currentTimeMillis());
+		
+		chatMessages.add(chatMessage);
+		LOGGER.log(Level.FINE, chatMessage.toXMLString());
+
+		byte[] blob = Conversion.objectToByte(chatMessage);
+
+		ATerm response = factory.make("sendChat(<blob>)", blob);
+		return response;
+	}
+	
+	public void saveChatMessages() {
+		try {
+			String filename = "chatMessages" + System.currentTimeMillis();
+
+			FileOutputStream fos = new FileOutputStream(filename);
+			ObjectOutputStream oos = new ObjectOutputStream(fos);
+			oos.writeObject(chatMessages);
+			oos.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
 	 * Log WhosWhere.
 	 * 
 	 * @param nickname
@@ -442,28 +485,6 @@ public class Server extends AbstractJavaTool {
 		sb.append("</whoswhere>");
 
 		LOGGER.log(Level.FINE, sb.toString());
-	}
-
-	/**
-	 * Log chat.
-	 * 
-	 * @param nickname
-	 *            The nickname of the client the chat message originated from.
-	 * @param message
-	 *            The message.
-	 */
-	public ATerm sendChat(final byte[] chatBlob) {
-		ChatMessage chatMessage = (ChatMessage) Conversion
-				.byteToObject(chatBlob);
-
-		chatMessage.setTimestamp(System.currentTimeMillis());
-
-		LOGGER.log(Level.FINE, chatMessage.toXMLString());
-		
-		byte[] blob = Conversion.objectToByte(chatMessage);
-
-		ATerm response = factory.make("sendChat(<blob>)", blob);
-		return response;
 	}
 
 	/**
