@@ -45,6 +45,7 @@ public class Session extends SimpleSession {
 	 *            The change.
 	 */
 	public void addChange(final AbstractChange change) {
+		change.setTimestamp(System.currentTimeMillis());
 		changes.add(change);
 	}
 

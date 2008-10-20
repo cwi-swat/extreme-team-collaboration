@@ -7,7 +7,6 @@ import java.util.List;
 
 import nl.jeldertpol.xtc.common.session.SimpleSession;
 import nl.jeldertpol.xtc.server.Server;
-import toolbus.adapter.java.AbstractJavaTool;
 
 /**
  * Command Line Interface for the server. Can print current sessions and
@@ -16,49 +15,42 @@ import toolbus.adapter.java.AbstractJavaTool;
  * 
  * @author Jeldert Pol
  */
-public class Commandline {
-	final Server server;
+public class Commandline extends Server {
 
-	/**
-	 * Starting point for XTC Server. Can be called directly from the Toolbus
-	 * script. This supplies the correct args (as required by
-	 * {@link AbstractJavaTool#connect(String[])}).
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @param args
-	 *            Arguments to connect to the Toolbus.
-	 * @throws Exception
-	 *             Thrown when something goes wrong during the parsing of the
-	 *             arguments or the establishing of the connection.
+	 * @see nl.jeldertpol.xtc.server.Server#Server(String[])
 	 */
-	public static void main(final String[] args) {
-		try {
-			new Commandline(args);
-		} catch (Exception e) {
-			e.printStackTrace();
-
-			System.out
-					.println("Arguments: -TB_TOOL_NAME server -TB_HOST localhost -TB_PORT 60000");
-			System.out.println("-TB_HOST and -TB_PORT can be redefined.");
-		}
+	public static void main(final String[] args) throws InterruptedException,
+			Exception {
+		new Commandline(args);
 	}
 
 	/**
-	 * Constructor. Connects to the server, prints help, and starts taking user
-	 * input.
+	 * Start a XTC server. Can connect to an external ToolBus, or start an
+	 * internal one.
+	 * 
+	 * The user can control the server via command line input.
 	 * 
 	 * @param args
-	 *            Arguments to connect to the Toolbus.
+	 *            The arguments needed for setting up the connection.
+	 * @throws InterruptedException
+	 *             When starting an internal ToolBus, a pause in performed, to
+	 *             let the ToolBus start.
 	 * @throws Exception
 	 *             Thrown when something goes wrong during the parsing of the
 	 *             arguments or the establishing of the connection.
+	 * 
+	 * @see #printHelp()
+	 * @see #printHelpInput()
 	 */
-	public Commandline(final String[] args) throws Exception {
-		super();
+	public Commandline(final String[] args) throws InterruptedException,
+			Exception {
+		super(args);
 
-		server = new Server();
-		server.connect(args);
+		printHelpInput();
 
-		printHelp();
 		loopInput();
 	}
 
@@ -71,7 +63,7 @@ public class Commandline {
 			String input = readInput();
 
 			if (input.equals("H")) {
-				printHelp();
+				printHelpInput();
 			} else if (input.equals("S")) {
 				showSessions();
 			} else if (input.equals("K")) {
@@ -102,11 +94,12 @@ public class Commandline {
 	}
 
 	/**
-	 * Prints a help message.
+	 * Prints a help message about how to interact with the server.
 	 */
-	private void printHelp() {
+	private void printHelpInput() {
 		System.out.println("XTC administrative console.");
 		System.out.println("Usage:");
+		System.out.println("H: Print this help message.");
 		System.out.println("S: Show sessions and clients.");
 		System.out
 				.println("K: Kick a client. (Should only be used if client crashed!)");
@@ -116,7 +109,7 @@ public class Commandline {
 	 * Shows the sessions and clients on the server.
 	 */
 	private void showSessions() {
-		List<SimpleSession> sessions = server.getSimpleSessions();
+		List<SimpleSession> sessions = getSimpleSessions();
 
 		for (SimpleSession simpleSession : sessions) {
 			System.out.println(simpleSession.getProjectName() + " ("
@@ -137,7 +130,7 @@ public class Commandline {
 		System.out.println("Enter name of session:");
 		String inputProject = readInput();
 
-		List<SimpleSession> sessions = server.getSimpleSessions();
+		List<SimpleSession> sessions = getSimpleSessions();
 
 		for (SimpleSession simpleSession : sessions) {
 			System.out.println(simpleSession.getProjectName());
@@ -160,7 +153,7 @@ public class Commandline {
 					if (client.equals(inputClient)) {
 						foundClient = true;
 
-						server.leaveSession(inputProject, inputClient);
+						leaveSession(inputProject, inputClient);
 						System.out.println("Client kicked!");
 
 						break;
@@ -176,7 +169,7 @@ public class Commandline {
 			System.out.println("Client not found.");
 		}
 
-		printHelp();
+		printHelpInput();
 	}
 
 }

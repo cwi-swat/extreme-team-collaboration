@@ -29,7 +29,7 @@ import aterm.ATermFactory;
 import aterm.ATermLong;
 
 /**
- * Server can send and receive messages from the Toolbus. Keeps a list of
+ * Server can send and receive messages from the ToolBus. Keeps a list of
  * current sessions.
  * 
  * @author Jeldert Pol
@@ -45,22 +45,101 @@ public class Server extends AbstractJavaTool {
 
 	private static final Logger LOGGER = new Logger(Logger.LogType.XML);
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see nl.jeldertpol.xtc.server.Server#Server(String[])
+	 */
+	public static void main(final String[] args) throws InterruptedException,
+			Exception {
+		new Server(args);
+	}
+
 	/**
-	 * Starting point for XTC Server. Can be called directly from the Toolbus
-	 * script. This supplies the correct args (as required by
-	 * {@link AbstractJavaTool#connect(String[])}).
+	 * Start a XTC server. Can connect to an external ToolBus, or start an
+	 * internal one.
 	 * 
 	 * @param args
-	 *            Arguments to connect to the Toolbus.
+	 *            The arguments needed for setting up the connection.
+	 * @throws InterruptedException
+	 *             When starting an internal ToolBus, a pause in performed, to
+	 *             let the ToolBus start.
 	 * @throws Exception
 	 *             Thrown when something goes wrong during the parsing of the
 	 *             arguments or the establishing of the connection.
+	 * 
+	 * @see #printHelp()
 	 */
-	public static void main(final String[] args) throws Exception {
+	public Server(final String[] args) throws InterruptedException, Exception {
+		printHelp();
+
+		boolean localToolbus = false;
+		boolean debugToolbus = false;
+
+		String argumentsToolbusServer[] = { "", "" };
+		String argumentsToolbus[] = { "", "", "", "" };
+
+		for (int i = 0; i < args.length; i++) {
+			String arg = args[i];
+
+			if (arg.equals("-TB_HOST")) {
+				argumentsToolbus[0] = "-TB_HOST";
+				argumentsToolbus[1] = args[i + 1];
+			} else if (arg.equals("-TB_PORT")) {
+				argumentsToolbusServer[0] = "-P" + args[i + 1];
+
+				argumentsToolbus[2] = "-TB_PORT";
+				argumentsToolbus[3] = args[i + 1];
+			} else if (arg.equals("-LOCAL")) {
+				localToolbus = true;
+			} else if (arg.equals("-DEBUG")) {
+				debugToolbus = true;
+			} else if (arg.equals("-S")) {
+				argumentsToolbusServer[1] = "-S" + args[i + 1];
+			}
+		}
+
+		if (debugToolbus || localToolbus) {
+			Thread toolbusThread = new Thread(new ToolbusThread(
+					argumentsToolbusServer, debugToolbus));
+			toolbusThread.start();
+			Thread.sleep(1000);
+		}
+
+		connect(argumentsToolbus);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see toolbus.adapter.java.AbstractJavaTool#connect(java.lang.String[])
+	 */
+	@Override
+	public void connect(String[] args) throws Exception {
+		String[] arguments = new String[args.length + 2];
+
+		arguments[0] = "-TB_TOOL_NAME";
+		arguments[1] = "server";
+
+		for (int i = 0; i < args.length; i++) {
+			arguments[i + 2] = args[i];
+		}
+
+		super.connect(arguments);
+	}
+
+	/**
+	 * Prints help about how to start the server.
+	 */
+	public static void printHelp() {
 		System.out
-				.println("Arguments: -TB_TOOL_NAME server -TB_HOST localhost -TB_PORT 60000");
-		System.out.println("-TB_HOST and -TB_PORT can be redefined.");
-		new Server().connect(args);
+				.println("Arguments: -TB_HOST localhost -TB_PORT 60000 (-LOCAL/-DEBUG -S scriptname)");
+		System.out.println("-TB_HOST gives the host of the ToolBus.");
+		System.out.println("-TB_PORT gives the port.");
+		System.out
+				.println("If -LOCAL is provided, the ToolBus will be started internally.");
+		System.out
+				.println("If -DEBUG is provided, the ToolBus will be started internally, and run in debug mode.");
 	}
 
 	@Override
@@ -372,7 +451,8 @@ public class Server extends AbstractJavaTool {
 	 *            The message.
 	 */
 	public void chat(final byte[] chatBlob) {
-		ChatMessage chatMessage = (ChatMessage) Conversion.byteToObject(chatBlob);
+		ChatMessage chatMessage = (ChatMessage) Conversion
+				.byteToObject(chatBlob);
 
 		StringBuilder sb = new StringBuilder(50); // Guaranteed minimum needed.
 
