@@ -311,7 +311,7 @@ public class Session {
 
 		// Request and apply all changes made so far.
 		List<AbstractChange> changes = server.requestChanges(projectName);
-		applyChanges(projectName, changes);
+		applyChanges(changes);
 
 		// Send the modified files.
 		for (IResource resource : modifiedFiles) {
@@ -685,7 +685,7 @@ public class Session {
 
 		List<AbstractChange> changes = server.requestTextualChanges(
 				projectName, resource);
-		applyChanges(projectName, changes);
+		applyChanges(changes);
 	}
 
 	/**
@@ -721,7 +721,7 @@ public class Session {
 	public void resume() {
 		if (paused) {
 			paused = false;
-			applyChanges(projectName, pauseList);
+			applyChanges(pauseList);
 			pauseList.clear();
 		}
 	}
@@ -741,6 +741,9 @@ public class Session {
 	 * 
 	 * @param project
 	 *            The project the change originated from.
+	 * @param resourcePath
+	 *            The resource the change belongs to.
+	 * 
 	 * @return <code>true</code> if change should be send to server,
 	 *         <code>false</code> otherwise.
 	 */
@@ -760,6 +763,7 @@ public class Session {
 	 * 
 	 * @param resourcePath
 	 *            Project relative path of resource.
+	 * 
 	 * @return <code>true</code> if resource is ignored, <code>false</code>
 	 *         otherwise.
 	 */
@@ -780,12 +784,11 @@ public class Session {
 	 * Determines whether a change should be received.
 	 * 
 	 * This is when client is in a session, the current project is the same as
-	 * remote project, and the nickname is not the same as this client.
+	 * remote project.
 	 * 
 	 * @param remoteProjectName
 	 *            The project the change originated from.
-	 * @param nickname
-	 *            The nickname of the client the change originated from.
+	 * 
 	 * @return <code>true</code> if change should be received,
 	 *         <code>false</code> otherwise.
 	 */
@@ -796,15 +799,12 @@ public class Session {
 	/**
 	 * Apply a list of changes.
 	 * 
-	 * @param remoteProjectName
-	 *            The project the change originated from.
 	 * @param changes
 	 *            Changes that should be applied.
 	 */
-	private void applyChanges(final String remoteProjectName,
-			final List<AbstractChange> changes) {
+	private void applyChanges(final List<AbstractChange> changes) {
 		for (AbstractChange abstractChange : changes) {
-			applyChange(remoteProjectName, abstractChange);
+			applyChange(abstractChange);
 		}
 	}
 
@@ -813,16 +813,13 @@ public class Session {
 	 * 
 	 * Change is only applied if it should be received.
 	 * 
-	 * @param remoteProjectName
-	 *            The project the change originated from.
 	 * @param abstractChange
 	 *            Change that should be applied.
 	 */
-	public void applyChange(final String remoteProjectName,
-			final AbstractChange abstractChange) {
+	public void applyChange(final AbstractChange abstractChange) {
 		if (paused) {
 			pauseList.add(abstractChange);
-		} else if (shouldReceive(remoteProjectName)) {
+		} else if (shouldReceive(abstractChange.getProjectName())) {
 			Job job = null;
 
 			// Remove listeners
@@ -882,10 +879,8 @@ public class Session {
 	/**
 	 * Receive a chat message from the server.
 	 * 
-	 * @param nickname
-	 *            The client sending the message.
-	 * @param message
-	 *            The message.
+	 * @param chatMessage
+	 *            The chat message.
 	 */
 	public void receiveChat(final ChatMessage chatMessage) {
 		Activator.getLogger().log(Level.INFO,
@@ -918,12 +913,8 @@ public class Session {
 	/**
 	 * Receive what resource is being viewed by another client.
 	 * 
-	 * @param nickname
-	 *            The other client.
-	 * @param remoteProjectName
-	 *            The project the resource belongs to.
-	 * @param resource
-	 *            The viewed resource, path is relative to the project.
+	 * @param whosWhere
+	 *            Contains the viewed resource, and client.
 	 */
 	public void receiveWhosWhere(
 			final nl.jeldertpol.xtc.common.whosWhere.WhosWhere whosWhere) {

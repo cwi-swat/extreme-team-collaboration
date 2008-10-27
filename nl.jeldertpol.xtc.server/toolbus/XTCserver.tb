@@ -52,7 +52,7 @@ process XTCclient(Client : client, Server : server) is
 					. snd-eval(Server, startJoinSession(Project, Revision, Nickname))
 					. rec-value(Server, startJoinSession(Success?))
 					. NicknameCheck := Nickname
-					. subscribe(change(<str>, <term>, <str>))	// Project, Change, Nickname
+					. subscribe(change(<term>, <str>))	// Change, Nickname
 					. subscribe(chat(<blob>))	// ChatMessage
 					. subscribe(whosWhere(<blob>))	// WhosWhere
 					. snd-response(Client, startJoinSession(Success))
@@ -69,7 +69,7 @@ process XTCclient(Client : client, Server : server) is
 					rec-request(Client, leaveSession(Project?, Nickname?))
 					. snd-eval(Server, leaveSession(Project, Nickname))
 					. rec-value(Server, leaveSession(Success?))
-					. unsubscribe(change(<str>, <term>, <str>))	// Project, Change, Nickname
+					. unsubscribe(change(<term>, <str>))	// Change, Nickname
 					. unsubscribe(chat(<blob>))	// ChatMessage
 					. unsubscribe(whosWhere(<blob>))	// WhosWhere
 					. snd-response(Client, leaveSession(Success))
@@ -106,30 +106,28 @@ process XTCclient(Client : client, Server : server) is
 			(
 				// Send a change
 				let
-					Project : str,
 					Change : blob,
 					Nickname : str,
 					Success : bool
 				in
-					rec-request(Client, sendChange(Project?, Change?, Nickname?))
-					. snd-eval(Server, sendChange(Project, Change, Nickname))
+					rec-request(Client, sendChange(Change?, Nickname?))
+					. snd-eval(Server, sendChange(Change))
 					. rec-value(Server, sendChange(Success?))
 					. snd-response(Client, sendChange(Success))
-					. snd-note(change(Project, Change, Nickname))
+					. snd-note(change(Change, Nickname))
 				endlet
 			)
 			+
 			(
 				// Receive a change
 				let
-					Project : str,
 					Change : blob,
 					Nickname : str
 				in
-					rec-note(change(Project?, Change?, Nickname?))
+					rec-note(change(Change?, Nickname?))
 					// Prevent sending change back to sender
 					. if not-equal(NicknameCheck, Nickname) then
-						snd-do(Client, receiveChange(Project, Change, Nickname))
+						snd-do(Client, receiveChange(Change))
 					else
 						tau
 					fi

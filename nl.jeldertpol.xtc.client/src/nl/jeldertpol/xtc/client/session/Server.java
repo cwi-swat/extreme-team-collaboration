@@ -227,18 +227,13 @@ public class Server extends AbstractJavaTool {
 	/**
 	 * Receive a change from the server / other clients.
 	 * 
-	 * @param projectName
-	 *            The name of the project the change originated from.
 	 * @param changeBlob
 	 *            Serialized {@link AbstractChange}.
-	 * @param nickname
-	 *            The nickname of the client the change originated from.
 	 */
-	public void receiveChange(final String projectName,
-			final byte[] changeBlob, final String nickname) {
+	public void receiveChange(final byte[] changeBlob) {
 		AbstractChange change = (AbstractChange) Conversion
 				.byteToObject(changeBlob);
-		Activator.SESSION.applyChange(projectName, change);
+		Activator.SESSION.applyChange(change);
 	}
 
 	/**

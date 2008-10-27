@@ -388,27 +388,30 @@ public class Server extends AbstractJavaTool {
 	/**
 	 * A client sends a change.
 	 * 
-	 * @param projectName
-	 *            Name of the project, to identify the session.
 	 * @param changeBlob
 	 *            Serialized {@link AbstractChange}.
-	 * @param nickname
-	 *            The nickname of the client.
 	 * 
 	 * @return <code>true</code> if the session was found, and changeTerm
 	 *         contains an {@link AbstractChange}, <code>false</code> otherwise.
 	 */
-	public ATerm sendChange(final String projectName, final byte[] changeBlob,
-			final String nickname) {
-		LOGGER.log(Level.INFO, "Client send a change (" + projectName + ", "
-				+ nickname + ").");
+	public ATerm sendChange(final byte[] changeBlob) {
+		AbstractChange change = (AbstractChange) Conversion
+				.byteToObject(changeBlob);
+
+		change.setTimestamp(System.currentTimeMillis());
+
+		LOGGER.log(Level.INFO, "Client send a change ("
+				+ change.getProjectName() + ", " + change.getNickname() + ").");
+		LOGGER.log(Level.FINE, change.toXMLString());
+
 		boolean success = false;
 
-		Session session = getSession(projectName);
-		if (session != null) {
-			AbstractChange change = (AbstractChange) Conversion
-					.byteToObject(changeBlob);
-			change.setTimestamp(System.currentTimeMillis());
+		// Add change to session.
+		Session session = getSession(change.getProjectName());
+		if (session == null) {
+			LOGGER.log(Level.SEVERE, "There is no session for this project. "
+					+ change.getProjectName());
+		} else {
 			session.addChange(change);
 			success = true;
 			LOGGER.log(Level.FINE, change.toXMLString());
@@ -559,7 +562,7 @@ public class Server extends AbstractJavaTool {
 	 *            The session to be loaded.
 	 * @return The {@link Session}, or <code>null</code>.
 	 */
-	private Session loadSession(final String filename) {
+	protected void loadSession(final String filename) {
 		Session session = null;
 
 		try {
@@ -567,6 +570,8 @@ public class Server extends AbstractJavaTool {
 			ObjectInputStream ois = new ObjectInputStream(fis);
 			session = (Session) ois.readObject();
 			ois.close();
+
+			sessions.add(session);
 		} catch (FileNotFoundException e) {
 			LOGGER.log(Level.SEVERE, e);
 		} catch (IOException e) {
@@ -574,8 +579,6 @@ public class Server extends AbstractJavaTool {
 		} catch (ClassNotFoundException e) {
 			LOGGER.log(Level.SEVERE, e);
 		}
-
-		return session;
 	}
 
 }

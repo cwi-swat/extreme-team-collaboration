@@ -67,6 +67,8 @@ public class Commandline extends Server {
 				printHelpInput();
 			} else if ("S".equals(input)) {
 				showSessions();
+			} else if ("L".equals(input)) {
+				loadSession();
 			} else if ("K".equals(input)) {
 				kickClient();
 			} else if ("Q".equals(input)) {
@@ -105,6 +107,7 @@ public class Commandline extends Server {
 		System.out.println("Usage:");
 		System.out.println("H: Print this help message.");
 		System.out.println("S: Show sessions and clients.");
+		System.out.println("L: Load a session.");
 		System.out
 				.println("K: Kick a client. (Should only be used if client crashed!)");
 		System.out
@@ -126,6 +129,13 @@ public class Commandline extends Server {
 			System.out.println();
 		}
 
+	}
+	
+	private void loadSession() {
+		System.out.println("Enter file name of session:");
+		String inputSession = readInput();
+		
+		loadSession(inputSession);
 	}
 
 	/**
