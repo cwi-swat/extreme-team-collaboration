@@ -51,7 +51,8 @@ public class Server extends AbstractJavaTool {
 	 */
 	private final List<ChatMessage> chatMessages = new ArrayList<ChatMessage>();
 
-	protected static final Logger LOGGER = new FileLogger(LogType.XML);
+	protected static final Logger LOGGER = new FileLogger(System
+			.getProperty("user.dir"), LogType.XML);
 
 	/*
 	 * (non-Javadoc)

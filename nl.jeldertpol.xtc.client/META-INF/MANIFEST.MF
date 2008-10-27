@@ -5,7 +5,7 @@ Bundle-SymbolicName: nl.jeldertpol.xtc.client;singleton:=true
 Bundle-Version: 0.0.7
 Bundle-Activator: nl.jeldertpol.xtc.client.Activator
 Bundle-Vendor: Jeldert Pol
-Require-Bundle: nl.jeldertpol.xtc.common;bundle-version="[0.0.7,0.0.7]",
+Require-Bundle: nl.jeldertpol.xtc.common;bundle-version="[0.0.8,0.0.8]",
  org.eclipse.ui;bundle-version="3.4.0",
  org.eclipse.core.runtime;bundle-version="3.4.0",
  org.eclipse.core.resources;bundle-version="3.4.0",

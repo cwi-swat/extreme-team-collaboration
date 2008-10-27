@@ -1,5 +1,6 @@
 package nl.jeldertpol.xtc.common.logging;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
@@ -36,13 +37,19 @@ public class FileLogger implements Logger {
 	 * @param logType
 	 *            The format of the log file.
 	 */
-	public FileLogger(final LogType logType) {
+	public FileLogger(final String location, final LogType logType) {
 		logger = java.util.logging.Logger.getLogger(logName);
 		logger.setLevel(Level.ALL);
 
+		String logLocation = location;
+		if (!location.endsWith(File.separator)) {
+			logLocation = location + File.separator;
+		}
+
 		try {
 			boolean append = true;
-			FileHandler fileHandler = new FileHandler(logFile, append);
+			FileHandler fileHandler = new FileHandler(logLocation + logFile,
+					append);
 			logger.addHandler(fileHandler);
 
 			Formatter formatter;

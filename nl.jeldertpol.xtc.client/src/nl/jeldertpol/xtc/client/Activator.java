@@ -87,14 +87,16 @@ public class Activator extends AbstractUIPlugin {
 				.getBoolean(PreferenceConstants.P_LOGGING_ENABLED);
 		String format = preferences
 				.getString(PreferenceConstants.P_LOGGING_FORMAT);
+		String location = preferences
+				.getString(PreferenceConstants.P_LOGGING_LOCATION);
 
 		Logger logger = new NullLogger();
 
 		if (enabled) {
 			if ("XML".equals(format)) {
-				logger = new FileLogger(LogType.XML);
+				logger = new FileLogger(location, LogType.XML);
 			} else if ("PLAIN".equals(format)) {
-				logger = new FileLogger(LogType.PLAIN);
+				logger = new FileLogger(location, LogType.PLAIN);
 			}
 		}
 

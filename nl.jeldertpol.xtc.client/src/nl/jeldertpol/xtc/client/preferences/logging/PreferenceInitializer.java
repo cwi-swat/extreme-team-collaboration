@@ -23,6 +23,8 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 		store.setDefault(PreferenceConstants.P_LOGGING_ENABLED, true);
 		store.setDefault(PreferenceConstants.P_LOGGING_FORMAT, "xml");
+		store.setDefault(PreferenceConstants.P_LOGGING_LOCATION, System
+				.getProperty("user.home"));
 	}
 
 }

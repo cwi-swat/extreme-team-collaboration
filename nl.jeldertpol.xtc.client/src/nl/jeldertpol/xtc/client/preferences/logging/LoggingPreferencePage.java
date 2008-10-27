@@ -3,6 +3,7 @@ package nl.jeldertpol.xtc.client.preferences.logging;
 import nl.jeldertpol.xtc.client.Activator;
 
 import org.eclipse.jface.preference.BooleanFieldEditor;
+import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
 import org.eclipse.ui.IWorkbench;
@@ -40,6 +41,11 @@ public class LoggingPreferencePage extends FieldEditorPreferencePage implements
 		addField(new RadioGroupFieldEditor(
 				PreferenceConstants.P_LOGGING_FORMAT, "Format of log", 2,
 				format, getFieldEditorParent(), true));
+		
+		// Log file location
+		DirectoryFieldEditor directoryFieldEditor = new DirectoryFieldEditor(PreferenceConstants.P_LOGGING_LOCATION, "Log file location", getFieldEditorParent());
+		
+		addField(directoryFieldEditor);
 	}
 
 	/*
