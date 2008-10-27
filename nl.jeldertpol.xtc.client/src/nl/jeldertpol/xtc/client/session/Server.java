@@ -200,19 +200,16 @@ public class Server extends AbstractJavaTool {
 	/**
 	 * Send a change to the server.
 	 * 
-	 * @param projectName
-	 *            The name of the project the change originated from.
 	 * @param change
 	 *            The actual change.
 	 * @param nickname
 	 *            The nickname of the client the change originated from.
 	 */
-	public void sendChange(final String projectName,
-			final AbstractChange change, final String nickname) {
+	public void sendChange(final AbstractChange change, final String nickname) {
 		byte[] blob = Conversion.objectToByte(change);
 
-		ATerm sendChange = factory.make("sendChange(<str>, <blob>, <str>)",
-				projectName, blob, nickname);
+		ATerm sendChange = factory.make("sendChange(<blob>, <str>)",
+				blob, nickname);
 		ATermAppl reply = sendRequest(sendChange);
 
 		ATerm answer = reply.getArgument(0);

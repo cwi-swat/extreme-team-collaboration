@@ -533,7 +533,7 @@ public class Session {
 
 		Activator.getLogger().log(Level.INFO, "Sending change: " + change);
 
-		server.sendChange(projectName, change, nickname);
+		server.sendChange(change, nickname);
 	}
 
 	/**
