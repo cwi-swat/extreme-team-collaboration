@@ -41,10 +41,12 @@ public class LoggingPreferencePage extends FieldEditorPreferencePage implements
 		addField(new RadioGroupFieldEditor(
 				PreferenceConstants.P_LOGGING_FORMAT, "Format of log", 2,
 				format, getFieldEditorParent(), true));
-		
+
 		// Log file location
-		DirectoryFieldEditor directoryFieldEditor = new DirectoryFieldEditor(PreferenceConstants.P_LOGGING_LOCATION, "Log file location", getFieldEditorParent());
-		
+		DirectoryFieldEditor directoryFieldEditor = new DirectoryFieldEditor(
+				PreferenceConstants.P_LOGGING_LOCATION, "Log file location",
+				getFieldEditorParent());
+
 		addField(directoryFieldEditor);
 	}
 

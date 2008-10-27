@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.jeldertpol.xtc.common.changes.AbstractChange;
+import nl.jeldertpol.xtc.common.chat.ChatMessage;
 import nl.jeldertpol.xtc.common.session.SimpleSession;
 import nl.jeldertpol.xtc.common.whosWhere.WhosWhere;
 
@@ -18,7 +19,12 @@ public class Session extends SimpleSession {
 
 	private final List<WhosWhere> whosWheres;
 
-	private static final long serialVersionUID = 2L;
+	/**
+	 * Holds the chat messages.
+	 */
+	private final List<ChatMessage> chatMessages = new ArrayList<ChatMessage>();
+
+	private static final long serialVersionUID = 3L;
 
 	/**
 	 * Create a new project.
@@ -56,6 +62,10 @@ public class Session extends SimpleSession {
 	 */
 	public List<AbstractChange> getChanges() {
 		return changes;
+	}
+
+	public void addChat(ChatMessage chatMessage) {
+		chatMessages.add(chatMessage);
 	}
 
 	public void addWhosWhere(final WhosWhere whosWhere) {

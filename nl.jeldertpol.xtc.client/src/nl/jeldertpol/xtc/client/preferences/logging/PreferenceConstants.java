@@ -19,7 +19,7 @@ public final class PreferenceConstants {
 	 * Constant for referring to the location of the log file.
 	 */
 	public static final String P_LOGGING_LOCATION = "loggingLocation";
-	
+
 	/**
 	 * Private constructor, so this class cannot be initiated.
 	 */

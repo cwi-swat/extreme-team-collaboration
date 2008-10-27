@@ -46,11 +46,6 @@ public class Server extends AbstractJavaTool {
 	 */
 	private final List<Session> sessions = new ArrayList<Session>();
 
-	/**
-	 * Holds the chat messages.
-	 */
-	private final List<ChatMessage> chatMessages = new ArrayList<ChatMessage>();
-
 	protected static final Logger LOGGER = new FileLogger(System
 			.getProperty("user.dir"), LogType.XML);
 
@@ -435,28 +430,22 @@ public class Server extends AbstractJavaTool {
 
 		chatMessage.setTimestamp(System.currentTimeMillis());
 
-		chatMessages.add(chatMessage);
-		LOGGER.log(Level.FINE, chatMessage.toXMLString());
+		// Add chat to session.
+		Session session = getSession(chatMessage.getProjectName());
+		if (session == null) {
+			LOGGER.log(Level.INFO,
+					"There is no session for this chat message. "
+							+ chatMessage.getProjectName());
+		} else {
+			session.addChat(chatMessage);
+			LOGGER.log(Level.FINE, chatMessage.toXMLString());
+		}
 
+		// Return chat message with timestamp set.
 		byte[] blob = Conversion.objectToByte(chatMessage);
 
 		ATerm response = factory.make("sendChat(<blob>)", blob);
 		return response;
-	}
-
-	public void saveChatMessages() {
-		try {
-			String filename = "chatMessages" + System.currentTimeMillis();
-
-			FileOutputStream fos = new FileOutputStream(filename);
-			ObjectOutputStream oos = new ObjectOutputStream(fos);
-			oos.writeObject(chatMessages);
-			oos.close();
-		} catch (FileNotFoundException e) {
-			LOGGER.log(Level.SEVERE, e);
-		} catch (IOException e) {
-			LOGGER.log(Level.SEVERE, e);
-		}
 	}
 
 	/**

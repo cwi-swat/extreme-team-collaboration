@@ -81,7 +81,8 @@ public class ShowProjects {
 				infoExtractor.getRevision(project);
 				versionedProjects.add(project);
 			} catch (RevisionExtractorException e) {
-				Activator.getLogger()
+				Activator
+						.getLogger()
 						.log(
 								Level.SEVERE,
 								"The underlying version control system throws an error.",

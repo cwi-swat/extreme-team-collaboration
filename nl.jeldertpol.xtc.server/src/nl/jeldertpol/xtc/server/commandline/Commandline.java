@@ -130,11 +130,11 @@ public class Commandline extends Server {
 		}
 
 	}
-	
+
 	private void loadSession() {
 		System.out.println("Enter file name of session:");
 		String inputSession = readInput();
-		
+
 		loadSession(inputSession);
 	}
 
@@ -201,9 +201,6 @@ public class Commandline extends Server {
 					leaveSession(simpleSession.getProjectName(), client);
 				}
 			}
-
-			// Save chat
-			saveChatMessages();
 		}
 	}
 

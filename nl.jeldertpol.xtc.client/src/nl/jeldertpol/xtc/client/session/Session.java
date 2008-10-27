@@ -872,7 +872,8 @@ public class Session {
 	public void sendChat(final String message) {
 		Activator.getLogger().log(Level.INFO, "Sending chat.");
 
-		ChatMessage chatMessage = new ChatMessage(nickname, message);
+		ChatMessage chatMessage = new ChatMessage(projectName, nickname,
+				message);
 		server.sendChat(chatMessage);
 	}
 

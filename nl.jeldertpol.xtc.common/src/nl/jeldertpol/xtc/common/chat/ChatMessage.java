@@ -9,7 +9,12 @@ import java.io.Serializable;
  */
 public class ChatMessage implements Serializable {
 
-	private static final long serialVersionUID = 2L;
+	private static final long serialVersionUID = 3L;
+
+	/**
+	 * The project.
+	 */
+	private final String projectName;
 
 	/**
 	 * The nickname.
@@ -31,11 +36,20 @@ public class ChatMessage implements Serializable {
 	 * @param message
 	 *            The message.
 	 */
-	public ChatMessage(final String nickname, final String message) {
+	public ChatMessage(final String projectName, final String nickname,
+			final String message) {
 		super();
 
+		this.projectName = projectName;
 		this.nickname = nickname;
 		this.message = message;
+	}
+
+	/**
+	 * @return the projectName
+	 */
+	public String getProjectName() {
+		return projectName;
 	}
 
 	/**
