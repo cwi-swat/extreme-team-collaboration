@@ -90,7 +90,7 @@ public class ChatView extends ViewPart implements ChatListener {
 			@Override
 			public void keyReleased(final KeyEvent e) {
 				// Control Enter
-				if ((e.character == SWT.CR) && (e.stateMask == SWT.CONTROL)) {
+				if (e.character == SWT.CR) {
 					sendMessage();
 				}
 			}
