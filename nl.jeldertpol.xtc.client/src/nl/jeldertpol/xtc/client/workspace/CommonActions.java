@@ -1,13 +1,22 @@
 package nl.jeldertpol.xtc.client.workspace;
 
+import java.util.logging.Level;
+
+import nl.jeldertpol.xtc.client.Activator;
+
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.editors.text.EditorsUI;
+import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 import org.eclipse.ui.texteditor.ITextEditor;
 
@@ -70,6 +79,43 @@ public class CommonActions {
 		}
 
 		return editor;
+	}
+
+	/**
+	 * Open a new editor for the specified resource. Tries to open the default
+	 * editor. If none is found, it uses a default text editor.
+	 * 
+	 * @param resource
+	 *            The resource to open in an editor.
+	 */
+	public void openEditor(final IResource resource) {
+		// Find default editor for resource
+		IEditorDescriptor desc = PlatformUI.getWorkbench().getEditorRegistry()
+				.getDefaultEditor(resource.getName());
+
+		// Default text editor
+		String editorID;
+
+		if (desc != null) {
+			// Default editor found, use that one
+			editorID = desc.getId();
+		} else {
+			// No default editor, use default text editor
+			editorID = EditorsUI.DEFAULT_TEXT_EDITOR_ID;
+		}
+
+		// Required variables
+		IWorkbenchPage page = PlatformUI.getWorkbench()
+				.getActiveWorkbenchWindow().getActivePage();
+		IFile file = (IFile) resource;
+
+		try {
+			// Open new editor
+			page.openEditor(new FileEditorInput(file), editorID);
+		} catch (PartInitException e) {
+			Activator.getLogger().log(Level.SEVERE,
+					"Editor could not be opened.", e);
+		}
 	}
 
 }

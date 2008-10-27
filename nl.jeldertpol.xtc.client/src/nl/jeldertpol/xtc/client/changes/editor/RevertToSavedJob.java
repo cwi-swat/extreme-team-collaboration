@@ -68,7 +68,8 @@ public class RevertToSavedJob extends UIJob {
 	 * Should only be called from within an {@link UIJob}. Otherwise use
 	 * {@link RevertToSavedJob}.
 	 * 
-	 * TODO javadoc
+	 * @param resource
+	 *            Resource to revert.
 	 */
 	public static void revertToSaved(final IResource resource) {
 		ITextEditor editor = Activator.COMMON_ACTIONS.findEditor(resource);
@@ -77,7 +78,10 @@ public class RevertToSavedJob extends UIJob {
 			// If resource is reverted, and being listened to, this revert
 			// change is also caught by the listener (and thus send to the
 			// server). We don't want this.
-			if (resource == Activator.documentListener.getResource()) {
+			
+			IResource listenedResource = Activator.documentListener.getResource();
+			
+			if (resource.equals(listenedResource)) {
 				IDocumentProvider documentProvider = editor
 						.getDocumentProvider();
 				IDocument document = documentProvider.getDocument(editor

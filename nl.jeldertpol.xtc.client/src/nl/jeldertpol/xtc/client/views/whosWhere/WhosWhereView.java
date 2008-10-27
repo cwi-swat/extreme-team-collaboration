@@ -196,34 +196,8 @@ public class WhosWhereView extends ViewPart implements WhosWhereListener {
 				// Focus editor
 				editor.getEditorSite().getPage().activate(editor);
 			} else {
-				// Find default editor for resource
-				IEditorDescriptor desc = PlatformUI.getWorkbench()
-						.getEditorRegistry().getDefaultEditor(
-								resource.getName());
-
-				// Default text editor
-				String editorID;
-
-				if (desc != null) {
-					// Default editor found, use that one
-					editorID = desc.getId();
-				} else {
-					// No default editor, use default text editor
-					editorID = EditorsUI.DEFAULT_TEXT_EDITOR_ID;
-				}
-
-				// Required variables
-				IWorkbenchPage page = PlatformUI.getWorkbench()
-						.getActiveWorkbenchWindow().getActivePage();
-				IFile file = (IFile) resource;
-
-				try {
-					// Open new editor
-					page.openEditor(new FileEditorInput(file), editorID);
-				} catch (PartInitException e) {
-					Activator.getLogger().log(Level.SEVERE,
-							"Editor could not be opened.", e);
-				}
+				// Open new editor
+				Activator.COMMON_ACTIONS.openEditor(resource);
 			}
 		}
 	}

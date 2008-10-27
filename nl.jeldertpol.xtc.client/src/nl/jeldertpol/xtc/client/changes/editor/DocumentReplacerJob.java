@@ -109,10 +109,15 @@ public class DocumentReplacerJob extends UIJob {
 						"TextualChange could not be applied.");
 
 				// Rejoin. Already in a UIThread, so can call directly
-				RevertToSavedJob.revertToSaved(resource);
+				editor.close(false);
+				Activator.COMMON_ACTIONS.openEditor(resource);
 				Activator.SESSION.requestTextualChanges(resource
 						.getProjectRelativePath());
+				// RevertToSavedJob.revertToSaved(resource);
+				// Activator.SESSION.requestTextualChanges(resource
+				// .getProjectRelativePath());
 			} finally {
+				// In case of exception, document listener is still added.
 				document.addDocumentListener(Activator.documentListener);
 			}
 		}
