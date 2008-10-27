@@ -36,13 +36,10 @@ public class WhosWhereTracker {
 	}
 
 	/**
-	 * A change was received. Notifies all listeners of this change.
+	 * A client changes location. Notifies all listeners of this new location.
 	 * 
-	 * @param nickname
-	 *            The nickname of the client the change originated from.
-	 * @param filePath
-	 *            The file the change originated from, path is relative to the
-	 *            project, and portable.
+	 * @param whosWhere
+	 *            Location information.
 	 */
 	public void change(final WhosWhere whosWhere) {
 		whosWhereMap.put(whosWhere.getNickname(), whosWhere.getResourceName());

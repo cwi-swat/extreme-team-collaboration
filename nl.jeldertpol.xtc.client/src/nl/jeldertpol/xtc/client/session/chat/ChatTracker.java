@@ -39,6 +39,12 @@ public class ChatTracker {
 		return chatMessages;
 	}
 
+	/**
+	 * A new chat message is received. Updates all listeners.
+	 * 
+	 * @param chatMessage
+	 *            The chat message.
+	 */
 	public void newMessage(final ChatMessage chatMessage) {
 		chatMessages.add(chatMessage);
 

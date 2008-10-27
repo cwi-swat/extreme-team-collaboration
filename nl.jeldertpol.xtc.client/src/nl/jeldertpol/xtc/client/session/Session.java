@@ -884,10 +884,13 @@ public class Session {
 	 *            The chat message.
 	 */
 	public void receiveChat(final ChatMessage chatMessage) {
-		Activator.getLogger().log(Level.INFO,
-				"Receiving chat from " + chatMessage.getNickname() + ".");
+		if (shouldReceive(chatMessage.getProjectName())) {
+			Activator.getLogger().log(Level.INFO,
+					"Receiving chat from " + chatMessage.getNickname() + ".");
 
-		chatTracker.newMessage(chatMessage);
+			chatTracker.newMessage(chatMessage);
+		}
+
 	}
 
 	/**
@@ -920,6 +923,12 @@ public class Session {
 	public void receiveWhosWhere(
 			final nl.jeldertpol.xtc.common.whosWhere.WhosWhere whosWhere) {
 		if (shouldReceive(whosWhere.getProjectName())) {
+			Activator.getLogger()
+					.log(
+							Level.INFO,
+							"Receiving WhosWhere from "
+									+ whosWhere.getNickname() + ".");
+
 			whosWhereTracker.change(whosWhere);
 		}
 	}
