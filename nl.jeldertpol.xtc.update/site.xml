@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <description url="http://www.jeldertpol.nl/software/xtc/update">
+      XTC update site
+   </description>
+   <feature url="features/nl.jeldertpol.xtc.feature_0.0.9.jar" id="nl.jeldertpol.xtc.feature" version="0.0.9">
+      <category name="XTC"/>
+   </feature>
+   <category-def name="XTC" label="XTC"/>
+</site>

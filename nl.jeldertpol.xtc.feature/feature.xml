@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="nl.jeldertpol.xtc.feature"
+      label="XTC Feature"
+      version="0.0.9"
+      provider-name="Jeldert Pol">
+
+   <description url="http://www.example.com/description">
+      [Enter Feature Description here.]
+   </description>
+
+   <copyright url="http://www.example.com/copyright">
+      [Enter Copyright Description here.]
+   </copyright>
+
+   <license url="http://www.example.com/license">
+      [Enter License Description here.]
+   </license>
+
+   <url>
+      <update label="XTC update site" url="http://www.jeldertpol.nl/software/xtc/update"/>
+      <discovery label="Subclipse" url="http://subclipse.tigris.org/update_1.4.x"/>
+      <discovery label="ToolBus" url="http://homepages.cwi.nl/~daybuild/releases/eclipse"/>
+      <discovery label="IMP" url="http://download.eclipse.org/technology/imp/updates/"/>
+   </url>
+
+   <requires>
+      <import plugin="nl.jeldertpol.xtc.common" version="0.0.9" match="perfect"/>
+      <import plugin="org.eclipse.ui" version="3.4.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.core.runtime" version="3.4.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.core.resources" version="3.4.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.team.core" version="3.4.0" match="greaterOrEqual"/>
+      <import plugin="org.tigris.subversion.subclipse.core" version="1.4.1" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.jface.text" version="3.4.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ui.editors" version="3.4.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.jdt.core" version="3.4.0" match="greaterOrEqual"/>
+      <import plugin="toolbus_ng" version="1.0.8" match="greaterOrEqual"/>
+      <import plugin="aterm_java" version="1.8.0" match="greaterOrEqual"/>
+      <import plugin="shared_objects" version="1.4.5" match="greaterOrEqual"/>
+      <import plugin="JJTraveler" version="0.5.0" match="greaterOrEqual"/>
+      <import plugin="toolbus_ng_eclipse_imp" version="1.0.3" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ui.ide"/>
+   </requires>
+
+   <plugin
+         id="nl.jeldertpol.xtc.client"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="nl.jeldertpol.xtc.common"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>
